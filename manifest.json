@@ -1,7 +1,7 @@
 {
-  "name": "Getting Started Example",
+  "name": "DID-SIOP",
   "version": "1.0",
-  "description": "Build an Extension!",
+  "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "permissions": ["activeTab", "declarativeContent"],
   "background": {
     "scripts": ["background.js"],
