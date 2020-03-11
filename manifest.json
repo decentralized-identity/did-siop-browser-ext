@@ -1,0 +1,20 @@
+{
+  "name": "Getting Started Example",
+  "version": "1.0",
+  "description": "Build an Extension!",
+  "permissions": ["activeTab", "declarativeContent"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+      "default_popup": "popup.html"
+   },
+  "content_scripts": [
+   {
+      "matches": ["<all_urls>"],
+      "js": ["inject.js"]
+   }
+  ],
+  "manifest_version": 2
+}
