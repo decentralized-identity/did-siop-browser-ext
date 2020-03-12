@@ -18,6 +18,9 @@ chrome.runtime.onInstalled.addListener(function() {
                     port.postMessage("openid ok");
                     port.postMessage(msg);
                 }
+                else{
+                    port.postMessage("openid did_authn bad request");
+                }
             });
         }
     });
