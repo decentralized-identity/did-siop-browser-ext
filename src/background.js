@@ -1,4 +1,5 @@
 const validator = require('./validator');
+const jwt = require('./jwt');
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -18,10 +19,10 @@ chrome.runtime.onInstalled.addListener(function() {
             port.onMessage.addListener(function(msg) {
                 if(validator.validateRequest(msg)){
                     port.postMessage("openid ok");
-                    port.postMessage(msg);
+                    port.postMessage(jwt.decodeJWT(msg.request));
                 }
                 else{
-                    port.postMessage("openid did_authn bad request");
+                    port.postMessage("openid did_authn bad request ");
                 }
             });
         }
