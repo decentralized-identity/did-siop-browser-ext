@@ -1,10 +1,18 @@
-const { Resolver} = require('did-resolver');
-const { getResolver} = require('ethr-did-resolver');
+const { Resolver } = require('did-resolver');
+const ethr = require('ethr-did-resolver');
+const web = require('web-did-resolver');
+const { resolverRpcUrls } = require('./config');
 
-const providerConfig = { rpcUrl: "https://rinkeby.infura.io/v3/7063b610c6f34907b0dd0cdab07f397b"};
+const ethrResolver = ethr.getResolver({ rpcUrl: resolverRpcUrls.ethr});
+const webResolver = web.getResolver();
+
+const methodRegistry = {
+    ...ethrResolver,
+    ...webResolver
+}
 
 const resolver = function () {
-    return new Resolver(getResolver(providerConfig));
+    return new Resolver(methodRegistry);
 }
 
 module.exports = resolver;

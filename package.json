@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --runInBand"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
   "dependencies": {
     "did-jwt": "^4.0.0",
     "ethr-did-resolver": "^2.2.0",
-    "jws": "^4.0.0"
+    "jws": "^4.0.0",
+    "web-did-resolver": "^1.2.1"
   },
   "devDependencies": {
     "jest": "^25.1.0"
