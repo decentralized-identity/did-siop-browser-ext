@@ -1,6 +1,23 @@
 const jwt = require('./jwt');
+const Url = require('url-parse');
 
-const validateRequest = async function(rqst){
+const parseRequest = function(raw){
+    const parsedRequest = new Url(raw, true);
+    return parsedRequest;
+}
+
+const validateRequestParams = async function(request){
+    let parsed = parseRequest(request);
+    return (
+        parsed.protocol === 'openid:' &&
+        parsed.slashes === true &&
+        parsed.query.response_type === 'id_token' &&
+        (parsed.query.client_id !== undefined && parsed.query.client_id !== '') &&
+        (parsed.query.scope !== undefined && parsed.query.scope.indexOf('openid did_authn') > -1)
+    );
+}
+
+/* const validateRequest = async function(rqst){
     try{
         return(
             //OAuth 2.0 
@@ -44,6 +61,9 @@ const validateRequestObj = async function(requestJWT){
         }
         throw err;
     }
-}
+} */
 
-module.exports = { validateRequest };
+module.exports = {
+    validateRequestParams,
+    parseRequest
+};
