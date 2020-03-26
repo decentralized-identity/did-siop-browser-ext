@@ -1,5 +1,6 @@
 const jwt = require('./jwt');
 const Url = require('url-parse');
+const $ = require('jquery');
 
 const parseRequest = function(raw){
     const parsedRequest = new Url(raw, true);
@@ -8,13 +9,30 @@ const parseRequest = function(raw){
 
 const validateRequestParams = async function(request){
     let parsed = parseRequest(request);
-    return (
+    if (
         parsed.protocol === 'openid:' &&
         parsed.slashes === true &&
         parsed.query.response_type === 'id_token' &&
         (parsed.query.client_id !== undefined && parsed.query.client_id !== '') &&
         (parsed.query.scope !== undefined && parsed.query.scope.indexOf('openid did_authn') > -1)
-    );
+    ){
+        if (parsed.query.request !== undefined && parsed.query.request !== '') return parsed.query.request;
+        if (parsed.query.request_uri !== undefined && parsed.query.request_uri !== '') {
+            try{
+                let requestJWT = await $.get(parsed.query.request_uri);
+                return requestJWT;
+            }
+            catch(err){
+                return Promise.reject(new Error('Cannot resolve request jwt'));
+            }
+        }
+        else{
+            return Promise.reject(new Error('Cannot resolve request jwt'));
+        }
+    }
+    else{
+        return Promise.reject(new Error('Bad request'));
+    }
 }
 
 /* const validateRequest = async function(rqst){
