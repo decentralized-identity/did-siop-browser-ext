@@ -19,6 +19,7 @@
     "did-jwt": "^4.0.0",
     "ethr-did-resolver": "^2.2.0",
     "jws": "^4.0.0",
+    "url-parse": "^1.4.7",
     "web-did-resolver": "^1.2.1"
   },
   "devDependencies": {
