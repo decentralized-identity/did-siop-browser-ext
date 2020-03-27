@@ -1,4 +1,5 @@
 const base64url = require('base64url');
+const rs256 = require('jwa')('RS256');
 
 const encodeBase64Url = function(plain){
     try{
@@ -18,12 +19,25 @@ const decodeBase64Url = function (encoded){
     }
 }
 
-const signJWT = function(){
-
+const signRS256 = function(header, payload, privKey){
+    try{
+        let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
+        let signature = rs256.sign(unsigned, privKey);
+        return unsigned + '.' + signature
+    }
+    catch(err){
+        throw new Error("RS256 signning error: " + err);
+    }
 }
 
-const verifyJWT = function(){
-
+const verifyRS256 = function(jwt, pubKey){
+    try {
+        let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
+        let signature = jwt.split('.')[2];
+        return rs256.verify(input, signature, pubKey);
+    } catch (err) {
+        throw new Error("RS256 verification error: " + err);
+    }
 }
 
 
@@ -62,6 +76,6 @@ const decodeJWT = function(jwt){
 module.exports = {
     encodeBase64Url,
     decodeBase64Url,
-    signJWT,
-    verifyJWT,
+    signRS256,
+    verifyRS256,
 };
