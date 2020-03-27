@@ -1,7 +1,6 @@
-const resolver = require('./resolver')();
 const base64url = require('base64url');
 
-const encodeJWT = function(plain){
+const encodeBase64Url = function(plain){
     try{
         return base64url.encode(JSON.stringify(plain));
     }
@@ -10,9 +9,9 @@ const encodeJWT = function(plain){
     }
 }
 
-const decodeJWT = function (jwt){
+const decodeBase64Url = function (encoded){
     try{
-        return JSON.parse(base64url.decode(jwt));
+        return JSON.parse(base64url.decode(encoded));
     }
     catch(err){
         throw new Error("Cannot decode jwt: " + err);
@@ -61,8 +60,8 @@ const decodeJWT = function(jwt){
 } */
 
 module.exports = {
-    encodeJWT,
-    decodeJWT,
+    encodeBase64Url,
+    decodeBase64Url,
     signJWT,
     verifyJWT,
 };

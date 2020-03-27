@@ -19,18 +19,18 @@ const testJWTDecoded = {
 
 describe("JWT -> To test jwt functions", function () {
     test("JWT encode", async () => {
-        let encodedHeader = JWT.encodeJWT(testJWTDecoded.header);
+        let encodedHeader = JWT.encodeBase64Url(testJWTDecoded.header);
         expect(encodedHeader).toEqual(testJWT.header);
 
-        let encodedPayload = JWT.encodeJWT(testJWTDecoded.payload);
+        let encodedPayload = JWT.encodeBase64Url(testJWTDecoded.payload);
         expect(encodedPayload).toEqual(testJWT.payload);
     });
 
     test("JWT decode", async () => {
-        let decodedHeader = JWT.decodeJWT(testJWT.header);
+        let decodedHeader = JWT.decodeBase64Url(testJWT.header);
         expect(decodedHeader).toEqual(testJWTDecoded.header);
 
-        let decodedPayload = JWT.decodeJWT(testJWT.payload);
+        let decodedPayload = JWT.decodeBase64Url(testJWT.payload);
         expect(decodedPayload).toEqual(testJWTDecoded.payload);
     });
 });
