@@ -1,7 +1,34 @@
-const didJWT = require('did-jwt');
 const resolver = require('./resolver')();
+const base64url = require('base64url');
 
-const verifyJWT = async function(jwt){
+const encodeJWT = function(plain){
+    try{
+        return base64url.encode(JSON.stringify(plain));
+    }
+    catch(err){
+        throw new Error("Cannot encode jwt: " + err);
+    }
+}
+
+const decodeJWT = function (jwt){
+    try{
+        return JSON.parse(base64url.decode(jwt));
+    }
+    catch(err){
+        throw new Error("Cannot decode jwt: " + err);
+    }
+}
+
+const signJWT = function(){
+
+}
+
+const verifyJWT = function(){
+
+}
+
+
+/* const verifyJWT = async function(jwt){
     try{
         let verified = undefined;
         verified = await didJWT.verifyJWT(jwt, {resolver: resolver});
@@ -31,6 +58,11 @@ const decodeJWT = function(jwt){
         }
         throw err;
     }
-}
+} */
 
-module.exports = { verifyJWT, decodeJWT };
+module.exports = {
+    encodeJWT,
+    decodeJWT,
+    signJWT,
+    verifyJWT,
+};
