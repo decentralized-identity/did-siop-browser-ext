@@ -44,10 +44,31 @@ const validateRequestParams = async function(request){
     }
 }
 
+const validateRequestJWT = async function(requestJWT){
+    let decodedHeader;
+    let decodedPayload;
+    try{
+        decodedHeader = JWT.decodeBase64Url(requestJWT.split('.')[0]);
+        decodedPayload = JWT.decodeBase64Url(requestJWT.split('.')[1]);
+    }
+    catch(err){
+        throw err;
+    }
 
+    if(
+        (decodedHeader.kid !== undefined && decodedHeader.kid !== '') &&
+        (decodedPayload.iss !== undefined && decodedPayload.iss !== '') &&
+        (decodedPayload.scope !== undefined && decodedPayload.scope.indexOf('did_authn') > -1) &&
+        (decodedPayload.registration !== undefined && decodedPayload.registration !== '')
+    ){
+        return true;
+    }
+    return false;
+}
 
 module.exports = {
     parseRequest,
     validateRequestParams,
+    validateRequestJWT,
     ERRORS
 };
