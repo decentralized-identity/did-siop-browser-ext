@@ -64,6 +64,22 @@ describe("Validator -> To test request validation", function () {
             let validity = await validator.validateRequestJWT(resources.jwts.jwtGoodEncoded);
             expect(validity).toBeTruthy();
         });
+        test("Request jwt validation - expect falsy", async () => {
+            let validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoKid);
+            expect(validity).toBeFalsy();
+
+            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoIss);
+            expect(validity).toBeFalsy();
+
+            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoScope);
+            expect(validity).toBeFalsy();
+
+            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadIncorrectScope);
+            expect(validity).toBeFalsy();
+
+            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoRegistration);
+            expect(validity).toBeFalsy();
+        });
     });
    
 });

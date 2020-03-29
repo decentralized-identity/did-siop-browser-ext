@@ -38,11 +38,35 @@ const keyPair = generateKeyPairSync('rsa', {
 const jwtGoodEncoded = JWT.signRS256(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
 const jwt_uri = 'http://localhost/requestJWT';
 
+const getBadRequestJWT = function(jwt, isPayload, property, value = null){
+    let newJWT = JSON.parse(JSON.stringify(jwt));
+    if(isPayload){
+        if(value === null){
+            delete newJWT.payload[property];
+        }
+        else{
+            newJWT.payload[property] = value;
+        }
+    }
+    else{
+         if (value === null) {
+             delete newJWT.header[property];
+         } else {
+             newJWT.header[property] = value;
+         }
+    }
+    return JWT.signRS256(newJWT.header, newJWT.payload, keyPair.privateKey);
+}
+
 const jwts = {
     jwtGoodDecoded,
     jwtGoodEncoded,
     bad:{
-
+        jwtBadNoKid: getBadRequestJWT(jwtGoodDecoded, false, 'kid'),
+        jwtBadNoIss: getBadRequestJWT(jwtGoodDecoded, true, 'iss'),
+        jwtBadNoScope: getBadRequestJWT(jwtGoodDecoded, true, 'scope'),
+        jwtBadIncorrectScope: getBadRequestJWT(jwtGoodDecoded, true, 'scope', 'openid'),
+        jwtBadNoRegistration: getBadRequestJWT(jwtGoodDecoded, true, 'registration'),
     }
 }
 
