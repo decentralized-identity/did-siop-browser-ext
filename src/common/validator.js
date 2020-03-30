@@ -1,10 +1,14 @@
 const JWT = require('./jwt');
 const Url = require('url-parse');
 const $ = require('jquery');
+const resolver = require('./resolver');
 
 const ERRORS = Object.freeze({
+    BAD_REQUEST_ERROR: 'Bad request error',
     JWT_RESOLVE_ERROR: 'Jwt resolve error',
-    BAD_REQUEST_ERROR: 'Bad request error'
+    MALFORMED_JWT_ERROR: 'Malformed jwt error',
+    VERIFICATION_KEY_ERROR: 'Public key error',
+    JWT_VERIFICATION_ERROR: 'Jwt verification error'
 });
 
 const parseRequest = function(raw){
@@ -44,6 +48,17 @@ const validateRequestParams = async function(request){
     }
 }
 
+const getPublicKeyFromDifferentTypes = function(key){
+    if (key.publicKeyBase64) return key.publicKeyBase64;
+    else if (key.publicKeyBase58) return key.publicKeyBase58;
+    else if (key.publicKeyHex) return key.publicKeyHex;
+    else if (key.publicKeyPem) return key.publicKeyPem;
+    else if (key.publicKeyJwk) return JSON.stringify(key.publicKeyJwk);
+    else if (key.publicKeyPgp) return key.publicKeyPgp;
+    else if (key.ethereumAddress) return key.ethereumAddress;
+    else if (key.address) return key.address;
+}
+
 const validateRequestJWT = async function(requestJWT){
     let decodedHeader;
     let decodedPayload;
@@ -61,9 +76,76 @@ const validateRequestJWT = async function(requestJWT){
         (decodedPayload.scope !== undefined && decodedPayload.scope.indexOf('did_authn') > -1) &&
         (decodedPayload.registration !== undefined && decodedPayload.registration !== '')
     ){
-        return true;
+        let publicKey;
+
+        let doc = decodedPayload.doc;
+        if (doc.authentication === undefined || doc.authentication.length < 1) {
+            try{
+                doc = await resolver.resolve(decodedPayload.iss);
+            }
+            catch(err){
+                doc = undefined;
+            }
+        }
+
+        if (doc.authentication !== undefined && doc.authentication.length > 0) {
+            for(method of doc.authentication){
+                if(method.id === decodedHeader.kid){
+                    publicKey = getPublicKeyFromDifferentTypes(method);
+                }
+                else if(method.publicKey !== undefined && method.publicKey.includes(decodedHeader.kid)){
+                    for (key of doc.publicKey) {
+                        if (key.id === decodedHeader.kid) {
+                            publicKey = getPublicKeyFromDifferentTypes(key);
+                        }
+                    }
+                }
+                else if(method === decodedHeader.kid){
+                    for (key of doc.publicKey) {
+                        if (key.id === method) {
+                            publicKey = getPublicKeyFromDifferentTypes(key);
+                        }
+                    }
+                    //Other verification methods (non public key)
+                }
+            }
+        }
+        else{
+            let jwks = decodedPayload.registration.jwks;
+            if (jwks === undefined || jwks.keys.length < 1 && decodedPayload.registration.jwks_uri !== undefined) {
+                try{
+                    jwks = $.get(decodedPayload.registration.jwks_uri);
+                }
+                catch(err){
+                    jwks = undefined;
+                }
+            }
+            if (jwks !== undefined && jwks.keys.length > 0){
+                for(jwk of jwks){
+                    if(jwk.id === decodedHeader.kid){
+                        //publicKey = keyFromJWK(jwk);
+                    }
+                }
+            }
+        }
+
+        if(publicKey){
+            let validity = JWT.verifyRS256(requestJWT, publicKey);
+            if(validity){
+                return {
+                    header: decodedHeader,
+                    payload: decodedPayload
+                }
+            }
+            else {
+                return new Error(ERRORS.JWT_VERIFICATION_ERROR);
+            }
+        }
+        else{
+            return new Error(ERRORS.VERIFICATION_KEY_ERROR);
+        }
     }
-    return false;
+    return new Error(ERRORS.MALFORMED_JWT_ERROR);
 }
 
 module.exports = {
