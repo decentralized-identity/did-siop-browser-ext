@@ -130,7 +130,7 @@ const validateRequestJWT = async function(requestJWT){
         }
 
         if(publicKey){
-            let validity = JWT.verifyRS256(requestJWT, publicKey);
+            let validity = JWT.verify(requestJWT, decodedHeader.alg, publicKey);
             if(validity){
                 return {
                     header: decodedHeader,
