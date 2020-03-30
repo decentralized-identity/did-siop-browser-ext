@@ -55,10 +55,24 @@ const verifyRS256 = function(jwt, pubKey){
     }
 }
 
+const sign = function(header, payload, algo, privKey){
+    switch(algo){
+        case 'RS256': return signRS256(header, payload, privKey);
+    }
+}
+
+const verify = function(jwt, algo, pubKey){
+    switch(algo){
+        case 'RS256': return verify(jwt, pubKey);
+    }
+}
+
 module.exports = {
     encodeBase64Url,
     decodeBase64Url,
     signRS256,
     verifyRS256,
+    sign,
+    verify,
     ERRORS
 };
