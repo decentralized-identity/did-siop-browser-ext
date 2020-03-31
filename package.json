@@ -18,6 +18,7 @@
   "dependencies": {
     "base64url": "^3.0.1",
     "did-resolver": "^1.1.0",
+    "ecdsa-sig-formatter": "^1.0.11",
     "elliptic": "^6.5.2",
     "ethr-did-resolver": "^2.2.0",
     "jquery": "^3.4.1",
