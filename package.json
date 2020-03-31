@@ -17,7 +17,6 @@
   "homepage": "https://github.com/SanujaLW/did-siop#readme",
   "dependencies": {
     "base64url": "^3.0.1",
-    "did-jwt": "^4.0.0",
     "ethr-did-resolver": "^2.2.0",
     "jquery": "^3.4.1",
     "jwa": "^2.0.0",
