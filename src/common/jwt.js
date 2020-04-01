@@ -1,11 +1,16 @@
 const base64url = require('base64url');
+const crypto = require('crypto');
 const rs256 = require('jwa')('RS256');
+const EC = require('elliptic').ec;
+const { derToJose, joseToDer } = require('ecdsa-sig-formatter');
 
 const ERRORS = Object.freeze({
     BASE_64_URL_ENCODE_ERROR: 'Base64Url encode error',
     BASE_64_URL_DECODE_ERROR: 'Base64Url decode error',
     RS256_SIGNING_ERROR: 'RS256 signing error',
-    RS256_VERIFICATION_ERROR: 'RS256 verification error'
+    RS256_VERIFICATION_ERROR: 'RS256 verification error',
+    ES256k_SIGNING_ERROR: 'ES256k signing error',
+    ES256K_VERIFICATION_ERROR: 'ES256K verification error',
 });
 
 const encodeBase64Url = function(plain){
@@ -55,15 +60,55 @@ const verifyRS256 = function(jwt, pubKey){
     }
 }
 
+const signES256k = function(header, payload, privKey){
+    try{
+        let ec = new EC('secp256k1');
+        let sha256 = crypto.createHash('sha256');
+
+        let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
+        let hash = sha256.update(unsigned).digest('hex');
+
+        let key = ec.keyFromPrivate(privKey);
+        let signature = key.sign(hash);
+        let sigBuffer = Buffer.from(signature.toDER());
+        return unsigned + '.' + derToJose(sigBuffer, 'ES256');
+    }
+    catch (err) {
+        let custom = new Error(ERRORS.ES256k_SIGNING_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
+}
+
+const verifyES256k = function(jwt, pubKey){
+    try {
+        let sha256 = crypto.createHash('sha256');
+        let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
+        let hash = sha256.update(input).digest();
+        let derSign = joseToDer(jwt.split('.')[2], 'ES256');
+
+        let ec = new EC('secp256k1');
+        let key = ec.keyFromPublic(pubKey, 'hex');
+
+        return key.verify(hash, derSign);
+    } catch (err) {
+        let custom = new Error(ERRORS.ES256K_VERIFICATION_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
+}
+
 const sign = function(header, payload, algo, privKey){
     switch(algo){
         case 'RS256': return signRS256(header, payload, privKey);
+        case 'ES256K': return signES256k(header, payload, privKey);
     }
 }
 
 const verify = function(jwt, algo, pubKey){
     switch(algo){
         case 'RS256': return verifyRS256(jwt, pubKey);
+        case 'ES256K': return verifyES256k(jwt, pubKey);
     }
 }
 
@@ -72,6 +117,8 @@ module.exports = {
     decodeBase64Url,
     signRS256,
     verifyRS256,
+    signES256k,
+    verifyES256k,
     sign,
     verify,
     ERRORS

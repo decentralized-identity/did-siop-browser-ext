@@ -1,5 +1,6 @@
 const JWT = require('../src/common/jwt');
 const { generateKeyPairSync } = require('crypto');
+const EC = require('elliptic').ec;
 
 
 const base64urlTestResource = {
@@ -34,6 +35,25 @@ const rs256TestResource = {
             "iat": 1516239022
         }
     }
+}
+
+const es256kTestResource = {
+    jwtDecoded: {
+        header: {
+            "alg": "ES256",
+            "typ": "JWT"
+        },
+        payload: {
+            "sub": "1234567890",
+            "name": "John Doe",
+            "admin": true,
+            "iat": 1516239022
+        }
+    },
+    privateKey: '04418834408F4485404C428460C1D008040410827D0A97D1DF3CE0ED3BC5F0C7091045E9D41D135649DBBD315727C18EACFB15BA801C1814AE0410002A85100D080011362C69A8D266C546CE0B60E95E1872D834B913B56BF8610AAE2C4A19C1C72AD41D4BA3D3FF90E4377A10DD9DA3C38CD628626740199389D41B74217513FD8ABC',
+    publicKey: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc656dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
+    publicKeyWrong: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc646dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
+
 }
 
 describe("JWT -> To test jwt functions", function () {
@@ -85,5 +105,14 @@ describe("JWT -> To test jwt functions", function () {
             validity = JWT.verifyRS256(signedJWT, keyPair.publicKey);
             expect(validity).toBeFalsy();
         });
+        test("ES256k", async ()=>{
+            let signature = JWT.signES256k(es256kTestResource.jwtDecoded.header, es256kTestResource.jwtDecoded.payload, es256kTestResource.privateKey);
+            
+            let validity = JWT.verifyES256k(signature, es256kTestResource.publicKey);
+            expect(validity).toBeTruthy();
+
+            validity = JWT.verifyES256k(signature, es256kTestResource.publicKeyWrong);
+            expect(validity).toBeFalsy();
+        })
     });
 });
