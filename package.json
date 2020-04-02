@@ -20,6 +20,7 @@
     "did-resolver": "^1.1.0",
     "ecdsa-sig-formatter": "^1.0.11",
     "elliptic": "^6.5.2",
+    "ethereum-public-key-to-address": "0.0.2",
     "ethr-did-resolver": "^2.2.0",
     "jquery": "^3.4.1",
     "jwa": "^2.0.0",
