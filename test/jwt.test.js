@@ -40,7 +40,7 @@ const rs256TestResource = {
 const es256kTestResource = {
     jwtDecoded: {
         header: {
-            "alg": "ES256",
+            "alg": "ES256K",
             "typ": "JWT"
         },
         payload: {
@@ -59,7 +59,7 @@ const es256kTestResource = {
 const es256kRecoverableResources = {
     jwtDecoded: {
         header: {
-            "alg": "ES256-R",
+            "alg": "ES256K-R",
             "typ": "JWT"
         },
         payload: {
@@ -170,5 +170,43 @@ describe("JWT -> To test jwt functions", function () {
             validity = JWT.verifyEdDSA(signature, edDsaTestResources.publicKeyWrong);
             expect(validity).toBeFalsy();
         });
+        test('Wrappers', async () =>{
+            try {
+                let rsaKeyPair = generateKeyPairSync('rsa', {
+                    modulusLength: 4096,
+                    publicKeyEncoding: {
+                        type: 'spki',
+                        format: 'pem'
+                    },
+                    privateKeyEncoding: {
+                        type: 'pkcs8',
+                        format: 'pem'
+                    }
+                });
+                let signature = JWT.sign(rs256TestResource.jwtDecoded.header, rs256TestResource.jwtDecoded.payload, rsaKeyPair.privateKey);
+                let validity = JWT.verify(signature, 'RS256', rsaKeyPair.publicKey);
+                expect(validity).toBeTruthy();
+
+                signature = JWT.sign(es256kTestResource.jwtDecoded.header, es256kTestResource.jwtDecoded.payload, es256kTestResource.privateKey);
+                validity = JWT.verify(signature, 'ES256K', es256kTestResource.publicKey);
+                expect(validity).toBeTruthy();
+
+                signature = JWT.sign(es256kRecoverableResources.jwtDecoded.header, es256kRecoverableResources.jwtDecoded.payload, es256kRecoverableResources.privateKey);
+                validity = JWT.verify(signature, 'ES256K-R', es256kRecoverableResources.publicKey);
+                expect(validity).toBeTruthy();
+
+                signature = JWT.sign(edDsaTestResources.jwtDecoded.header, edDsaTestResources.jwtDecoded.payload, edDsaTestResources.privateKey);
+                validity = JWT.verify(signature, 'EdDSA', edDsaTestResources.publicKey);
+                expect(validity).toBeTruthy();
+            } catch (err) {
+                let errors = []
+                while(err){
+                    errors.push(err.message);
+                    err = err.inner;
+                }
+                console.log(errors);
+                throw new Error('Test failed');
+            }
+        })
     });
 });

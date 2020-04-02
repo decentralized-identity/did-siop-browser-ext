@@ -18,6 +18,7 @@ const ERRORS = Object.freeze({
     EDDSA_VERIFICATION_ERROR: 'EDDSA verification error',
     JWT_SIGNING_ERROR: 'JWT signing error',
     JWT_VERIFICATION_ERROR: 'JWT verification error',
+    INVALID_ALGORITHM_ERROR: 'Invalid algorithm',
 });
 
 const encodeBase64Url = function(plain){
@@ -49,6 +50,8 @@ const leftpad = function (data, size = 64){
 
 const signRS256 = function(header, payload, privKey){
     try{
+        if(header.alg !== 'RS256') throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
         let signature = rs256.sign(unsigned, privKey);
         return unsigned + '.' + signature
@@ -62,6 +65,8 @@ const signRS256 = function(header, payload, privKey){
 
 const verifyRS256 = function(jwt, pubKey){
     try {
+        if (decodeBase64Url(jwt.split('.')[0]).alg !== 'RS256') throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
         let signature = jwt.split('.')[2];
         return rs256.verify(input, signature, pubKey);
@@ -74,6 +79,8 @@ const verifyRS256 = function(jwt, pubKey){
 
 const signES256k = function(header, payload, privKey, recoverable){
     try{
+        if (header.alg !== (recoverable? 'ES256K-R' : 'ES256K')) throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let ec = new EC('secp256k1');
         let sha256 = crypto.createHash('sha256');
 
@@ -100,6 +107,8 @@ const signES256k = function(header, payload, privKey, recoverable){
 
 const verifyES256k = function(jwt, pubKey, recoverable){
     try {
+        if (decodeBase64Url(jwt.split('.')[0]).alg !== (recoverable ? 'ES256K-R' : 'ES256K')) throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let sha256 = crypto.createHash('sha256');
         let ec = new EC('secp256k1');
 
@@ -154,6 +163,8 @@ const verifyES256kRecoverable = function (jwt, pubKey){
 
 const signEdDSA = function (header, payload, privKey){
     try {
+        if (header.alg !== 'EdDSA') throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let ec = new EdDSA('ed25519');
 
         let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
@@ -172,6 +183,8 @@ const signEdDSA = function (header, payload, privKey){
 
 const verifyEdDSA = function(jwt, pubKey){
     try {
+        if (decodeBase64Url(jwt.split('.')[0]).alg !== 'EdDSA') throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
+
         let ec = new EdDSA('ed25519');
 
         let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
@@ -203,9 +216,9 @@ const sign = function(header, payload, privKey){
     }
 }
 
-const verify = function(jwt, pubKey){
+const verify = function(jwt, alg, pubKey){
     try {
-        switch(header.alg){
+        switch(alg){
             case 'RS256': return verifyRS256(jwt, pubKey);
             case 'ES256K': return verifyES256k(jwt, pubKey);
             case 'ES256K-R': return verifyES256kRecoverable(jwt, pubKey);
