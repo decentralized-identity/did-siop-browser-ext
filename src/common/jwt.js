@@ -16,6 +16,8 @@ const ERRORS = Object.freeze({
     ES256K_R_VERIFICATION_ERROR: 'ES256K-R verification error',
     EDDSA_SIGNING_ERROR: 'EDDSA signing error',
     EDDSA_VERIFICATION_ERROR: 'EDDSA verification error',
+    JWT_SIGNING_ERROR: 'JWT signing error',
+    JWT_VERIFICATION_ERROR: 'JWT verification error',
 });
 
 const encodeBase64Url = function(plain){
@@ -186,19 +188,33 @@ const verifyEdDSA = function(jwt, pubKey){
     }
 }
 
-const sign = function(header, payload, algo, privKey){
-    switch(algo){
-        case 'RS256': return signRS256(header, payload, privKey);
-        case 'ES256K': return signES256k(header, payload, privKey);
-        case 'ES256K-R': return signES256kRecoverable(header, payload, privKey);
+const sign = function(header, payload, privKey){
+    try {
+        switch(header.alg){
+            case 'RS256': return signRS256(header, payload, privKey);
+            case 'ES256K': return signES256k(header, payload, privKey);
+            case 'ES256K-R': return signES256kRecoverable(header, payload, privKey);
+            case 'EdDSA': return signEdDSA(header, payload, privKey);
+        }
+    } catch (err) {
+        let custom = new Error(ERRORS.JWT_SIGNING_ERROR);
+        custom.inner = err;
+        throw custom;
     }
 }
 
-const verify = function(jwt, algo, pubKey){
-    switch(algo){
-        case 'RS256': return verifyRS256(jwt, pubKey);
-        case 'ES256K': return verifyES256k(jwt, pubKey);
-        case 'ES256K-R': return verifyES256kRecoverable(jwt, pubKey);
+const verify = function(jwt, pubKey){
+    try {
+        switch(header.alg){
+            case 'RS256': return verifyRS256(jwt, pubKey);
+            case 'ES256K': return verifyES256k(jwt, pubKey);
+            case 'ES256K-R': return verifyES256kRecoverable(jwt, pubKey);
+            case 'EdDSA': return verifyEdDSA(jwt, pubKey);
+        }
+    } catch (err) {
+        let custom = new Error(ERRORS.JWT_VERIFICATION_ERROR);
+        custom.inner = err;
+        throw custom;
     }
 }
 
