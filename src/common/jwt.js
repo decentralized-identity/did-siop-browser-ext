@@ -2,7 +2,7 @@ const base64url = require('base64url');
 const crypto = require('crypto');
 const rs256 = require('jwa')('RS256');
 const EC = require('elliptic').ec;
-const { derToJose, joseToDer } = require('ecdsa-sig-formatter');
+const keyToEtherAddress = require('ethereum-public-key-to-address');
 
 const ERRORS = Object.freeze({
     BASE_64_URL_ENCODE_ERROR: 'Base64Url encode error',
@@ -35,6 +35,11 @@ const decodeBase64Url = function (encoded){
     }
 }
 
+const leftpad = function (data, size = 64){
+    if (data.length === size) return data
+    return '0'.repeat(size - data.length) + data
+}
+
 const signRS256 = function(header, payload, privKey){
     try{
         let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
@@ -60,7 +65,7 @@ const verifyRS256 = function(jwt, pubKey){
     }
 }
 
-const signES256k = function(header, payload, privKey){
+const signES256k = function(header, payload, privKey, recoverable){
     try{
         let ec = new EC('secp256k1');
         let sha256 = crypto.createHash('sha256');
@@ -69,9 +74,15 @@ const signES256k = function(header, payload, privKey){
         let hash = sha256.update(unsigned).digest('hex');
 
         let key = ec.keyFromPrivate(privKey);
-        let signature = key.sign(hash);
-        let sigBuffer = Buffer.from(signature.toDER());
-        return unsigned + '.' + derToJose(sigBuffer, 'ES256');
+
+        let ec256k_signature = key.sign(hash);
+
+        let jose = Buffer.alloc(recoverable? 65 : 64);
+        Buffer.from(leftpad(ec256k_signature.r.toString('hex')), 'hex').copy(jose, 0);
+        Buffer.from(leftpad(ec256k_signature.s.toString('hex')), 'hex').copy(jose, 32);
+        if(recoverable)jose[64] = ec256k_signature.recoveryParam;
+
+        return unsigned + '.' + base64url.encode(jose);
     }
     catch (err) {
         let custom = new Error(ERRORS.ES256k_SIGNING_ERROR);
@@ -80,17 +91,33 @@ const signES256k = function(header, payload, privKey){
     }
 }
 
-const verifyES256k = function(jwt, pubKey){
+const verifyES256k = function(jwt, pubKey, recoverable){
     try {
         let sha256 = crypto.createHash('sha256');
+        let ec = new EC('secp256k1');
+
         let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
         let hash = sha256.update(input).digest();
-        let derSign = joseToDer(jwt.split('.')[2], 'ES256');
 
-        let ec = new EC('secp256k1');
+        let sigBuffer = Buffer.from(base64url.toBuffer(jwt.split('.')[2]));
+        if(sigBuffer.length !== (recoverable? 65 : 64)) throw new Error('Invalid JWT');
+        let signatureObj = {
+            r: sigBuffer.slice(0, 32).toString('hex'),
+            s: sigBuffer.slice(32, 64).toString('hex')
+        }
+
+        if (recoverable) {
+            let recoveredKey = ec.recoverPubKey(hash, signatureObj, sigBuffer[64]);
+            return (
+                recoveredKey.encode('hex') === pubKey ||
+                recoveredKey.encode('hex', true) === pubKey ||
+                keyToEtherAddress(recoveredKey.encode('hex')) === pubKey
+            )
+        }
+
         let key = ec.keyFromPublic(pubKey, 'hex');
 
-        return key.verify(hash, derSign);
+        return key.verify(hash, signatureObj);
     } catch (err) {
         let custom = new Error(ERRORS.ES256K_VERIFICATION_ERROR);
         custom.inner = err;
@@ -98,10 +125,19 @@ const verifyES256k = function(jwt, pubKey){
     }
 }
 
+const signES256kRecoverable = function (header, payload, privKey) {
+    return signES256k(header, payload, privKey, true)
+}
+
+const verifyES256kRecoverable = function (jwt, pubKey){
+    return verifyES256k(jwt, pubKey, true);
+}
+
 const sign = function(header, payload, algo, privKey){
     switch(algo){
         case 'RS256': return signRS256(header, payload, privKey);
         case 'ES256K': return signES256k(header, payload, privKey);
+        case 'ES256K-R': return signES256kRecoverable(header, payload, privKey);
     }
 }
 
@@ -109,6 +145,7 @@ const verify = function(jwt, algo, pubKey){
     switch(algo){
         case 'RS256': return verifyRS256(jwt, pubKey);
         case 'ES256K': return verifyES256k(jwt, pubKey);
+        case 'ES256K-R': return verifyES256kRecoverable(jwt, pubKey);
     }
 }
 
@@ -119,6 +156,8 @@ module.exports = {
     verifyRS256,
     signES256k,
     verifyES256k,
+    signES256kRecoverable,
+    verifyES256kRecoverable,
     sign,
     verify,
     ERRORS

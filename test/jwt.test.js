@@ -56,6 +56,25 @@ const es256kTestResource = {
 
 }
 
+const es256kRecoverableResources = {
+    jwtDecoded: {
+        header: {
+            "alg": "ES256-R",
+            "typ": "JWT"
+        },
+        payload: {
+            "sub": "1234567890",
+            "name": "John Doe",
+            "admin": true,
+            "iat": 1516239022
+        }
+    },
+    privateKey: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+    publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',
+    publicKeyWrong: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc646dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
+
+}
+
 describe("JWT -> To test jwt functions", function () {
     test("JWT encode", async () => {
         let encodedHeader = JWT.encodeBase64Url(base64urlTestResource.testJWTDecoded.header);
@@ -113,6 +132,15 @@ describe("JWT -> To test jwt functions", function () {
 
             validity = JWT.verifyES256k(signature, es256kTestResource.publicKeyWrong);
             expect(validity).toBeFalsy();
-        })
+        });
+        test("ES256k-R", async () => {
+            let signature = JWT.signES256kRecoverable(es256kRecoverableResources.jwtDecoded.header, es256kRecoverableResources.jwtDecoded.payload, es256kRecoverableResources.privateKey);
+
+            let validity = JWT.verifyES256kRecoverable(signature, es256kRecoverableResources.publicKey);
+            expect(validity).toBeTruthy();
+
+            validity = JWT.verifyES256kRecoverable(signature, es256kRecoverableResources.publicKeyWrong);
+            expect(validity).toBeFalsy();
+        });
     });
 });
