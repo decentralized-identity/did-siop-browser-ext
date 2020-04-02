@@ -2,6 +2,7 @@ const base64url = require('base64url');
 const crypto = require('crypto');
 const rs256 = require('jwa')('RS256');
 const EC = require('elliptic').ec;
+const EdDSA = require('elliptic').eddsa;
 const keyToEtherAddress = require('ethereum-public-key-to-address');
 
 const ERRORS = Object.freeze({
@@ -11,6 +12,10 @@ const ERRORS = Object.freeze({
     RS256_VERIFICATION_ERROR: 'RS256 verification error',
     ES256k_SIGNING_ERROR: 'ES256k signing error',
     ES256K_VERIFICATION_ERROR: 'ES256K verification error',
+    ES256k_R_SIGNING_ERROR: 'ES256k-R signing error',
+    ES256K_R_VERIFICATION_ERROR: 'ES256K-R verification error',
+    EDDSA_SIGNING_ERROR: 'EDDSA signing error',
+    EDDSA_VERIFICATION_ERROR: 'EDDSA verification error',
 });
 
 const encodeBase64Url = function(plain){
@@ -126,11 +131,59 @@ const verifyES256k = function(jwt, pubKey, recoverable){
 }
 
 const signES256kRecoverable = function (header, payload, privKey) {
-    return signES256k(header, payload, privKey, true)
+    try {
+        return signES256k(header, payload, privKey, true)
+    } catch (err) {
+        let custom = new Error(ERRORS.ES256k_R_SIGNING_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
 }
 
 const verifyES256kRecoverable = function (jwt, pubKey){
-    return verifyES256k(jwt, pubKey, true);
+    try {
+        return verifyES256k(jwt, pubKey, true);
+    } catch (err) {
+        let custom = new Error(ERRORS.ES256K_R_VERIFICATION_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
+}
+
+const signEdDSA = function (header, payload, privKey){
+    try {
+        let ec = new EdDSA('ed25519');
+
+        let unsigned = encodeBase64Url(header) + '.' + encodeBase64Url(payload);
+
+        let key = ec.keyFromSecret(privKey);
+
+        let edDsa_signature = key.sign(Buffer.from(unsigned));
+
+        return unsigned + '.' + encodeBase64Url(edDsa_signature.toHex());
+    } catch (err) {
+        let custom = new Error(ERRORS.EDDSA_SIGNING_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
+}
+
+const verifyEdDSA = function(jwt, pubKey){
+    try {
+        let ec = new EdDSA('ed25519');
+
+        let input = jwt.split('.')[0] + '.' + jwt.split('.')[1];
+
+        let signature = jwt.split('.')[2];
+
+        let key = ec.keyFromPublic(pubKey, 'hex');
+
+        return key.verify(Buffer.from(input), base64url.decode(signature));
+    } catch (err) {
+        let custom = new Error(ERRORS.EDDSA_VERIFICATION_ERROR);
+        custom.inner = err;
+        throw custom;
+    }
 }
 
 const sign = function(header, payload, algo, privKey){
@@ -158,6 +211,8 @@ module.exports = {
     verifyES256k,
     signES256kRecoverable,
     verifyES256kRecoverable,
+    signEdDSA,
+    verifyEdDSA,
     sign,
     verify,
     ERRORS

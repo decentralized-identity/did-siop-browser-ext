@@ -75,6 +75,25 @@ const es256kRecoverableResources = {
 
 }
 
+const edDsaTestResources = {
+     jwtDecoded: {
+             header: {
+                 "alg": "EdDSA",
+                 "typ": "JWT"
+             },
+             payload: {
+                 "sub": "1234567890",
+                 "name": "John Doe",
+                 "admin": true,
+                 "iat": 1516239022
+             }
+         },
+    privateKey: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+    publicKey: 'b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f25e5f92444cde',
+    publicKeyWrong: 'b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f24e5f92444cde',
+
+}
+
 describe("JWT -> To test jwt functions", function () {
     test("JWT encode", async () => {
         let encodedHeader = JWT.encodeBase64Url(base64urlTestResource.testJWTDecoded.header);
@@ -140,6 +159,15 @@ describe("JWT -> To test jwt functions", function () {
             expect(validity).toBeTruthy();
 
             validity = JWT.verifyES256kRecoverable(signature, es256kRecoverableResources.publicKeyWrong);
+            expect(validity).toBeFalsy();
+        });
+        test("EdDSA", async () =>{
+            let signature = JWT.signEdDSA(edDsaTestResources.jwtDecoded.header, edDsaTestResources.jwtDecoded.payload, edDsaTestResources.privateKey);
+
+            let validity = JWT.verifyEdDSA(signature, edDsaTestResources.publicKey);
+            expect(validity).toBeTruthy();
+
+            validity = JWT.verifyEdDSA(signature, edDsaTestResources.publicKeyWrong);
             expect(validity).toBeFalsy();
         });
     });
