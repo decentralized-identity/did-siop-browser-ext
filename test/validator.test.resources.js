@@ -5,11 +5,11 @@ const { generateKeyPairSync } = require('crypto');
 const jwtGoodDecoded = {
     header: {
         "typ": "JWT",
-        "alg": "ES256K",
-        "kid": "did:example:0xab#key-1"
+        "alg": "ES256K-R",
+        "kid": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner"
     },
     payload: {
-        "iss": "did:example:0xab",
+        "iss": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83",
         "response_type": "id_token",
         "client_id": "https://my.rp.com/cb",
         "scope": "openid did_authn",
@@ -23,19 +23,12 @@ const jwtGoodDecoded = {
     }
 }
 
-const keyPair = generateKeyPairSync('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem'
-    },
-    privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem'
-    }
-});
+const keyPair = {
+    privateKey: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+    publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
+}
 
-const jwtGoodEncoded = JWT.signRS256(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
+const jwtGoodEncoded = JWT.sign(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
 const jwt_uri = 'http://localhost/requestJWT';
 
 const getBadRequestJWT = function(jwt, isPayload, property, value = null){
@@ -55,7 +48,7 @@ const getBadRequestJWT = function(jwt, isPayload, property, value = null){
              newJWT.header[property] = value;
          }
     }
-    return JWT.signRS256(newJWT.header, newJWT.payload, keyPair.privateKey);
+    return JWT.sign(newJWT.header, newJWT.payload, keyPair.privateKey);
 }
 
 const jwts = {
@@ -101,6 +94,11 @@ const requests = {
 const errors = {
     badRequestError : new Error(ERRORS.BAD_REQUEST_ERROR),
     noJWTError : new Error(ERRORS.JWT_RESOLVE_ERROR),
+    malformedJWTError: new Error(ERRORS.MALFORMED_JWT_ERROR),
+    verficationKeyError: new Error(ERRORS.VERIFICATION_KEY_ERROR),
+    jwkError: new Error(ERRORS.JWK_ERROR),
+    jwtVerificationError: new Error(ERRORS.JWT_VERIFICATION_ERROR),
+    invalidSignatureError: new Error(ERRORS.INVALID_SIGNATURE_ERROR),
 }
 
 module.exports = {

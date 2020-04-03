@@ -1,14 +1,17 @@
 const JWT = require('./jwt');
 const Url = require('url-parse');
 const $ = require('jquery');
-const resolver = require('./resolver');
+const resolver = require('./resolver')();
+const ethereumAddress = require('ethereum-checksum-address');
 
 const ERRORS = Object.freeze({
     BAD_REQUEST_ERROR: 'Bad request error',
     JWT_RESOLVE_ERROR: 'Jwt resolve error',
     MALFORMED_JWT_ERROR: 'Malformed jwt error',
     VERIFICATION_KEY_ERROR: 'Public key error',
-    JWT_VERIFICATION_ERROR: 'Jwt verification error'
+    JWK_ERROR: 'JWK error',
+    JWT_VERIFICATION_ERROR: 'Jwt verification error',
+    INVALID_SIGNATURE_ERROR: 'Invalid signature error'
 });
 
 const parseRequest = function(raw){
@@ -55,7 +58,7 @@ const getPublicKeyFromDifferentTypes = function(key){
     else if (key.publicKeyPem) return key.publicKeyPem;
     else if (key.publicKeyJwk) return JSON.stringify(key.publicKeyJwk);
     else if (key.publicKeyPgp) return key.publicKeyPgp;
-    else if (key.ethereumAddress) return key.ethereumAddress;
+    else if (key.ethereumAddress) return ethereumAddress.toChecksumAddress(key.ethereumAddress);
     else if (key.address) return key.address;
 }
 
@@ -79,7 +82,7 @@ const validateRequestJWT = async function(requestJWT){
         let publicKey;
 
         let doc = decodedPayload.doc;
-        if (doc.authentication === undefined || doc.authentication.length < 1) {
+        if (doc === undefined || (doc && doc.authentication.length < 1)) {
             try{
                 doc = await resolver.resolve(decodedPayload.iss);
             }
@@ -88,7 +91,7 @@ const validateRequestJWT = async function(requestJWT){
             }
         }
 
-        if (doc.authentication !== undefined && doc.authentication.length > 0) {
+        if (doc !== undefined && doc.authentication.length > 0) {
             for(method of doc.authentication){
                 if(method.id === decodedHeader.kid){
                     publicKey = getPublicKeyFromDifferentTypes(method);
@@ -127,6 +130,9 @@ const validateRequestJWT = async function(requestJWT){
                     }
                 }
             }
+            else{
+                return Promise.reject(new Error(ERRORS.JWK_ERROR));
+            }
         }
 
         if(publicKey){
@@ -138,14 +144,16 @@ const validateRequestJWT = async function(requestJWT){
                 }
             }
             else {
-                return new Error(ERRORS.JWT_VERIFICATION_ERROR);
+                return Promise.reject(ERRORS.INVALID_SIGNATURE_ERROR);
             }
         }
         else{
-            return new Error(ERRORS.VERIFICATION_KEY_ERROR);
+            return Promise.reject(new Error(ERRORS.VERIFICATION_KEY_ERROR));
         }
     }
-    return new Error(ERRORS.MALFORMED_JWT_ERROR);
+    else{
+        return Promise.reject(new Error(ERRORS.MALFORMED_JWT_ERROR));
+    }
 }
 
 module.exports = {

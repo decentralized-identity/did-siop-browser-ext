@@ -61,24 +61,34 @@ describe("Validator -> To test request validation", function () {
     });
     describe("Request jwt validation", function(){
         test("Request jwt validation - expect truthy", async ()=>{
-            let validity = await validator.validateRequestJWT(resources.jwts.jwtGoodEncoded);
-            expect(validity).toBeTruthy();
+            try {
+                let validity = await validator.validateRequestJWT(resources.jwts.jwtGoodEncoded);
+                expect(validity).toBeTruthy();
+            } catch (err) {
+                let errors = []
+                while (err) {
+                    errors.push(err.message);
+                    err = err.inner;
+                }
+                console.log(errors);
+                throw new Error('Test failed');
+            }
         });
         test("Request jwt validation - expect falsy", async () => {
-            let validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoKid);
-            expect(validity).toBeFalsy();
+            let validityPromise = validator.validateRequestJWT(resources.jwts.bad.jwtBadNoKid);
+            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
 
-            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoIss);
-            expect(validity).toBeFalsy();
+            validityPromise = validator.validateRequestJWT(resources.jwts.bad.jwtBadNoIss);
+            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
 
-            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoScope);
-            expect(validity).toBeFalsy();
+            validityPromise = validator.validateRequestJWT(resources.jwts.bad.jwtBadNoScope);
+            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
 
-            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadIncorrectScope);
-            expect(validity).toBeFalsy();
+            validityPromise = validator.validateRequestJWT(resources.jwts.bad.jwtBadIncorrectScope);
+            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
 
-            validity = await validator.validateRequestJWT(resources.jwts.bad.jwtBadNoRegistration);
-            expect(validity).toBeFalsy();
+            validityPromise = validator.validateRequestJWT(resources.jwts.bad.jwtBadNoRegistration);
+            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
         });
     });
    
