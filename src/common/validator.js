@@ -156,9 +156,22 @@ const validateRequestJWT = async function(requestJWT){
     }
 }
 
+const validateRequest = async function(request){
+    try{
+        let requestJWT = await validateRequestParams(request);
+        let jwtDecoded = await validateRequestJWT(requestJWT);
+        return jwtDecoded;
+    }
+    catch(err){
+        throw err;
+    }
+
+}
+
 module.exports = {
     parseRequest,
     validateRequestParams,
     validateRequestJWT,
+    validateRequest,
     ERRORS
 };
