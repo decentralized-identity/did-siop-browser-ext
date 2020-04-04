@@ -26,6 +26,7 @@
     "ethr-did-resolver": "^2.2.0",
     "jquery": "^3.4.1",
     "jwa": "^2.0.0",
+    "node-rsa": "^1.0.8",
     "url-parse": "^1.4.7",
     "web-did-resolver": "^1.2.1"
   },
