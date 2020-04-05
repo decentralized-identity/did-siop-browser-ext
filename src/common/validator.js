@@ -1,4 +1,5 @@
 const JWT = require('./jwt');
+const JWK = require('./jwk');
 const Url = require('url-parse');
 const $ = require('jquery');
 const resolver = require('./resolver')();
@@ -126,7 +127,7 @@ const validateRequestJWT = async function(requestJWT){
             if (jwks !== undefined && jwks.keys.length > 0){
                 for(jwk of jwks){
                     if(jwk.id === decodedHeader.kid){
-                        //publicKey = keyFromJWK(jwk);
+                        publicKey = JWK.getPublicKey(jwk);
                     }
                 }
             }
