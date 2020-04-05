@@ -33,7 +33,7 @@ describe("JWK key retrieval", function () {
             "alg": "ES256"
         }
 
-        let hex = JWK.getES256PublicKeyHex(ec256JWK);
+        let hex = JWK.getECPublicKeyHex(ec256JWK);
 
         let ec = EC('secp256k1');
         let key = ec.keyFromPublic(hex, 'hex');
