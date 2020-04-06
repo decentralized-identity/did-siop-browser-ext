@@ -1,4 +1,4 @@
-const JWT = require('../common/jwt');
+const { signJWT } = require('../common');
 
 document.getElementById('did-siop-login').addEventListener('click',
     function(){
@@ -37,5 +37,5 @@ const keyPair = {
     publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
 }
 
-const jwtGoodEncoded = JWT.sign(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
+const jwtGoodEncoded = signJWT(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
 const requestGoodEmbeddedJWT = 'openid://?response_type=id_token&client_id=https://rp.example.com/cb&scope=openid did_authn&request=' + jwtGoodEncoded;

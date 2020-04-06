@@ -1,4 +1,4 @@
-const validator = require('../common/validator');
+const { validateRequest } = require('../common');
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -17,7 +17,7 @@ chrome.runtime.onInstalled.addListener(function() {
         if(port.name === "did-siop"){
             port.onMessage.addListener(async function(msg) {
                 try{
-                    if(await validator.validateRequest(msg)){
+                    if(await validateRequest(msg)){
                         port.postMessage("openid ok");
                     }
                     else{
