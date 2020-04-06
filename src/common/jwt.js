@@ -201,7 +201,7 @@ const verifyEdDSA = function(jwt, pubKey){
     }
 }
 
-const sign = function(header, payload, privKey){
+const signJWT = function(header, payload, privKey){
     try {
         switch(header.alg){
             case 'RS256': return signRS256(header, payload, privKey);
@@ -216,7 +216,7 @@ const sign = function(header, payload, privKey){
     }
 }
 
-const verify = function(jwt, alg, pubKey){
+const verifyJWT = function(jwt, alg, pubKey){
     try {
         switch(alg){
             case 'RS256': return verifyRS256(jwt, pubKey);
@@ -242,7 +242,7 @@ module.exports = {
     verifyES256kRecoverable,
     signEdDSA,
     verifyEdDSA,
-    sign,
-    verify,
+    signJWT,
+    verifyJWT,
     ERRORS
 };

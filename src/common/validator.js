@@ -137,7 +137,7 @@ const validateRequestJWT = async function(requestJWT){
         }
 
         if(publicKey){
-            let validity = JWT.verify(requestJWT, decodedHeader.alg, publicKey);
+            let validity = JWT.verifyJWT(requestJWT, decodedHeader.alg, publicKey);
             if(validity){
                 return {
                     header: decodedHeader,

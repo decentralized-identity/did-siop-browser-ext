@@ -1,6 +1,5 @@
 const JWT = require('../src/common/jwt');
 const { ERRORS } = require('../src/common/validator');
-const { generateKeyPairSync } = require('crypto');
 
 const jwtGoodDecoded = {
     header: {
@@ -28,7 +27,7 @@ const keyPair = {
     publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
 }
 
-const jwtGoodEncoded = JWT.sign(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
+const jwtGoodEncoded = JWT.signJWT(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
 const jwt_uri = 'http://localhost/requestJWT';
 
 const getBadRequestJWT = function(jwt, isPayload, property, value = null){
@@ -48,7 +47,7 @@ const getBadRequestJWT = function(jwt, isPayload, property, value = null){
              newJWT.header[property] = value;
          }
     }
-    return JWT.sign(newJWT.header, newJWT.payload, keyPair.privateKey);
+    return JWT.signJWT(newJWT.header, newJWT.payload, keyPair.privateKey);
 }
 
 const jwts = {

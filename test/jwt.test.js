@@ -183,20 +183,20 @@ describe("JWT -> To test jwt functions", function () {
                         format: 'pem'
                     }
                 });
-                let signature = JWT.sign(rs256TestResource.jwtDecoded.header, rs256TestResource.jwtDecoded.payload, rsaKeyPair.privateKey);
-                let validity = JWT.verify(signature, 'RS256', rsaKeyPair.publicKey);
+                let signature = JWT.signJWT(rs256TestResource.jwtDecoded.header, rs256TestResource.jwtDecoded.payload, rsaKeyPair.privateKey);
+                let validity = JWT.verifyJWT(signature, 'RS256', rsaKeyPair.publicKey);
                 expect(validity).toBeTruthy();
 
-                signature = JWT.sign(es256kTestResource.jwtDecoded.header, es256kTestResource.jwtDecoded.payload, es256kTestResource.privateKey);
-                validity = JWT.verify(signature, 'ES256K', es256kTestResource.publicKey);
+                signature = JWT.signJWT(es256kTestResource.jwtDecoded.header, es256kTestResource.jwtDecoded.payload, es256kTestResource.privateKey);
+                validity = JWT.verifyJWT(signature, 'ES256K', es256kTestResource.publicKey);
                 expect(validity).toBeTruthy();
 
-                signature = JWT.sign(es256kRecoverableResources.jwtDecoded.header, es256kRecoverableResources.jwtDecoded.payload, es256kRecoverableResources.privateKey);
-                validity = JWT.verify(signature, 'ES256K-R', es256kRecoverableResources.publicKey);
+                signature = JWT.signJWT(es256kRecoverableResources.jwtDecoded.header, es256kRecoverableResources.jwtDecoded.payload, es256kRecoverableResources.privateKey);
+                validity = JWT.verifyJWT(signature, 'ES256K-R', es256kRecoverableResources.publicKey);
                 expect(validity).toBeTruthy();
 
-                signature = JWT.sign(edDsaTestResources.jwtDecoded.header, edDsaTestResources.jwtDecoded.payload, edDsaTestResources.privateKey);
-                validity = JWT.verify(signature, 'EdDSA', edDsaTestResources.publicKey);
+                signature = JWT.signJWT(edDsaTestResources.jwtDecoded.header, edDsaTestResources.jwtDecoded.payload, edDsaTestResources.privateKey);
+                validity = JWT.verifyJWT(signature, 'EdDSA', edDsaTestResources.publicKey);
                 expect(validity).toBeTruthy();
             } catch (err) {
                 let errors = []
