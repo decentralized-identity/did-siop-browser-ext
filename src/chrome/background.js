@@ -1,4 +1,4 @@
-const validator = require('../validator');
+const validator = require('../common/validator');
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -19,15 +19,13 @@ chrome.runtime.onInstalled.addListener(function() {
                 try{
                     if(await validator.validateRequest(msg)){
                         port.postMessage("openid ok");
-                        port.postMessage(msg.request);
                     }
                     else{
-                        port.postMessage("openid did_authn bad request ");
+                        port.postMessage("openid did_authn request error: " + err);
                     }
                 }
                 catch(err){
-                    port.postMessage("openid did_authn bad request: " + err);
-                    port.postMessage(err.msglist);
+                    port.postMessage("openid did_authn request error: " + err);
                 }
             });
         }

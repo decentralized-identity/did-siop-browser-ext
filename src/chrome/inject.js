@@ -1,7 +1,9 @@
+const JWT = require('../common/jwt');
+
 document.getElementById('did-siop-login').addEventListener('click',
     function(){
         var port = chrome.runtime.connect({name: "did-siop"});
-        port.postMessage(testReq);
+        port.postMessage(requestGoodEmbeddedJWT);
         port.onMessage.addListener(function(msg) {
             console.log(msg);
         });
@@ -9,12 +11,31 @@ document.getElementById('did-siop-login').addEventListener('click',
 );
 
 
-const testReq = {
-    scheme: 'openid://',
-    response_type: 'id_token',
-    client_id: 'test/callback',
-    scope: ['openid', 'did_authn'],
-    request: "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1ODQxMDA4MTksImlzcyI6ImRpZDpldGhyOjB4QjA3RWFkOTcxN2I0NEI2Y0Y0MzljNDc0MzYyYjlCMDg3N0NCQkY4MyIsInJlc3BvbnNlX3R5cGUiOiJpZF90b2tlbiIsImNsaWVudF9pZCI6Imh0dHBzOi8vbXkucnAuY29tL2NiIiwic2NvcGUiOiJvcGVuaWQgZGlkX2F1dGhuIiwic3RhdGUiOiJhZjBpZmpzbGRraiIsIm5vbmNlIjoibi0wUzZfV3pBMk1qIiwicmVzcG9uc2VfbW9kZSI6ImZvcm1fcG9zdCIsInJlZ2lzdHJhdGlvbiI6eyJqd2tzX3VyaSI6Imh0dHBzOi8vdW5pcmVzb2x2ZXIuaW8vMS4wL2lkZW50aWZpZXJzL2RpZDpldGhyOjB4QjA3RWFkOTcxN2I0NEI2Y0Y0MzljNDc0MzYyYjlCMDg3N0NCQkY4Mzt0cmFuc2Zvcm0ta2V5cz1qd2tzIiwiaWRfdG9rZW5fc2lnbmVkX3Jlc3BvbnNlX2FsZyI6WyJFUzI1NksiLCJFZERTQSIsIlJTMjU2Il19fQ.LI6KBAAVAdLRL4pfYPYbRcz1pKJ5WKVxgUp7eXntC1J6OT1WqegFqdgONshNIXXdULUhxy1C0paXc85Kgd9bWA"
-
+const jwtGoodDecoded = {
+    header: {
+        "typ": "JWT",
+        "alg": "ES256K-R",
+        "kid": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner"
+    },
+    payload: {
+        "iss": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83",
+        "response_type": "id_token",
+        "client_id": "https://my.rp.com/cb",
+        "scope": "openid did_authn",
+        "state": "af0ifjsldkj",
+        "nonce": "n-0S6_WzA2Mj",
+        "response_mode": "form_post",
+        "registration": {
+            "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+            "id_token_signed_response_alg": ["ES256K", "EdDSA", "RS256"]
+        }
+    }
 }
 
+const keyPair = {
+    privateKey: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+    publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
+}
+
+const jwtGoodEncoded = JWT.sign(jwtGoodDecoded.header, jwtGoodDecoded.payload, keyPair.privateKey);
+const requestGoodEmbeddedJWT = 'openid://?response_type=id_token&client_id=https://rp.example.com/cb&scope=openid did_authn&request=' + jwtGoodEncoded;

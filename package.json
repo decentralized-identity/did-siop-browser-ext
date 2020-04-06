@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "scripts": {
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "chrome-build": "browserify src/chrome/background.js -o dist/chrome/popup/background.bundle.js && browserify src/chrome/inject.js -o dist/chrome/content_scripts/inject.bundle.js"
   },
   "repository": {
     "type": "git",
@@ -16,12 +17,21 @@
   },
   "homepage": "https://github.com/SanujaLW/did-siop#readme",
   "dependencies": {
-    "did-jwt": "^4.0.0",
+    "base64url": "^3.0.1",
+    "did-resolver": "^1.1.0",
+    "ecdsa-sig-formatter": "^1.0.11",
+    "elliptic": "^6.5.2",
+    "ethereum-checksum-address": "0.0.5",
+    "ethereum-public-key-to-address": "0.0.2",
     "ethr-did-resolver": "^2.2.0",
-    "jws": "^4.0.0",
+    "jquery": "^3.4.1",
+    "jwa": "^2.0.0",
+    "node-rsa": "^1.0.8",
+    "url-parse": "^1.4.7",
     "web-did-resolver": "^1.2.1"
   },
   "devDependencies": {
-    "jest": "^25.1.0"
+    "jest": "^25.1.0",
+    "nock": "^12.0.3"
   }
 }
