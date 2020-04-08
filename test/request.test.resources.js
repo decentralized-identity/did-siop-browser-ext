@@ -1,5 +1,5 @@
 const JWT = require('../src/common/jwt');
-const { ERRORS } = require('../src/common/validator');
+const { ERRORS } = require('../src/common/request');
 
 const jwtGoodDecoded = {
     header: {

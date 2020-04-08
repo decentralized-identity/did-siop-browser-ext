@@ -1,6 +1,6 @@
-const validator = require('../src/common/validator');
+const validator = require('../src/common/request');
 const nock = require('nock');
-const resources = require('./validator.test.resources');
+const resources = require('./request.test.resources');
 
 
 describe("Validator -> To test request validation", function () {
