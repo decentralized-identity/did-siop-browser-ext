@@ -11,7 +11,17 @@ const getPublicKeyFromDifferentTypes = function (key) {
     else if (key.address) return key.address;
 }
 
+const validateDidDoc = function(did, doc){
+    return (
+        doc &&
+        doc['@context'] === 'https://w3id.org/did/v1' &&
+        doc.id == did &&
+        doc.authentication &&
+        doc.authentication.length > 0
+    );
+}
 
 module.exports = {
     getPublicKeyFromDifferentTypes,
+    validateDidDoc,
 }
