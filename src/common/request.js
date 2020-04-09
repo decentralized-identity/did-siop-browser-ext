@@ -3,7 +3,7 @@ const JWK = require('./jwk');
 const queryString = require('query-string');
 const $ = require('jquery');
 const resolver = require('./resolver')();
-const ethereumAddress = require('ethereum-checksum-address');
+const { getPublicKeyFromDifferentTypes } = require('./util');
 
 const ERRORS = Object.freeze({
     BAD_REQUEST_ERROR: 'Bad request error',
@@ -48,17 +48,6 @@ const validateRequestParams = async function(request){
         let custom = new Error(ERRORS.BAD_REQUEST_ERROR);
         return Promise.reject(custom);
     }
-}
-
-const getPublicKeyFromDifferentTypes = function(key){
-    if (key.publicKeyBase64) return key.publicKeyBase64;
-    else if (key.publicKeyBase58) return key.publicKeyBase58;
-    else if (key.publicKeyHex) return key.publicKeyHex;
-    else if (key.publicKeyPem) return key.publicKeyPem;
-    else if (key.publicKeyJwk) return JSON.stringify(key.publicKeyJwk);
-    else if (key.publicKeyPgp) return key.publicKeyPgp;
-    else if (key.ethereumAddress) return ethereumAddress.toChecksumAddress(key.ethereumAddress);
-    else if (key.address) return key.address;
 }
 
 const validateRequestJWT = async function(requestJWT){
@@ -166,6 +155,7 @@ const validateRequest = async function(request){
     }
 
 }
+
 
 module.exports = {
     parseRequest,
