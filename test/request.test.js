@@ -6,8 +6,7 @@ const resources = require('./request.test.resources');
 describe("Validator -> To test request validation", function () {
     test("Request parsing", async () => {
         let parsed = request.parseRequest(resources.requests.good.requestGoodEmbeddedJWT);
-        expect(parsed.slashes).toBeTruthy();
-        expect(parsed.protocol).toEqual('openid:');
+        expect(parsed.url).toEqual('openid://');
         expect(parsed.query).toEqual(resources.queryObj);
     });
     describe("Request params validation", function (){

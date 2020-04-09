@@ -1,6 +1,6 @@
 const JWT = require('./jwt');
 const JWK = require('./jwk');
-const Url = require('url-parse');
+const queryString = require('query-string');
 const $ = require('jquery');
 const resolver = require('./resolver')();
 const ethereumAddress = require('ethereum-checksum-address');
@@ -16,15 +16,13 @@ const ERRORS = Object.freeze({
 });
 
 const parseRequest = function(raw){
-    const parsedRequest = new Url(raw, true);
-    return parsedRequest;
+    return queryString.parseUrl(raw);
 }
 
 const validateRequestParams = async function(request){
     let parsed = parseRequest(request);
     if (
-        parsed.protocol === 'openid:' &&
-        parsed.slashes === true &&
+        parsed.url === 'openid://' &&
         parsed.query.response_type === 'id_token' &&
         (parsed.query.client_id !== undefined && parsed.query.client_id !== '') &&
         (parsed.query.scope !== undefined && parsed.query.scope.indexOf('openid did_authn') > -1)

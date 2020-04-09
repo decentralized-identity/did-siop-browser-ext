@@ -28,7 +28,7 @@
     "jquery": "^3.4.1",
     "jwa": "^2.0.0",
     "node-rsa": "^1.0.8",
-    "url-parse": "^1.4.7",
+    "query-string": "^6.12.0",
     "web-did-resolver": "^1.2.1"
   },
   "devDependencies": {
