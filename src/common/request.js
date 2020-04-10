@@ -1,9 +1,8 @@
 const JWT = require('./jwt');
 const JWK = require('./jwk');
-const Url = require('url-parse');
+const queryString = require('query-string');
 const $ = require('jquery');
-const resolver = require('./resolver')();
-const ethereumAddress = require('ethereum-checksum-address');
+const { getKeyFromDidDoc, getKeyFromJWKS } = require('./util');
 
 const ERRORS = Object.freeze({
     BAD_REQUEST_ERROR: 'Bad request error',
@@ -16,15 +15,13 @@ const ERRORS = Object.freeze({
 });
 
 const parseRequest = function(raw){
-    const parsedRequest = new Url(raw, true);
-    return parsedRequest;
+    return queryString.parseUrl(raw);
 }
 
 const validateRequestParams = async function(request){
     let parsed = parseRequest(request);
     if (
-        parsed.protocol === 'openid:' &&
-        parsed.slashes === true &&
+        parsed.url === 'openid://' &&
         parsed.query.response_type === 'id_token' &&
         (parsed.query.client_id !== undefined && parsed.query.client_id !== '') &&
         (parsed.query.scope !== undefined && parsed.query.scope.indexOf('openid did_authn') > -1)
@@ -52,17 +49,6 @@ const validateRequestParams = async function(request){
     }
 }
 
-const getPublicKeyFromDifferentTypes = function(key){
-    if (key.publicKeyBase64) return key.publicKeyBase64;
-    else if (key.publicKeyBase58) return key.publicKeyBase58;
-    else if (key.publicKeyHex) return key.publicKeyHex;
-    else if (key.publicKeyPem) return key.publicKeyPem;
-    else if (key.publicKeyJwk) return JSON.stringify(key.publicKeyJwk);
-    else if (key.publicKeyPgp) return key.publicKeyPgp;
-    else if (key.ethereumAddress) return ethereumAddress.toChecksumAddress(key.ethereumAddress);
-    else if (key.address) return key.address;
-}
-
 const validateRequestJWT = async function(requestJWT){
     let decodedHeader;
     let decodedPayload;
@@ -82,58 +68,11 @@ const validateRequestJWT = async function(requestJWT){
     ){
         let publicKey;
 
-        let doc = decodedPayload.doc;
-        if (doc === undefined || (doc && doc.authentication.length < 1)) {
-            try{
-                doc = await resolver.resolve(decodedPayload.iss);
-            }
-            catch(err){
-                doc = undefined;
-            }
-        }
-
-        if (doc !== undefined && doc.authentication.length > 0) {
-            for(method of doc.authentication){
-                if(method.id === decodedHeader.kid){
-                    publicKey = getPublicKeyFromDifferentTypes(method);
-                }
-                else if(method.publicKey !== undefined && method.publicKey.includes(decodedHeader.kid)){
-                    for (key of doc.publicKey) {
-                        if (key.id === decodedHeader.kid) {
-                            publicKey = getPublicKeyFromDifferentTypes(key);
-                        }
-                    }
-                }
-                else if(method === decodedHeader.kid){
-                    for (key of doc.publicKey) {
-                        if (key.id === method) {
-                            publicKey = getPublicKeyFromDifferentTypes(key);
-                        }
-                    }
-                    //Other verification methods (non public key)
-                }
-            }
-        }
-        else{
-            let jwks = decodedPayload.registration.jwks;
-            if (jwks === undefined || jwks.keys.length < 1 && decodedPayload.registration.jwks_uri !== undefined) {
-                try{
-                    jwks = $.get(decodedPayload.registration.jwks_uri);
-                }
-                catch(err){
-                    jwks = undefined;
-                }
-            }
-            if (jwks !== undefined && jwks.keys.length > 0){
-                for(jwk of jwks){
-                    if(jwk.id === decodedHeader.kid){
-                        publicKey = JWK.getPublicKey(jwk);
-                    }
-                }
-            }
-            else{
-                return Promise.reject(new Error(ERRORS.JWK_ERROR));
-            }
+        try {
+            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
+        } catch (err) {
+            let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
+            publicKey = JWK.getPublicKey(jwk);
         }
 
         if(publicKey){
@@ -169,10 +108,77 @@ const validateRequest = async function(request){
 
 }
 
+/* 
+options = {
+    state,
+    nonce,
+    response_mode,
+}
+
+rp = {
+    did,
+    did_doc,
+    redirect_uri,
+    request_uri,
+    registration: {
+
+    }
+}
+
+signing = {
+    alg,
+    signing_key,
+    kid,
+}
+
+
+*/
+const generateRequest = async function ( rp = {}, signing = {}, options = {}) {
+    const url = 'openid://';
+    const query = {
+        response_type: 'id_token',
+        client_id: rp.redirect_uri,
+        scope: 'openid did_authn',
+    }
+
+    if(rp.request_uri){
+        query.request_uri = rp.request_uri;
+    }
+    else{
+        let jwtHeader = {
+            alg: signing.alg,
+            type: 'JWT',
+            kid: signing.kid
+        }
+
+        let jwtPayload = {
+            iss: rp.did,
+            responce_type: 'id_token',
+            scope: 'openid did_authn',
+            client_id: rp.redirect_uri,
+            registration: rp.registration,
+            ...options
+        }
+
+        if (rp.did_doc) jwtPayload.did_doc = rp.did_doc;
+
+        let jwt = JWT.signJWT(jwtHeader, jwtPayload, signing.signing_key);
+
+        query.request = jwt;
+    }
+
+    return queryString.stringifyUrl({
+        url,
+        query
+    });
+
+}
+
 module.exports = {
     parseRequest,
     validateRequestParams,
     validateRequestJWT,
     validateRequest,
+    generateRequest,
     ERRORS
 };
