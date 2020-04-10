@@ -1,5 +1,6 @@
 const ethereumAddress = require('ethereum-checksum-address');
 const resolver = require('./resolver')();
+const $ = require('jquery');
 
 const getPublicKeyFromDifferentTypes = function (key) {
     if (key.publicKeyBase64) return key.publicKeyBase64;
@@ -53,8 +54,28 @@ const getKeyFromDidDoc = async function (did, kid, doc) {
 
 }
 
+const getKeyFromJWKS = async function(jwks, jwks_uri, kid){
+    if(jwks.keys === undefined || jwks.keys.length < 1){
+        try{
+            jwks = $.get(jwks_uri);
+        }
+        catch(err){
+            let custome = new Error('No jwk matching kid');
+            custome.inner = err;
+            throw custome;
+        }
+    }
+    if (jwks.keys !== undefined && jwks.keys.length > 0){
+        for(key of jwks.keys){
+            if(key.kid === kid) return key;
+        }
+    }
+    throw new Error('No jwk matching kid');
+}
+
 module.exports = {
     getPublicKeyFromDifferentTypes,
     validateDidDoc,
     getKeyFromDidDoc,
+    getKeyFromJWKS,
 }

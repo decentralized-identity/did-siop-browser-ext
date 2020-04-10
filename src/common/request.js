@@ -2,8 +2,7 @@ const JWT = require('./jwt');
 const JWK = require('./jwk');
 const queryString = require('query-string');
 const $ = require('jquery');
-const resolver = require('./resolver')();
-const { getKeyFromDidDoc } = require('./util');
+const { getKeyFromDidDoc, getKeyFromJWKS } = require('./util');
 
 const ERRORS = Object.freeze({
     BAD_REQUEST_ERROR: 'Bad request error',
@@ -72,25 +71,8 @@ const validateRequestJWT = async function(requestJWT){
         try {
             publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.doc);
         } catch (err) {
-             let jwks = decodedPayload.registration.jwks;
-            if (jwks === undefined || jwks.keys.length < 1 && decodedPayload.registration.jwks_uri !== undefined) {
-                try{
-                    jwks = $.get(decodedPayload.registration.jwks_uri);
-                }
-                catch(err){
-                    jwks = undefined;
-                }
-            }
-            if (jwks !== undefined && jwks.keys.length > 0){
-                for(jwk of jwks){
-                    if(jwk.id === decodedHeader.kid){
-                        publicKey = JWK.getPublicKey(jwk);
-                    }
-                }
-            }
-            else{
-                return Promise.reject(new Error(ERRORS.JWK_ERROR));
-            }
+            let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
+            publicKey = JWK.getPublicKey(jwk);
         }
 
         if(publicKey){
@@ -125,6 +107,7 @@ const validateRequest = async function(request){
     }
 
 }
+
 
 
 module.exports = {
