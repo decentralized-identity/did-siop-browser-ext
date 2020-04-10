@@ -1,7 +1,7 @@
 const { resolver } = require('./resolver')();
 const { signJWT, verifyJWT } = require('./jwt');
 const { getPublicKey, } = require('./jwk');
-const { validateRequest } = require('./request');
+const { validateRequest, generateRequest } = require('./request');
 
 module.exports = {
     resolver,
@@ -9,4 +9,5 @@ module.exports = {
     verifyJWT,
     getPublicKey,
     validateRequest,
+    generateRequest,
 }
