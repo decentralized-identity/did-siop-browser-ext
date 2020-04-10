@@ -1,7 +1,9 @@
-const { validateDidDoc } = require('../src/common/util');
+const { validateDidDoc, getKeyFromDidDoc } = require('../src/common/util');
 
 const resources = {
     didGood: "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83",
+    kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
+    publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',
     didDocGood: {
         "@context": "https://w3id.org/did/v1",
         "id": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83",
@@ -41,5 +43,13 @@ describe("util -> To test utility functions", function () {
         didDocBadNoAuthentication.authentication = [];
         validity = validateDidDoc(didGood, didDocBadNoAuthentication);
         expect(validity).toBeFalsy();
+    });
+    test("Get public key from DID Document", async () => {
+        let key = await getKeyFromDidDoc(resources.didGood, resources.kid, resources.didDocGood);
+        expect(key).toEqual(resources.publicKey);
+
+        let keyPromise = getKeyFromDidDoc(resources.didGood, '', resources.didDocGood);
+        await expect(keyPromise).rejects.toEqual(new Error('No public key matching kid'));
+       
     });
 });

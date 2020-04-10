@@ -1,4 +1,5 @@
 const ethereumAddress = require('ethereum-checksum-address');
+const resolver = require('./resolver')();
 
 const getPublicKeyFromDifferentTypes = function (key) {
     if (key.publicKeyBase64) return key.publicKeyBase64;
@@ -21,7 +22,39 @@ const validateDidDoc = function(did, doc){
     );
 }
 
+const getKeyFromDidDoc = async function (did, kid, doc) {
+    if(!validateDidDoc(did, doc)){
+        let resolvedDoc = await resolver.resolve(did);
+        if(validateDidDoc(did, resolvedDoc)){
+            doc = resolvedDoc;
+        }
+        else{
+            throw new Error('Invalid DID or Document');
+        }
+    }
+
+    for(method of doc.authentication){
+        if(method.id === kid) return getPublicKeyFromDifferentTypes(method);
+
+        if(method.publicKey && method.publicKey.includes(kid)){
+            for(pub of doc.publicKey){
+                if(pub.id === kid) return getPublicKeyFromDifferentTypes(pub);
+            }
+        }
+
+        if(method === kid){
+            for (pub of doc.publicKey) {
+                if (pub.id === kid) return getPublicKeyFromDifferentTypes(pub);
+            }
+            //Implement other verification methods here
+        }
+    }
+    throw new Error('No public key matching kid');
+
+}
+
 module.exports = {
     getPublicKeyFromDifferentTypes,
     validateDidDoc,
+    getKeyFromDidDoc,
 }

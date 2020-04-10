@@ -3,7 +3,7 @@ const JWK = require('./jwk');
 const queryString = require('query-string');
 const $ = require('jquery');
 const resolver = require('./resolver')();
-const { getPublicKeyFromDifferentTypes } = require('./util');
+const { getKeyFromDidDoc } = require('./util');
 
 const ERRORS = Object.freeze({
     BAD_REQUEST_ERROR: 'Bad request error',
@@ -69,40 +69,10 @@ const validateRequestJWT = async function(requestJWT){
     ){
         let publicKey;
 
-        let doc = decodedPayload.doc;
-        if (doc === undefined || (doc && doc.authentication.length < 1)) {
-            try{
-                doc = await resolver.resolve(decodedPayload.iss);
-            }
-            catch(err){
-                doc = undefined;
-            }
-        }
-
-        if (doc !== undefined && doc.authentication.length > 0) {
-            for(method of doc.authentication){
-                if(method.id === decodedHeader.kid){
-                    publicKey = getPublicKeyFromDifferentTypes(method);
-                }
-                else if(method.publicKey !== undefined && method.publicKey.includes(decodedHeader.kid)){
-                    for (key of doc.publicKey) {
-                        if (key.id === decodedHeader.kid) {
-                            publicKey = getPublicKeyFromDifferentTypes(key);
-                        }
-                    }
-                }
-                else if(method === decodedHeader.kid){
-                    for (key of doc.publicKey) {
-                        if (key.id === method) {
-                            publicKey = getPublicKeyFromDifferentTypes(key);
-                        }
-                    }
-                    //Other verification methods (non public key)
-                }
-            }
-        }
-        else{
-            let jwks = decodedPayload.registration.jwks;
+        try {
+            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.doc);
+        } catch (err) {
+             let jwks = decodedPayload.registration.jwks;
             if (jwks === undefined || jwks.keys.length < 1 && decodedPayload.registration.jwks_uri !== undefined) {
                 try{
                     jwks = $.get(decodedPayload.registration.jwks_uri);
