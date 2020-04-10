@@ -90,5 +90,12 @@ describe("Validator -> To test request validation", function () {
             await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
         });
     });
-   
+    describe("Request generation", function () {
+        test("Generate request - expect truthy", async () => {
+            let rqst = await request.generateRequest(resources.requests.components.rp, resources.requests.components.signing, resources.requests.components.options);
+            let decoded = await request.validateRequest(rqst);
+            expect(decoded).toHaveProperty('header');
+            expect(decoded).toHaveProperty('payload');
+        });
+    });
 });

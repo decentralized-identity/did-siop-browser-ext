@@ -69,7 +69,7 @@ const validateRequestJWT = async function(requestJWT){
         let publicKey;
 
         try {
-            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.doc);
+            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
             let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
             publicKey = JWK.getPublicKey(jwk);
@@ -108,12 +108,77 @@ const validateRequest = async function(request){
 
 }
 
+/* 
+options = {
+    state,
+    nonce,
+    response_mode,
+}
 
+rp = {
+    did,
+    did_doc,
+    redirect_uri,
+    request_uri,
+    registration: {
+
+    }
+}
+
+signing = {
+    alg,
+    signing_key,
+    kid,
+}
+
+
+*/
+const generateRequest = async function ( rp = {}, signing = {}, options = {}) {
+    const url = 'openid://';
+    const query = {
+        response_type: 'id_token',
+        client_id: rp.redirect_uri,
+        scope: 'openid did_authn',
+    }
+
+    if(rp.request_uri){
+        query.request_uri = rp.request_uri;
+    }
+    else{
+        let jwtHeader = {
+            alg: signing.alg,
+            type: 'JWT',
+            kid: signing.kid
+        }
+
+        let jwtPayload = {
+            iss: rp.did,
+            responce_type: 'id_token',
+            scope: 'openid did_authn',
+            client_id: rp.redirect_uri,
+            registration: rp.registration,
+            ...options
+        }
+
+        if (rp.did_doc) jwtPayload.did_doc = rp.did_doc;
+
+        let jwt = JWT.signJWT(jwtHeader, jwtPayload, signing.signing_key);
+
+        query.request = jwt;
+    }
+
+    return queryString.stringifyUrl({
+        url,
+        query
+    });
+
+}
 
 module.exports = {
     parseRequest,
     validateRequestParams,
     validateRequestJWT,
     validateRequest,
+    generateRequest,
     ERRORS
 };

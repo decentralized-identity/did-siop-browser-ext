@@ -87,6 +87,26 @@ const requests = {
         requestBadNoJWTUri : 'openid://?response_type=id_token&client_id=https://rp.example.com/cb&scope=openid did_authn&request_uri=',
         requestBadIncorrectJWTUri : 'openid://?response_type=id_token&client_id=https://rp.example.com/cb&scope=openid did_authn&request_uri=http://localhost/incorrectRequestJWT',
 
+    },
+    components:{
+        signing: {
+            alg: 'ES256K-R',
+            signing_key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+            kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
+        },
+        rp: {
+            did: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',
+            redirect_uri: 'https://my.rp.com/cb',
+            registration: {
+                "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+                "id_token_signed_response_alg": ["ES256K", "EdDSA", "RS256"]
+            }
+        },
+        options: {
+            state: 'af0ifjsldkj',
+            nonce: 'n-0S6_WzA2Mj',
+            response_mode: "form_post",
+        }
     }
 }
 
