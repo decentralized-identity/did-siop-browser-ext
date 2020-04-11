@@ -26,7 +26,7 @@ describe("JWK key retrieval", function () {
         expect(n).toEqual(rsaJWK.n);
         expect(e).toEqual(rsaJWK.e);
     });
-    test("ES256", async () => {
+    test("ES256K", async () => {
         let ec256JWK = {
             "kty": "EC",
             "use": "sig",
@@ -88,5 +88,18 @@ describe("JWK key retrieval", function () {
         let newJWK = JWK.getRSAJWK(pem);
 
         expect(newJWK).toEqual(rsaJWK);
+    });
+    test("EC256K hex to JWK", async () => {
+        let ec256JWK = {
+            "kty": "EC",
+            "crv": "secp256k1",
+            "x": "vA1MdssF25DZIeLSd-SZBuzJvp1pVPZErBEGTnmZD_k",
+            "y": "OhW9OTHWEzZRFfRaucIvOQ5za-I2qI1u3i8rOx38ANw",
+        }
+
+        let hex = JWK.getECPublicKeyHex(ec256JWK);
+        let newJWK = JWK.getECJWK(hex);
+
+        expect(newJWK).toEqual(ec256JWK);
     });
 });

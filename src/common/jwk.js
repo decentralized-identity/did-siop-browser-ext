@@ -91,10 +91,24 @@ const getRSAJWK = function(publicKeyPEM){
     }
 }
 
+const getECJWK = function(publicKeyHex){
+    let ec = new EC('secp256k1');
+    let key = ec.keyFromPublic(publicKeyHex, 'hex');
+    let x = base64url.encode(key.getPublic().getX().toBuffer());
+    let y = base64url.encode(key.getPublic().getY().toBuffer());
+    return {
+        crv: 'secp256k1',
+        kty: 'EC',
+        x,
+        y,
+    }
+}
+
 module.exports = {
     getRSA256PublicKeyPem,
     getECPublicKeyHex,
     getPublicKey,
     getRSAJWK,
+    getECJWK,
     ERRORS,
 }
