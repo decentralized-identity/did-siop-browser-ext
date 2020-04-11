@@ -51,6 +51,7 @@ const es256kTestResource = {
         }
     },
     privateKey: '04418834408F4485404C428460C1D008040410827D0A97D1DF3CE0ED3BC5F0C7091045E9D41D135649DBBD315727C18EACFB15BA801C1814AE0410002A85100D080011362C69A8D266C546CE0B60E95E1872D834B913B56BF8610AAE2C4A19C1C72AD41D4BA3D3FF90E4377A10DD9DA3C38CD628626740199389D41B74217513FD8ABC',
+    privateKeyWrong: '04418834408F4485404C428460C1D008040410827D0A97D1DF3CE0ED3BC5F0C7091045E9D41D135649DBBD315727C18EACFB15BA801C1814AE0410002A85100D080011362C69A8D266C546CE0B60E95E1872D834B913B56BF8610ABE2C4A19C1C72AD41D4BA3D3FF90E4377A10DD9DA3C38CD628626740199389D41B74217513FD8ABC',
     publicKey: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc656dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
     publicKeyWrong: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc646dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
 
@@ -70,6 +71,7 @@ const es256kRecoverableResources = {
         }
     },
     privateKey: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+    privateKeyWrong: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0944',
     publicKey: '0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',
     publicKeyWrong: '0428c0da3e1c15e84876625d366eab8dd20c84288bcf6a71a0699209fc646dcfeb4633d7eff3dc63be7d7ada54fcb63cd603e5ac0a1382de19a73487dbc8e177e9',
 
@@ -89,6 +91,7 @@ const edDsaTestResources = {
              }
          },
     privateKey: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+    privateKeyWrong: '1498b5467a63dffa2dc9d9e069cff075d16fc33fdd4c3b01bfadae6433767d93',
     publicKey: 'b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f25e5f92444cde',
     publicKeyWrong: 'b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f24e5f92444cde',
 
@@ -208,5 +211,71 @@ describe("JWT -> To test jwt functions", function () {
                 throw new Error('Test failed');
             }
         })
+    });
+
+    describe("JWT verify key pair", function(){
+        test('RS256', async () => {
+            let keyPair = generateKeyPairSync('rsa', {
+                modulusLength: 4096,
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem'
+                }
+            });
+            let isMatching = JWT.verifyKeyPair(keyPair.privateKey, keyPair.publicKey, 'RS256');
+            expect(isMatching).toBeTruthy();
+
+            let wrongKeyPair = generateKeyPairSync('rsa', {
+                modulusLength: 4096,
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem'
+                }
+            });
+
+            isMatching = JWT.verifyKeyPair(wrongKeyPair.privateKey, keyPair.publicKey, 'RS256');
+            expect(isMatching).toBeFalsy();
+
+            isMatching = JWT.verifyKeyPair(keyPair.privateKey, wrongKeyPair.publicKey, 'RS256');
+            expect(isMatching).toBeFalsy();
+        });
+        test('ES256K', async () => {
+            let isMatching = JWT.verifyKeyPair(es256kTestResource.privateKey, es256kTestResource.publicKey, 'ES256K');
+            expect(isMatching).toBeTruthy();
+
+            isMatching = JWT.verifyKeyPair(es256kTestResource.privateKeyWrong, es256kTestResource.publicKey, 'ES256K');
+            expect(isMatching).toBeFalsy();
+
+            isMatching = JWT.verifyKeyPair(es256kTestResource.privateKey, es256kTestResource.publicKeyWrong, 'ES256K');
+            expect(isMatching).toBeFalsy();
+        });
+        test('ES256K-R', async () => {
+            let isMatching = JWT.verifyKeyPair(es256kRecoverableResources.privateKey, es256kRecoverableResources.publicKey, 'ES256K-R');
+            expect(isMatching).toBeTruthy();
+
+            isMatching = JWT.verifyKeyPair(es256kRecoverableResources.privateKeyWrong, es256kRecoverableResources.publicKey, 'ES256K-R');
+            expect(isMatching).toBeFalsy();
+
+            isMatching = JWT.verifyKeyPair(es256kRecoverableResources.privateKey, es256kRecoverableResources.publicKeyWrong, 'ES256K-R');
+            expect(isMatching).toBeFalsy();
+        });
+        test('EdDSA', async () => {
+            let isMatching = JWT.verifyKeyPair(edDsaTestResources.privateKey, edDsaTestResources.publicKey, 'EdDSA');
+            expect(isMatching).toBeTruthy();
+
+            isMatching = JWT.verifyKeyPair(edDsaTestResources.privateKeyWrong, edDsaTestResources.publicKey, 'EdDSA');
+            expect(isMatching).toBeFalsy();
+
+            isMatching = JWT.verifyKeyPair(edDsaTestResources.privateKey, edDsaTestResources.publicKeyWrong, 'EdDSA');
+            expect(isMatching).toBeFalsy();
+        });
     });
 });

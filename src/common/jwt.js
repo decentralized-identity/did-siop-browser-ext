@@ -231,6 +231,23 @@ const verifyJWT = function(jwt, alg, pubKey){
     }
 }
 
+const verifyKeyPair = function(privateKey, publicKey, algo){
+    let testJWT = {
+        header: {
+            typ: 'JWT',
+            alg: algo,
+        },
+        payload: {
+            "sub": "1234567890",
+            "name": "John Doe",
+            "iat": 1516239022,
+        }
+    }
+
+    let jwtSigned = signJWT(testJWT.header, testJWT.payload, privateKey);
+    return verifyJWT(jwtSigned, algo, publicKey);
+}
+
 module.exports = {
     encodeBase64Url,
     decodeBase64Url,
@@ -244,5 +261,6 @@ module.exports = {
     verifyEdDSA,
     signJWT,
     verifyJWT,
+    verifyKeyPair,
     ERRORS
 };
