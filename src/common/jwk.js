@@ -104,11 +104,25 @@ const getECJWK = function(publicKeyHex){
     }
 }
 
+const getJWK = function(key, kty){
+    if (kty) {
+        switch (kty) {
+            case 'RSA':
+                return getRSAJWK(key);
+            case 'EC':
+                return getECJWK(key);
+        }
+    } else {
+        throw new Error(ERRORS.INCORRECT_ALGORITHM);
+    }
+}
+
 module.exports = {
     getRSA256PublicKeyPem,
     getECPublicKeyHex,
     getPublicKey,
     getRSAJWK,
     getECJWK,
+    getJWK,
     ERRORS,
 }
