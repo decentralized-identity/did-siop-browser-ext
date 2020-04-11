@@ -77,9 +77,24 @@ const getPublicKey = function(jwk){
     }
 }
 
+const getRSAJWK = function(publicKeyPEM){
+    let key = new NodeRSA();
+    key.importKey(publicKeyPEM, 'pkcs8-public-pem');
+    let n = base64url.encode(key.keyPair.n.toBuffer().slice(1));
+    let e = key.keyPair.e.toString(16);
+    e = (e%2===0)? e: '0'+e;
+    e = Buffer.from(e, 'hex').toString('base64');
+    return{
+        e,
+        kty: 'RSA',
+        n,
+    }
+}
+
 module.exports = {
     getRSA256PublicKeyPem,
     getECPublicKeyHex,
     getPublicKey,
+    getRSAJWK,
     ERRORS,
 }

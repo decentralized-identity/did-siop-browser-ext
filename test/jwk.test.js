@@ -19,8 +19,12 @@ describe("JWK key retrieval", function () {
         let key = new NodeRSA();
         key.importKey(pem, 'pkcs8-public-pem');
         let n = base64url.encode(key.keyPair.n.toBuffer().slice(1));
+        let e = key.keyPair.e.toString(16);
+        e = (e % 2 === 0) ? e : '0' + e;
+        e = Buffer.from(e, 'hex').toString('base64');
 
         expect(n).toEqual(rsaJWK.n);
+        expect(e).toEqual(rsaJWK.e);
     });
     test("ES256", async () => {
         let ec256JWK = {
@@ -73,4 +77,16 @@ describe("JWK key retrieval", function () {
         expect(base64url.encode(ecKey.getPublic().getX().toBuffer())).toEqual(ec256JWK.x);
         expect(base64url.encode(ecKey.getPublic().getY().toBuffer())).toEqual(ec256JWK.y);
     })
+    test("RSA PEM to JWK", async () => {
+        let rsaJWK = {
+            "kty": "RSA",
+            "e": "AQAB",
+            "n": "p9YsIG-Z8Irub55l5d-TmCSCgYBIRH8TufEKNO4SqQ2OteWiNnmyHJ15xwW8B_dFcwS1-kTgjbrssGqmaCtj-CghOhBZ7xbhMdeMvGrjVRG2bCw1_hLqdpwacpzWQsDCfRd0LzjP-1vBPSRm9xZ5ar2EYS03n70yHBbpSJOxqs_H-_spfBUXmh68gFRkl7WXjQYTwu7pYodUI_NgGps-4CTTOj_kgjaVYT9YUj09zTUERzVGWNehenoVEI1fL7yAAbuxl8GqrtmIG4lbdvszsL-ROSiLJvPlo-YtefDzbzIqNfDpktbyqU6tdnbxalY5RqgUeAnDUgsWN9ajziLiiw"
+        }
+
+        let pem = JWK.getRSA256PublicKeyPem(rsaJWK);
+        let newJWK = JWK.getRSAJWK(pem);
+
+        expect(newJWK).toEqual(rsaJWK);
+    });
 });
