@@ -116,7 +116,7 @@ describe("JWK -> To test JWK functions", function (){
 
             let thumbprint = 'NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs';
 
-            let sub = JWK.getBase64UrlEncodedThumbprint(jwk);
+            let sub = JWK.getBase64UrlEncodedJWKThumbprint(jwk);
 
             expect(sub).toEqual(thumbprint);
         });

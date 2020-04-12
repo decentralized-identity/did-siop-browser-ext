@@ -120,7 +120,7 @@ const getJWK = function(key, kty){
     }
 }
 
-const getBase64UrlEncodedThumbprint = function (jwk) {
+const getBase64UrlEncodedJWKThumbprint = function (jwk) {
     let lexicallyOrderedJWK;
 
     switch(jwk.kty){
@@ -156,6 +156,6 @@ module.exports = {
     getRSAJWK,
     getECJWK,
     getJWK,
-    getBase64UrlEncodedThumbprint,
+    getBase64UrlEncodedJWKThumbprint,
     ERRORS,
 }
