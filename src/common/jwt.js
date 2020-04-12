@@ -208,6 +208,7 @@ const signJWT = function(header, payload, privKey){
             case 'ES256K': return signES256k(header, payload, privKey);
             case 'ES256K-R': return signES256kRecoverable(header, payload, privKey);
             case 'EdDSA': return signEdDSA(header, payload, privKey);
+            default: throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
         }
     } catch (err) {
         let custom = new Error(ERRORS.JWT_SIGNING_ERROR);
@@ -223,6 +224,7 @@ const verifyJWT = function(jwt, alg, pubKey){
             case 'ES256K': return verifyES256k(jwt, pubKey);
             case 'ES256K-R': return verifyES256kRecoverable(jwt, pubKey);
             case 'EdDSA': return verifyEdDSA(jwt, pubKey);
+            default: throw new Error(ERRORS.INVALID_ALGORITHM_ERROR);
         }
     } catch (err) {
         let custom = new Error(ERRORS.JWT_VERIFICATION_ERROR);
