@@ -120,6 +120,15 @@ const getJWK = function(key, kty){
     }
 }
 
+const getKeyTypeByAlgorithm = function(alg){
+    switch(alg){
+        case 'RS256': return 'RSA';
+        case 'ES256K':
+        case 'ES256K-R': return 'EC';
+        default: return undefined;
+    }
+}
+
 const getBase64UrlEncodedJWKThumbprint = function (jwk) {
     let lexicallyOrderedJWK;
 
@@ -157,5 +166,6 @@ module.exports = {
     getECJWK,
     getJWK,
     getBase64UrlEncodedJWKThumbprint,
+    getKeyTypeByAlgorithm,
     ERRORS,
 }
