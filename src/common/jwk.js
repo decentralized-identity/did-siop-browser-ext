@@ -2,6 +2,7 @@ const NodeRSA = require('node-rsa');
 var EC = require('elliptic').ec;
 const EdDSA = require('elliptic').eddsa;
 const base64url = require('base64url');
+const crypto = require('crypto');
 
 const ERRORS = Object.freeze({
     INVALID_JWK: 'Invalid JWK',
@@ -111,10 +112,41 @@ const getJWK = function(key, kty){
                 return getRSAJWK(key);
             case 'EC':
                 return getECJWK(key);
+            default:
+                throw new Error(ERRORS.INCORRECT_ALGORITHM);
         }
     } else {
         throw new Error(ERRORS.INCORRECT_ALGORITHM);
     }
+}
+
+const getBase64UrlEncodedThumbprint = function (jwk) {
+    let lexicallyOrderedJWK;
+
+    switch(jwk.kty){
+        case 'RSA': {
+            lexicallyOrderedJWK = {
+                e: jwk.e,
+                kty: jwk.kty,
+                n: jwk.n,
+            };
+            break;
+        }
+        case 'EC': {
+            lexicallyOrderedJWK = {
+                crv: jwk.crv,
+                kty: jwk.kty,
+                x: jwk.x,
+                y: jwk.y,
+            };
+            break;
+        }
+        default: throw new Error(ERRORS.INVALID_JWK);
+    }
+
+    let sha256 = crypto.createHash('sha256');
+    let hash = sha256.update(JSON.stringify(lexicallyOrderedJWK)).digest();
+    return base64url.encode(hash);
 }
 
 module.exports = {
@@ -124,5 +156,6 @@ module.exports = {
     getRSAJWK,
     getECJWK,
     getJWK,
+    getBase64UrlEncodedThumbprint,
     ERRORS,
 }
