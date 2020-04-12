@@ -3,7 +3,7 @@ const nock = require('nock');
 const resources = require('./request.test.resources');
 
 
-describe("Validator -> To test request validation", function () {
+describe("Request -> To test request validation", function () {
     test("Request parsing", async () => {
         let parsed = request.parseRequest(resources.requests.good.requestGoodEmbeddedJWT);
         expect(parsed.url).toEqual('openid://');
