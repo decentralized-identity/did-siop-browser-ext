@@ -1,4 +1,4 @@
-const { generateResponse } = require('../src/common/response');
+const { generateResponse, validateResponse } = require('../src/common/response');
 const { verifyJWT } = require('../src/common/jwt');
 
 
@@ -29,6 +29,12 @@ describe("Response -> To test response functions", function () {
 
         let response = await generateResponse(requestPayload, signing, me);
 
-        expect(verifyJWT(response, 'ES256K-R', signing.public_key)).toBeTruthy();
+        let checkParams = {
+            redirect_uri: 'https://my.rp.com/cb',
+            nonce: "n-0S6_WzA2Mj",
+            validBefore: Date.now() + 10000,
+        }
+        let validity = await validateResponse(response, checkParams);
+        expect(validity).toBeTruthy();
     });
 });
