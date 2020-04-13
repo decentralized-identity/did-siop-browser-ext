@@ -50,6 +50,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         if (requestPayload.state) payload.state = requestPayload.state;
 
         payload.iat = Date.now();
+        payload.exp = Date.now() + 1000;
 
         return signJWT(header, payload, signing.signing_key);
     } catch (err) {
