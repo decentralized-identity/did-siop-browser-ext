@@ -108,31 +108,9 @@ const validateRequest = async function(request){
 
 }
 
-/* 
-options = {
-    state,
-    nonce,
-    response_mode,
-}
-
-rp = {
-    did,
-    did_doc,
-    redirect_uri,
-    request_uri,
-    registration: {
-
-    }
-}
-
-signing = {
-    alg,
-    signing_key,
-    kid,
-}
-
-
-*/
+//options = Request optional fields { state, nonce, response_mode }
+//rp = Relying party info { redirect_uri, request_uri, did, did_doc, registration: {} }
+//signing = signing info { alg, signing_key, kid }
 const generateRequest = async function ( rp = {}, signing = {}, options = {}) {
     const url = 'openid://';
     const query = {
@@ -171,7 +149,6 @@ const generateRequest = async function ( rp = {}, signing = {}, options = {}) {
         url,
         query
     });
-
 }
 
 module.exports = {
