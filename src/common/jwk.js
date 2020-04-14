@@ -95,8 +95,8 @@ const getRSAJWK = function(publicKeyPEM){
 const getECJWK = function(publicKeyHex){
     let ec = new EC('secp256k1');
     let key = ec.keyFromPublic(publicKeyHex, 'hex');
-    let x = base64url.encode(key.getPublic().getX().toBuffer());
-    let y = base64url.encode(key.getPublic().getY().toBuffer());
+    let x = base64url.encode(key.getPublic().getX().toArrayLike(Buffer));
+    let y = base64url.encode(key.getPublic().getY().toArrayLike(Buffer));
     return {
         crv: 'secp256k1',
         kty: 'EC',

@@ -46,7 +46,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         else{
             Promise.reject(ERRORS.KEY_MISMATCH);
         }
-        if (signing.alg === 'ES256K-R') publicKey = etheruemPrivateKeyToPublicKey(signing.signing_key);
+        if (signing.alg === 'ES256K-R') publicKey = etheruemPrivateKeyToPublicKey(signing.signing_key).toString('hex');
 
         payload.did = me.did;
         if(me.did_doc) payload.did_doc = me.did_doc;
