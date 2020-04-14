@@ -13,12 +13,13 @@ chrome.runtime.onInstalled.addListener(function() {
                             url: uri,
                         });
                         console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                    })
+                    .catch(err => {
+                        console.log(err);
                     });
                 })
                 .catch(err => {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        err,
-                    });
+                    console.log(err);
                 });
             }
         });
