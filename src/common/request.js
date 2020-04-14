@@ -71,8 +71,12 @@ const validateRequestJWT = async function(requestJWT){
         try {
             publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
-            let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
-            publicKey = JWK.getPublicKey(jwk);
+            try {
+                let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
+                publicKey = JWK.getPublicKey(jwk);
+            } catch (err) {
+                publickey = undefined;
+            }
         }
 
         if(publicKey){
