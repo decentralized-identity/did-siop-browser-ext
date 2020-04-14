@@ -1,7 +1,7 @@
 const { generateRequest } = require('./request');
 const { validateResponse } = require('./response');
 
-module.exports = class did_siop_rp {
+class RP {
     initialize(redirect_uri, did, rp_meta, did_doc) {
         this.redirect_uri = redirect_uri;
         this.did = did;
@@ -42,4 +42,8 @@ module.exports = class did_siop_rp {
     validateResponse(response, checkParams = {}) {
         return validateResponse(response, checkParams);
     }
+}
+
+module.exports = {
+    RP,
 }
