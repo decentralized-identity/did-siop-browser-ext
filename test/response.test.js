@@ -32,7 +32,8 @@ describe("Response -> To test response functions", function () {
         let checkParams = {
             redirect_uri: 'https://my.rp.com/cb',
             nonce: "n-0S6_WzA2Mj",
-            validBefore: Date.now() + 10000,
+            validBefore: 1000,
+            isExpirable: true,
         }
         let validity = await validateResponse(response, checkParams);
         expect(validity).toBeTruthy();

@@ -21,7 +21,8 @@ const ERRORS = Object.freeze({
 //requestPayload = payload of the request
 //signing = signing info { alg, kid, signing_key(private key),  }
 //me = end user info { did, did_doc } 
-const generateResponse = async function(requestPayload = {}, signing = {}, me = {}){
+//expiresIn
+const generateResponse = async function(requestPayload = {}, signing = {}, me = {}, expiresIn){
     try {
         let payload = {
             iss: 'https://self-issued.me',
@@ -59,7 +60,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         if (requestPayload.state) payload.state = requestPayload.state;
 
         payload.iat = Date.now();
-        payload.exp = Date.now() + 1000;
+        payload.exp = Date.now() + (expiresIn || 1000);
 
         return JWT.signJWT(header, payload, signing.signing_key);
     } catch (err) {
@@ -106,7 +107,7 @@ const validateResponse = async function(response, checkParams = {}){
         }
 
         if(checkParams.isExpirable){
-            if (decodedPayload.iat) {
+            if (decodedPayload.exp) {
                 if (decodedPayload.exp <= Date.now()) return Promise.reject(new Error(ERRORS.JWT_VALIDITY_EXPIRED));
             } else {
                 return Promise.reject(new Error(ERRORS.NO_EXPIRATION));
