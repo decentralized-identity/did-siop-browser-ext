@@ -2,18 +2,6 @@ const { validateRequest, parseRequest } = require('../common/request');
 const { generateResponse } = require('../common/response');
 
 chrome.runtime.onInstalled.addListener(function() {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-        chrome.declarativeContent.onPageChanged.addRules([
-            {
-                conditions: [
-                  new chrome.declarativeContent.PageStateMatcher({
-                    pageUrl: { hostEquals: '' }
-                  })
-                ],
-                actions: [ new chrome.declarativeContent.ShowPageAction() ]
-            }
-        ]);
-    });
     chrome.tabs.onCreated.addListener(function(){
         chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
             let request = tabs[0].pendingUrl;

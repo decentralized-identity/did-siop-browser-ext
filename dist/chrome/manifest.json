@@ -7,8 +7,9 @@
     "scripts": ["./popup/background.bundle.js"],
     "persistent": false
   },
-  "page_action": {
-      "default_popup": "./popup/popup.html"
-   },
+  "browser_action": {
+    "default_title": "DID-SIOP",
+    "default_popup": "./popup/popup.html"
+  },
   "manifest_version": 2
 }
