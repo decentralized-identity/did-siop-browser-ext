@@ -1,6 +1,6 @@
 const { getKeyFromDidDoc } = require('./util');
-const { verifyKeyPair, signJWT, verifyJWT, decodeBase64Url } = require('./jwt');
-const { getJWK, getBase64UrlEncodedJWKThumbprint, getKeyTypeByAlgorithm, getPublicKey } = require('./jwk');
+const JWT = require('./jwt');
+const JWK = require('./jwk');
 const etheruemPrivateKeyToPublicKey = require('ethereum-private-key-to-public-key');
 
 
@@ -39,7 +39,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         }
     
         let publicKey = await getKeyFromDidDoc(me.did, signing.kid, me.did_doc);
-        if(verifyKeyPair(signing.signing_key, publicKey, signing.alg)){
+        if(JWT.verifyKeyPair(signing.signing_key, publicKey, signing.alg)){
             header.kid = signing.kid;
         }
         else{
@@ -51,9 +51,9 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         if(me.did_doc) payload.did_doc = me.did_doc;
         if(requestPayload.client_id) payload.aud = requestPayload.client_id;
 
-        let kty = getKeyTypeByAlgorithm(signing.alg);
-        payload.sub_jwk = getJWK(publicKey, kty);
-        payload.sub = getBase64UrlEncodedJWKThumbprint(payload.sub_jwk);
+        let kty = JWK.getKeyTypeByAlgorithm(signing.alg);
+        payload.sub_jwk = JWK.getJWK(publicKey, kty);
+        payload.sub = JWK.getBase64UrlEncodedJWKThumbprint(payload.sub_jwk);
 
         if (requestPayload.nonce) payload.nonce = requestPayload.nonce;
         if (requestPayload.state) payload.state = requestPayload.state;
@@ -61,7 +61,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         payload.iat = Date.now();
         payload.exp = Date.now() + 1000;
 
-        return signJWT(header, payload, signing.signing_key);
+        return JWT.signJWT(header, payload, signing.signing_key);
     } catch (err) {
         Promise.reject(err);
     }
@@ -74,8 +74,8 @@ const validateResponse = async function(response, checkParams = {}){
     let decodedHeader;
     let decodedPayload;
     try {
-        decodedHeader = decodeBase64Url(response.split('.')[0]);
-        decodedPayload = decodeBase64Url(response.split('.')[1]);
+        decodedHeader = JWT.decodeBase64Url(response.split('.')[0]);
+        decodedPayload = JWT.decodeBase64Url(response.split('.')[1]);
     } catch (err) {
         throw err;
     }
@@ -118,15 +118,15 @@ const validateResponse = async function(response, checkParams = {}){
         try {
             publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
-            publicKey = getPublicKey(decodedPayload.sub_jwk);
+            publicKey = JWK.getPublicKey(decodedPayload.sub_jwk);
         }
 
-        let jwkThumbprint = getBase64UrlEncodedJWKThumbprint(decodedPayload.sub_jwk);
+        let jwkThumbprint = JWK.getBase64UrlEncodedJWKThumbprint(decodedPayload.sub_jwk);
         if (jwkThumbprint !== decodedPayload.sub) return Promise.reject(new Error(ERRORS.INVALID_JWK_THUMBPRINT));
 
         let verificationAlg = (decodedHeader.alg)? decodedHeader.alg : "RS256";
 
-        let validity = verifyJWT(response, verificationAlg, publicKey);
+        let validity = JWT.verifyJWT(response, verificationAlg, publicKey);
         
         if(validity) return {
             decodedHeader,
