@@ -4,7 +4,7 @@
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "scripts": {
     "test": "jest --runInBand",
-    "chrome-build": "browserify src/chrome/background.js -o dist/chrome/popup/background.bundle.js && browserify src/chrome/inject.js -o dist/chrome/content_scripts/inject.bundle.js",
+    "chrome-build": "browserify src/chrome/background.js -o dist/chrome/popup/background.bundle.js",
     "lib-build": "browserify src/common/index.js -o dist/lib/did-siop.bundle.js"
   },
   "repository": {
