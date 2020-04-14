@@ -1,4 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.DID_SIOP = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
@@ -48683,7 +48683,7 @@ module.exports = config;
 const { generateRequest } = require('./request');
 const { validateResponse } = require('./response');
 
-module.exports = class did_siop_rp {
+class RP {
     initialize(redirect_uri, did, rp_meta, did_doc) {
         this.redirect_uri = redirect_uri;
         this.did = did;
@@ -48724,6 +48724,10 @@ module.exports = class did_siop_rp {
     validateResponse(response, checkParams = {}) {
         return validateResponse(response, checkParams);
     }
+}
+
+module.exports = {
+    RP,
 }
 },{"./request":298,"./response":300}],296:[function(require,module,exports){
 (function (Buffer){
@@ -48824,8 +48828,8 @@ const getRSAJWK = function(publicKeyPEM){
 const getECJWK = function(publicKeyHex){
     let ec = new EC('secp256k1');
     let key = ec.keyFromPublic(publicKeyHex, 'hex');
-    let x = base64url.encode(key.getPublic().getX().toBuffer());
-    let y = base64url.encode(key.getPublic().getY().toBuffer());
+    let x = base64url.encode(key.getPublic().getX().toArrayLike(Buffer));
+    let y = base64url.encode(key.getPublic().getY().toArrayLike(Buffer));
     return {
         crv: 'secp256k1',
         kty: 'EC',
@@ -49400,7 +49404,7 @@ const generateResponse = async function(requestPayload = {}, signing = {}, me = 
         else{
             Promise.reject(ERRORS.KEY_MISMATCH);
         }
-        if (signing.alg === 'ES256K-R') publicKey = etheruemPrivateKeyToPublicKey(signing.signing_key);
+        if (signing.alg === 'ES256K-R') publicKey = etheruemPrivateKeyToPublicKey(signing.signing_key).toString('hex');
 
         payload.did = me.did;
         if(me.did_doc) payload.did_doc = me.did_doc;
@@ -49581,4 +49585,5 @@ module.exports = {
     getKeyFromDidDoc,
     getKeyFromJWKS,
 }
-},{"./resolver":299,"ethereum-checksum-address":201,"jquery":239}]},{},[295]);
+},{"./resolver":299,"ethereum-checksum-address":201,"jquery":239}]},{},[295])(295)
+});
