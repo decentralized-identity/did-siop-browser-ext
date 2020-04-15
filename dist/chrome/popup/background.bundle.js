@@ -48675,7 +48675,7 @@ module.exports = XMLHttpRequest;
 const { validateRequest, parseRequest } = require('../common/request');
 const { generateResponse } = require('../common/response');
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onStartup.addListener(function() {
     chrome.tabs.onCreated.addListener(function(){
         chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
             let request = tabs[0].pendingUrl;
@@ -48687,12 +48687,13 @@ chrome.runtime.onInstalled.addListener(function() {
                             url: uri,
                         });
                         console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                    })
+                    .catch(err => {
+                        console.log(err);
                     });
                 })
                 .catch(err => {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        err,
-                    });
+                    console.log(err);
                 });
             }
         });
@@ -49235,8 +49236,12 @@ const validateRequestJWT = async function(requestJWT){
         try {
             publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
-            let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
-            publicKey = JWK.getPublicKey(jwk);
+            try {
+                let jwk = await getKeyFromJWKS(decodedPayload.jwks, decodedPayload.jwks_uri, decodedHeader.kid);
+                publicKey = JWK.getPublicKey(jwk);
+            } catch (err) {
+                publickey = undefined;
+            }
         }
 
         if(publicKey){
