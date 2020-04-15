@@ -1,7 +1,7 @@
 const { validateRequest, parseRequest } = require('../common/request');
 const { generateResponse } = require('../common/response');
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onStartup.addListener(function() {
     chrome.tabs.onCreated.addListener(function(){
         chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
             let request = tabs[0].pendingUrl;
