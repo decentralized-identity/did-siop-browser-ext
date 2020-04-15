@@ -4,8 +4,7 @@
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "permissions": ["tabs", "activeTab", "declarativeContent"],
   "background": {
-    "scripts": ["./popup/background.bundle.js"],
-    "persistent": false
+    "scripts": ["./popup/background.bundle.js"]
   },
   "browser_action": {
     "default_title": "DID-SIOP",
