@@ -145,7 +145,6 @@ const registration_not_supported = {
 }
 
 module.exports = {
-    ERROR_RESPONSES: [
         invalid_request,
         unauthorized_client,
         access_denied,
@@ -162,5 +161,4 @@ module.exports = {
         request_not_supported,
         request_uri_not_supported,
         registration_not_supported,
-    ]
 }
