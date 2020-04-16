@@ -78,7 +78,14 @@ const validateResponse = async function(response, checkParams = {}){
         decodedHeader = JWT.decodeBase64Url(response.split('.')[0]);
         decodedPayload = JWT.decodeBase64Url(response.split('.')[1]);
     } catch (err) {
-        throw err;
+        try {
+            let error = JWT.decodeBase64Url(response);
+            if(error){
+                return error;
+            }
+        } catch (err) {
+            return Promise.reject(err);
+        }
     }
 
     if(
