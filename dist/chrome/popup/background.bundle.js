@@ -48674,27 +48674,51 @@ module.exports = XMLHttpRequest;
 },{}],294:[function(require,module,exports){
 const { validateRequest, parseRequest } = require('../common/request');
 const { generateResponse } = require('../common/response');
+const ERROR_RESPONSES = require('../common/response.errors');
+const { encodeBase64Url } = require('../common/jwt');
 
 chrome.runtime.onStartup.addListener(function() {
     chrome.tabs.onCreated.addListener(function(){
         chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
             let request = tabs[0].pendingUrl;
-            if (parseRequest(request).url === 'openid://' && confirm('Sign in using did-siop?')) {
-                validateRequest(request).then(decodedRequest => {
-                    generateResponse(decodedRequest.payload, signing, me).then( response => {
-                        let uri = decodedRequest.payload.client_id + '#' + response;
+            if (parseRequest(request).url === 'openid://') {
+                if (confirm('Sign in using did-siop?')){
+                    validateRequest(request).then(decodedRequest => {
+                            generateResponse(decodedRequest.payload, signing, me).then(response => {
+                                    let uri = decodedRequest.payload.client_id + '#' + response;
+                                    chrome.tabs.update(tabs[0].id, {
+                                        url: uri,
+                                    });
+                                    console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                            })
+                            .catch(err => {
+                                alert(err);
+                            });
+                    })
+                    .catch(err => {
+                        let uri = parseRequest(request).query.client_id;
+                        if (uri) {
+                            uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES[err.message].response);
+                            chrome.tabs.update(tabs[0].id, {
+                                url: uri,
+                            });
+                        } else {
+                            alert('Error: invalid redirect url');
+                        }
+                    });
+                }
+                else{
+                    let uri = parseRequest(request).query.client_id;
+                    if(uri){
+                        uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES.access_denied.response);
                         chrome.tabs.update(tabs[0].id, {
                             url: uri,
                         });
-                        console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                    }
+                    else{
+                        alert('Error: invalid redirect url');
+                    }
+                }
             }
         });
     });
@@ -48709,7 +48733,7 @@ const signing = {
 const me = {
     did: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
 }
-},{"../common/request":298,"../common/response":300}],295:[function(require,module,exports){
+},{"../common/jwt":297,"../common/request":298,"../common/response":301,"../common/response.errors":300}],295:[function(require,module,exports){
 const config = {
     resolverRpcUrls: {
         ethr: "https://rinkeby.infura.io/v3/7063b610c6f34907b0dd0cdab07f397b"
@@ -49168,16 +49192,11 @@ const JWK = require('./jwk');
 const queryString = require('query-string');
 const $ = require('jquery');
 const { getKeyFromDidDoc, getKeyFromJWKS } = require('./util');
+const ERROR_RESPONSES  = require('./response.errors');
 
-const ERRORS = Object.freeze({
-    BAD_REQUEST_ERROR: 'Bad request error',
-    JWT_RESOLVE_ERROR: 'Jwt resolve error',
-    MALFORMED_JWT_ERROR: 'Malformed jwt error',
-    VERIFICATION_KEY_ERROR: 'Public key error',
-    JWK_ERROR: 'JWK error',
-    JWT_VERIFICATION_ERROR: 'Jwt verification error',
-    INVALID_SIGNATURE_ERROR: 'Invalid signature error'
-});
+const RESPONSE_TYPES = ['id_token',];
+const SUPPORTED_SCOPES = ['openid', 'did_authn',];
+const REQUIRED_SCOPES = ['openid', 'did_authn',];
 
 const parseRequest = function(raw){
     return queryString.parseUrl(raw);
@@ -49185,32 +49204,40 @@ const parseRequest = function(raw){
 
 const validateRequestParams = async function(request){
     let parsed = parseRequest(request);
+
+    
     if (
-        parsed.url === 'openid://' &&
-        parsed.query.response_type === 'id_token' &&
-        (parsed.query.client_id !== undefined && parsed.query.client_id !== '') &&
-        (parsed.query.scope !== undefined && parsed.query.scope.indexOf('openid did_authn') > -1)
-    ){
-        if (parsed.query.request !== undefined && parsed.query.request !== '') return parsed.query.request;
-        if (parsed.query.request_uri !== undefined && parsed.query.request_uri !== '') {
-            try{
-                let requestJWT = await $.get(parsed.query.request_uri);
-                return requestJWT;
-            }
-            catch(err){
-                let custom = new Error(ERRORS.JWT_RESOLVE_ERROR);
-                custom.inner = err;
-                return Promise.reject(custom);
-            }
+        parsed.url !== 'openid://' ||
+        (parsed.query.client_id === undefined || parsed.query.client_id.match(/^ *$/)) ||
+        (parsed.query.response_type === undefined || parsed.query.response_type.match(/^ *$/))
+    ) return Promise.reject(ERROR_RESPONSES.invalid_request.err);
+    
+    if (parsed.query.scope !== undefined){
+        let requestedScopes = parsed.query.scope.split(' ');
+        if (!(requestedScopes.every(s => SUPPORTED_SCOPES.includes(s))) || !(REQUIRED_SCOPES.every(s => requestedScopes.includes(s))))
+            return Promise.reject(ERROR_RESPONSES.invalid_scope.err);
+    }
+    else return Promise.reject(ERROR_RESPONSES.invalid_request.err);
+
+    if(!RESPONSE_TYPES.includes(parsed.query.response_type)) return Promise.reject(ERROR_RESPONSES.unsupported_response_type.err);
+
+    if (parsed.query.request === undefined){
+        if (parsed.query.request_uri === undefined) {
+             return Promise.reject(ERROR_RESPONSES.invalid_request.err);
         }
         else{
-            let custom = new Error(ERRORS.JWT_RESOLVE_ERROR);
-            return Promise.reject(custom);
+            if (parsed.query.request_uri.match(/^ *$/)) return Promise.reject(ERROR_RESPONSES.invalid_request_uri.err)
+            try {
+                let requestJWT = await $.get(parsed.query.request_uri);
+                return requestJWT? requestJWT : Promise.reject(ERROR_RESPONSES.invalid_request_uri.err);
+            } catch (err) {
+                return Promise.reject(ERROR_RESPONSES.invalid_request_uri.err);
+            }
         }
     }
     else{
-        let custom = new Error(ERRORS.BAD_REQUEST_ERROR);
-        return Promise.reject(custom);
+        if (parsed.query.request.match(/^ *$/)) return Promise.reject(ERROR_RESPONSES.invalid_request_object.err);
+        return parsed.query.request;
     }
 }
 
@@ -49222,7 +49249,7 @@ const validateRequestJWT = async function(requestJWT){
         decodedPayload = JWT.decodeBase64Url(requestJWT.split('.')[1]);
     }
     catch(err){
-        throw err;
+        return Promise.reject(ERROR_RESPONSES.invalid_request_object.err);
     }
 
     if(
@@ -49253,15 +49280,15 @@ const validateRequestJWT = async function(requestJWT){
                 }
             }
             else {
-                return Promise.reject(ERRORS.INVALID_SIGNATURE_ERROR);
+                return Promise.reject(ERROR_RESPONSES.invalid_request_object.err);
             }
         }
         else{
-            return Promise.reject(new Error(ERRORS.VERIFICATION_KEY_ERROR));
+            return Promise.reject(ERROR_RESPONSES.invalid_request_object.err);
         }
     }
     else{
-        return Promise.reject(new Error(ERRORS.MALFORMED_JWT_ERROR));
+        return Promise.reject(ERROR_RESPONSES.invalid_request_object.err);
     }
 }
 
@@ -49300,7 +49327,7 @@ const generateRequest = async function ( rp = {}, signing = {}, options = {}) {
 
         let jwtPayload = {
             iss: rp.did,
-            responce_type: 'id_token',
+            response_type: 'id_token',
             scope: 'openid did_authn',
             client_id: rp.redirect_uri,
             registration: rp.registration,
@@ -49325,10 +49352,9 @@ module.exports = {
     validateRequestParams,
     validateRequestJWT,
     validateRequest,
-    generateRequest,
-    ERRORS
+    generateRequest
 };
-},{"./jwk":296,"./jwt":297,"./util":301,"jquery":239,"query-string":270}],299:[function(require,module,exports){
+},{"./jwk":296,"./jwt":297,"./response.errors":300,"./util":302,"jquery":239,"query-string":270}],299:[function(require,module,exports){
 const { Resolver } = require('did-resolver');
 const ethr = require('ethr-did-resolver');
 const web = require('web-did-resolver');
@@ -49348,6 +49374,172 @@ const resolver = function () {
 
 module.exports = resolver;
 },{"./config":295,"did-resolver":182,"ethr-did-resolver":221,"web-did-resolver":292}],300:[function(require,module,exports){
+//OAuth 2.0
+const invalid_request = {
+    err: new Error('invalid_request'),
+    response: {
+        error: 'invalid_request',
+        description: 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.',
+        error_uri:''
+    }
+}
+
+const unauthorized_client = {
+    err: new Error('unauthorized_client'),
+    response: {
+        error: 'unauthorized_client',
+        description: 'The client is not authorized to request an authorization code using this method.',
+        error_uri: ''
+    }
+}
+
+const access_denied = {
+    err: new Error('access_denied'),
+    response: {
+        error: 'access_denied',
+        description: 'The resource owner or authorization server denied the request.',
+        error_uri: ''
+    }
+}
+
+const unsupported_response_type = {
+    err: new Error('unsupported_response_type'),
+    response: {
+        error: 'unsupported_response_type',
+        description: 'The authorization server does not support obtaining an authorization code using this method.',
+        error_uri: ''
+    }
+}
+
+const invalid_scope = {
+    err: new Error('invalid_scope'),
+    response: {
+        error: 'invalid_scope',
+        description: 'The requested scope is invalid, unknown, or malformed.',
+        error_uri: ''
+    }
+}
+
+const server_error = {
+    err: new Error('server_error'),
+    response: {
+        error: 'server_error',
+        description: 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request',
+        error_uri: ''
+    }
+}
+
+const temporarily_unavailable = {
+    err: new Error('temporarily_unavailable'),
+    response: {
+        error: 'temporarily_unavailable',
+        description: 'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
+        error_uri: ''
+    }
+}
+
+//OpenId Connect
+const interaction_required = {
+    err: new Error('interaction_required'),
+    response: {
+        error: 'interaction_required',
+        description: 'The Authorization Server requires End-User interaction of some form to proceed.',
+        error_uri: ''
+    }
+}
+
+const login_required = {
+    err: new Error('login_required'),
+    response: {
+        error: 'login_required',
+        description: 'The Authorization Server requires End-User authentication.',
+        error_uri: ''
+    }
+}
+
+const account_selection_required = {
+    err: new Error('account_selection_required'),
+    response: {
+        error: 'account_selection_required',
+        description: 'The End-User is REQUIRED to select a session at the Authorization Server.',
+        error_uri: ''
+    }
+}
+
+const consent_required = {
+    err: new Error('consent_required'),
+    response: {
+        error: 'consent_required',
+        description: 'The Authorization Server requires End-User consent.',
+        error_uri: ''
+    }
+}
+
+const invalid_request_uri = {
+    err: new Error('invalid_request_uri'),
+    response: {
+        error: 'invalid_request_uri',
+        description: 'The request_uri in the Authorization Request returns an error or contains invalid data.',
+        error_uri: ''
+    }
+}
+
+const invalid_request_object = {
+    err: new Error('invalid_request_object'),
+    response: {
+        error: 'invalid_request_object',
+        description: 'The request parameter contains an invalid Request Object.',
+        error_uri: ''
+    }
+}
+
+const request_not_supported = {
+    err: new Error('request_not_supported'),
+    response: {
+        error: 'request_not_supported',
+        description: 'The OP does not support use of the request parameter.',
+        error_uri: ''
+    }
+}
+
+const request_uri_not_supported = {
+    err: new Error('request_uri_not_supported'),
+    response: {
+        error: 'request_uri_not_supported',
+        description: 'The OP does not support use of the request_uri parameter',
+        error_uri: ''
+    }
+}
+
+const registration_not_supported = {
+    err: new Error('registration_not_supported'),
+    response: {
+        error: 'registration_not_supported',
+        description: 'The OP does not support use of the registration parameter',
+        error_uri: ''
+    }
+}
+
+module.exports = {
+        invalid_request,
+        unauthorized_client,
+        access_denied,
+        unsupported_response_type,
+        invalid_scope,
+        server_error,
+        temporarily_unavailable,
+        interaction_required,
+        login_required,
+        account_selection_required,
+        consent_required,
+        invalid_request_uri,
+        invalid_request_object,
+        request_not_supported,
+        request_uri_not_supported,
+        registration_not_supported,
+}
+
+},{}],301:[function(require,module,exports){
 const { getKeyFromDidDoc } = require('./util');
 const JWT = require('./jwt');
 const JWK = require('./jwk');
@@ -49495,7 +49687,7 @@ module.exports = {
     generateResponse,
     validateResponse,
 }
-},{"./jwk":296,"./jwt":297,"./util":301,"ethereum-private-key-to-public-key":202}],301:[function(require,module,exports){
+},{"./jwk":296,"./jwt":297,"./util":302,"ethereum-private-key-to-public-key":202}],302:[function(require,module,exports){
 const ethereumAddress = require('ethereum-checksum-address');
 const resolver = require('./resolver')();
 const $ = require('jquery');
