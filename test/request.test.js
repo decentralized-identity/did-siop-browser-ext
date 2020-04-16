@@ -1,6 +1,7 @@
 const request = require('../src/common/request');
 const nock = require('nock');
 const resources = require('./request.test.resources');
+const ERROR_RESPONSES = require('../src/common/response.errors');
 
 
 describe("Request -> To test request validation", function () {
@@ -25,37 +26,37 @@ describe("Request -> To test request validation", function () {
 
         test('Request params validation - expect falsy', async () => {
             let validityPromise = request.validateRequestParams(resources.requests.bad.requestBadProtocol);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoSlashes);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoResponseType);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadIncorrectResponseType);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.unsupported_response_type.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoClientId);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoScope);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_scope.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoScopeOpenId);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_scope.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoScopeDidAuthN);
-            await expect(validityPromise).rejects.toEqual(resources.errors.badRequestError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_scope.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoJWT);
-            await expect(validityPromise).rejects.toEqual(resources.errors.noJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadNoJWTUri);
-            await expect(validityPromise).rejects.toEqual(resources.errors.noJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_uri.err);
 
             validityPromise = request.validateRequestParams(resources.requests.bad.requestBadIncorrectJWTUri);
-            await expect(validityPromise).rejects.toEqual(resources.errors.noJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_uri.err);
         });
     });
     describe("Request jwt validation", function(){
@@ -75,19 +76,19 @@ describe("Request -> To test request validation", function () {
         });
         test("Request jwt validation - expect falsy", async () => {
             let validityPromise = request.validateRequestJWT(resources.jwts.bad.jwtBadNoKid);
-            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
 
             validityPromise = request.validateRequestJWT(resources.jwts.bad.jwtBadNoIss);
-            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
 
             validityPromise = request.validateRequestJWT(resources.jwts.bad.jwtBadNoScope);
-            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
 
             validityPromise = request.validateRequestJWT(resources.jwts.bad.jwtBadIncorrectScope);
-            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
 
             validityPromise = request.validateRequestJWT(resources.jwts.bad.jwtBadNoRegistration);
-            await expect(validityPromise).rejects.toEqual(resources.errors.malformedJWTError);
+            await expect(validityPromise).rejects.toEqual(ERROR_RESPONSES.invalid_request_object.err);
         });
     });
     describe("Request generation", function () {

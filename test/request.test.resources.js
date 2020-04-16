@@ -110,19 +110,8 @@ const requests = {
     }
 }
 
-const errors = {
-    badRequestError : new Error(ERRORS.BAD_REQUEST_ERROR),
-    noJWTError : new Error(ERRORS.JWT_RESOLVE_ERROR),
-    malformedJWTError: new Error(ERRORS.MALFORMED_JWT_ERROR),
-    verficationKeyError: new Error(ERRORS.VERIFICATION_KEY_ERROR),
-    jwkError: new Error(ERRORS.JWK_ERROR),
-    jwtVerificationError: new Error(ERRORS.JWT_VERIFICATION_ERROR),
-    invalidSignatureError: new Error(ERRORS.INVALID_SIGNATURE_ERROR),
-}
-
 module.exports = {
     jwts,
     queryObj,
     requests,
-    errors
 }
