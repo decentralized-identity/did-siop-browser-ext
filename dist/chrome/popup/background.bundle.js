@@ -48677,50 +48677,48 @@ const { generateResponse } = require('../common/response');
 const ERROR_RESPONSES = require('../common/response.errors');
 const { encodeBase64Url } = require('../common/jwt');
 
-chrome.runtime.onStartup.addListener(function() {
-    chrome.tabs.onCreated.addListener(function(){
-        chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
-            let request = tabs[0].pendingUrl;
-            if (parseRequest(request).url === 'openid://') {
-                if (confirm('Sign in using did-siop?')){
-                    validateRequest(request).then(decodedRequest => {
-                            generateResponse(decodedRequest.payload, signing, me).then(response => {
-                                    let uri = decodedRequest.payload.client_id + '#' + response;
-                                    chrome.tabs.update(tabs[0].id, {
-                                        url: uri,
-                                    });
-                                    console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                            })
-                            .catch(err => {
-                                alert(err);
-                            });
-                    })
-                    .catch(err => {
-                        let uri = parseRequest(request).query.client_id;
-                        if (uri) {
-                            uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES[err.message].response);
-                            chrome.tabs.update(tabs[0].id, {
-                                url: uri,
-                            });
-                        } else {
-                            alert('Error: invalid redirect url');
-                        }
-                    });
-                }
-                else{
+chrome.tabs.onCreated.addListener(function(){
+    chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
+        let request = tabs[0].pendingUrl;
+        if (parseRequest(request).url === 'openid://') {
+            if (confirm('Sign in using did-siop?')){
+                validateRequest(request).then(decodedRequest => {
+                        generateResponse(decodedRequest.payload, signing, me).then(response => {
+                                let uri = decodedRequest.payload.client_id + '#' + response;
+                                chrome.tabs.update(tabs[0].id, {
+                                    url: uri,
+                                });
+                                console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                        })
+                        .catch(err => {
+                            alert(err);
+                        });
+                })
+                .catch(err => {
                     let uri = parseRequest(request).query.client_id;
-                    if(uri){
-                        uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES.access_denied.response);
+                    if (uri) {
+                        uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES[err.message].response);
                         chrome.tabs.update(tabs[0].id, {
                             url: uri,
                         });
-                    }
-                    else{
+                    } else {
                         alert('Error: invalid redirect url');
                     }
+                });
+            }
+            else{
+                let uri = parseRequest(request).query.client_id;
+                if(uri){
+                    uri = uri + '#' + encodeBase64Url(ERROR_RESPONSES.access_denied.response);
+                    chrome.tabs.update(tabs[0].id, {
+                        url: uri,
+                    });
+                }
+                else{
+                    alert('Error: invalid redirect url');
                 }
             }
-        });
+        }
     });
 });
 
@@ -49548,6 +49546,7 @@ const etheruemPrivateKeyToPublicKey = require('ethereum-private-key-to-public-ke
 
 const ERRORS = Object.freeze({
     UNSUPPORTED_ALGO: 'Algorithm not supported',
+    PUBLIC_KEY_ERROR: 'Cannot resolve public key',
     KEY_MISMATCH: 'Signing key does not match kid',
     MALFORMED_JWT_ERROR: 'Malformed response jwt',
     NON_SIOP_FLOW: 'Response jwt is not compatible with SIOP flow',
@@ -49620,7 +49619,14 @@ const validateResponse = async function(response, checkParams = {}){
         decodedHeader = JWT.decodeBase64Url(response.split('.')[0]);
         decodedPayload = JWT.decodeBase64Url(response.split('.')[1]);
     } catch (err) {
-        throw err;
+        try {
+            let error = JWT.decodeBase64Url(response);
+            if(error){
+                return error;
+            }
+        } catch (err) {
+            return Promise.reject(err);
+        }
     }
 
     if(
@@ -49659,9 +49665,13 @@ const validateResponse = async function(response, checkParams = {}){
         let publicKey;
 
         try {
-            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
+            publicKey = await getKeyFromDidDoc(decodedPayload.did, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
-            publicKey = JWK.getPublicKey(decodedPayload.sub_jwk);
+            try {
+                publicKey = JWK.getPublicKey(decodedPayload.sub_jwk);
+            } catch (err) {
+                return Promise.reject(ERRORS.PUBLIC_KEY_ERROR);
+            }
         }
 
         let jwkThumbprint = JWK.getBase64UrlEncodedJWKThumbprint(decodedPayload.sub_jwk);
@@ -49715,11 +49725,15 @@ const validateDidDoc = function(did, doc){
 
 const getKeyFromDidDoc = async function (did, kid, doc) {
     if(!validateDidDoc(did, doc)){
-        let resolvedDoc = await resolver.resolve(did);
-        if(validateDidDoc(did, resolvedDoc)){
-            doc = resolvedDoc;
-        }
-        else{
+        try {
+            let resolvedDoc = await resolver.resolve(did);
+            if (validateDidDoc(did, resolvedDoc)) {
+                doc = resolvedDoc; 
+            }
+            else{
+                throw new Error('Invalid DID or Document');
+            }
+        } catch (err) {
             throw new Error('Invalid DID or Document');
         }
     }
