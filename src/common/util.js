@@ -25,11 +25,15 @@ const validateDidDoc = function(did, doc){
 
 const getKeyFromDidDoc = async function (did, kid, doc) {
     if(!validateDidDoc(did, doc)){
-        let resolvedDoc = await resolver.resolve(did);
-        if(validateDidDoc(did, resolvedDoc)){
-            doc = resolvedDoc;
-        }
-        else{
+        try {
+            let resolvedDoc = await resolver.resolve(did);
+            if (validateDidDoc(did, resolvedDoc)) {
+                doc = resolvedDoc; 
+            }
+            else{
+                throw new Error('Invalid DID or Document');
+            }
+        } catch (err) {
             throw new Error('Invalid DID or Document');
         }
     }
