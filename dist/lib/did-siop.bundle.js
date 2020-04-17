@@ -49536,6 +49536,7 @@ const etheruemPrivateKeyToPublicKey = require('ethereum-private-key-to-public-ke
 
 const ERRORS = Object.freeze({
     UNSUPPORTED_ALGO: 'Algorithm not supported',
+    PUBLIC_KEY_ERROR: 'Cannot resolve public key',
     KEY_MISMATCH: 'Signing key does not match kid',
     MALFORMED_JWT_ERROR: 'Malformed response jwt',
     NON_SIOP_FLOW: 'Response jwt is not compatible with SIOP flow',
@@ -49654,9 +49655,13 @@ const validateResponse = async function(response, checkParams = {}){
         let publicKey;
 
         try {
-            publicKey = await getKeyFromDidDoc(decodedPayload.iss, decodedHeader.kid, decodedPayload.did_doc);
+            publicKey = await getKeyFromDidDoc(decodedPayload.did, decodedHeader.kid, decodedPayload.did_doc);
         } catch (err) {
-            publicKey = JWK.getPublicKey(decodedPayload.sub_jwk);
+            try {
+                publicKey = JWK.getPublicKey(decodedPayload.sub_jwk);
+            } catch (err) {
+                return Promise.reject(ERRORS.PUBLIC_KEY_ERROR);
+            }
         }
 
         let jwkThumbprint = JWK.getBase64UrlEncodedJWKThumbprint(decodedPayload.sub_jwk);
@@ -49710,11 +49715,15 @@ const validateDidDoc = function(did, doc){
 
 const getKeyFromDidDoc = async function (did, kid, doc) {
     if(!validateDidDoc(did, doc)){
-        let resolvedDoc = await resolver.resolve(did);
-        if(validateDidDoc(did, resolvedDoc)){
-            doc = resolvedDoc;
-        }
-        else{
+        try {
+            let resolvedDoc = await resolver.resolve(did);
+            if (validateDidDoc(did, resolvedDoc)) {
+                doc = resolvedDoc; 
+            }
+            else{
+                throw new Error('Invalid DID or Document');
+            }
+        } catch (err) {
             throw new Error('Invalid DID or Document');
         }
     }
