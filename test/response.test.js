@@ -4,6 +4,7 @@ const { verifyJWT } = require('../src/common/jwt');
 
 describe("Response -> To test response functions", function () {
     test("Response generation and validation", async () => {
+        jest.setTimeout(7000);
         let requestPayload = {
             "iss": "did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83",
             "response_type": "id_token",
