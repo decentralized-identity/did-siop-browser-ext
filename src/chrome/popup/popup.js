@@ -1,4 +1,4 @@
-const resolver = require('../../common/resolver')();
+const resolver = require('../../common/resolver');
 const { getKeyFromDidDoc, validateDidDoc } = require('../../common/util');
 const { verifyKeyPair } = require('../../common/jwt');
 

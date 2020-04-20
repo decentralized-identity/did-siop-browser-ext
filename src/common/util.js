@@ -1,5 +1,5 @@
 const ethereumAddress = require('ethereum-checksum-address');
-const resolver = require('./resolver')();
+const resolver = require('./resolver');
 const $ = require('jquery');
 
 const getPublicKeyFromDifferentTypes = function (key) {

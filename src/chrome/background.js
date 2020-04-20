@@ -3,7 +3,7 @@ const { generateResponse } = require('../common/response');
 const ERROR_RESPONSES = require('../common/response.errors');
 const { encodeBase64Url, verifyKeyPair } = require('../common/jwt');
 const { validateDidDoc, getKeyFromDidDoc } = require('../common/util');
-const { resolver } = require('../common/resolver')();
+const resolver = require('../common/resolver');
 
 chrome.runtime.onInstalled.addListener(function(){
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
