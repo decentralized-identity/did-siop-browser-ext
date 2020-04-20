@@ -5,6 +5,18 @@ const { encodeBase64Url, verifyKeyPair } = require('../common/jwt');
 const { validateDidDoc, getKeyFromDidDoc } = require('../common/util');
 const { resolver } = require('../common/resolver')();
 
+chrome.runtime.onInstalled.addListener(function(){
+    let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
+    localStorage.setItem('did_siop_user_did', did);
+
+    let signing = {
+        alg: 'ES256K-R',
+        kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
+        signing_key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+    }
+    localStorage.setItem('did_siop_singing_info', JSON.stringify(signing));
+});
+
 chrome.tabs.onCreated.addListener(function(){
     chrome.tabs.query({ active: true, lastFocusedWindow: true}, tabs => {
         let request = tabs[0].pendingUrl;
