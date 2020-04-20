@@ -1,5 +1,5 @@
 # did-siop #
-Self Issued OpenIdConnect Provider (SIOP) for Decentralized Identities (DIDs) implemented as a browser add-on
+This implements Self Issued OpenIdConnect Provider (SIOP) for Decentralized Identities (DIDs). This is implemented  as a browser add-on and allows to integrate Identity Wallets with Relying Parties which uses OpenIDConnect Clients (OIDC Clients) which complies the SIOP specification.
 
 # How to test
 * Load ***dist>chrome*** folder into chrome extensions using developer mode
