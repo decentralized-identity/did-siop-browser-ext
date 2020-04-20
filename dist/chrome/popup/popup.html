@@ -1,6 +1,35 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" href="popup.css">
+    </head>
     <body>
-        <h4>SIOP-DID</h4>
+        <div class="main">
+            <h1>SIOP-DID</h1>
+
+            <div class="did-wrapper">
+                <h5>Set User DID</h5>
+                DID: <input type="text" id="did">
+                <button id="setDID" style="margin-top: 5px;">Set</button>
+            </div>
+
+            <div class="signing-wrapper">
+                <h5>Set Signing Info</h5>
+                Algorithm: <select name="" id="algorithm">
+                    <option value="RS256">RS256</option>
+                    <option value="ES256K">ES256k</option>
+                    <option value="ES256K-R">ES256K-R</option>
+                    <option value="EdDSA">EdDSA</option>
+                </select> <br>
+                Kid value: <input type="text" id="kid"> <br>
+                Private Key: <input type="text" id="signing_key"> <br>
+                <button id="setSigningInfo" style="margin-top: 5px;">Set</button>
+            </div>
+
+            <div class="error-wrapper">
+                <p id="error-view"></p>
+            </div>
+        </div>
+        <script src="popup.bundle.js"></script>
     </body>
 </html>

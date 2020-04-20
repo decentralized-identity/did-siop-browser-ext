@@ -1,0 +1,29 @@
+.main{
+    width: 250px;
+    height: 400px;
+    margin: auto;
+}
+
+.did-wrapper{
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signing-wrapper {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.error-wrapper {
+    margin-top: 20px;
+    text-align: center;
+    color: red;
+}
+
+h1, h5{
+    text-align: center;
+}
+
+input, select{
+    margin-top: 10px;
+}
