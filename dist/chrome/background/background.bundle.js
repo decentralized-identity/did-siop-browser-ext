@@ -48685,16 +48685,23 @@ chrome.tabs.onCreated.addListener(function(){
         if (parseRequest(request).url === 'openid://') {
             if (confirm('Sign in using did-siop?')){
                 validateRequest(request).then(decodedRequest => {
-                        generateResponse(decodedRequest.payload, signing, me).then(response => {
-                                let uri = decodedRequest.payload.client_id + '#' + response;
-                                chrome.tabs.update(tabs[0].id, {
-                                    url: uri,
-                                });
-                                console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                        })
-                        .catch(err => {
-                            alert(err);
-                        });
+                        let me = getME();
+                        let signing = getSingingInfo();
+                        if(me && signing){
+                            generateResponse(decodedRequest.payload, signing, me).then(response => {
+                                    let uri = decodedRequest.payload.client_id + '#' + response;
+                                    chrome.tabs.update(tabs[0].id, {
+                                        url: uri,
+                                    });
+                                    console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                            })
+                            .catch(err => {
+                                    alert(err);
+                            });
+                        }
+                        else{
+                            alert('User or signing information is not set please set them first');
+                        }
                 })
                 .catch(err => {
                     let uri = parseRequest(request).query.client_id;
@@ -48723,32 +48730,6 @@ chrome.tabs.onCreated.addListener(function(){
         }
     });
 });
-/* 
-const signing = {
-    alg: 'ES256K-R',
-    kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
-    signing_key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964'
-}
-
-const me = {
-    did: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83'
-} */
-
-const setME = function(){
-    let did = document.getElementById('did').value;
-    try {
-        let doc = resolver.resolve(did);
-        if(validateDidDoc(did, doc)){
-            localStorage.setItem('did_siop_user_did', did);
-            localStorage.setItem('did_siop_user_did_doc', did_doc);
-        }
-        else{
-            alert('Invalid DID and DID Document');
-        }
-    } catch (err) {
-        alert(err);
-    }
-}
 
 const getME = function(){
     return {
@@ -48757,47 +48738,9 @@ const getME = function(){
     }
 }
 
-const setSigningInfo = async function(){
-    let signing = {
-        alg: document.getElementById('algorithm').value,
-        kid: document.getElementById('kid').value,
-        signing_key: document.getElementById('signing_key').value,
-    }
-
-    if(signing.alg && signing.kid && signing.signing_key){
-        if(getME().did){
-            try {
-                let publicKey = await getKeyFromDidDoc(me.did, signing.kid);
-                let validity = verifyKeyPair(signing.signing_key, publicKey, signing.alg);
-                if (validity === true) {
-                    localStorage.setItem('did_siop_singing_info', JSON.stringify(signing));
-                } else {
-                    alert('Invalid singing info');
-                }
-            } catch (err) {
-                alert(err);
-            }
-        }
-        else{
-            alert('User DID is not set. Please set the DID first'); 
-        }
-    }
-    else{
-        alert('Missing required parameters');
-    }
-}
-
 const getSingingInfo = function(){
     return JSON.parse(localStorage.getItem('did_siop_singing_info'));
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('setDID').addEventListener('click', setME);
-    document.getElementById('setSigningInfo').addEventListener('click', setSigningInfo);
-});
-
-const me = getME();
-const signing = getSingingInfo();
 },{"../common/jwt":297,"../common/request":298,"../common/resolver":299,"../common/response":301,"../common/response.errors":300,"../common/util":302}],295:[function(require,module,exports){
 const config = {
     resolverRpcUrls: {
