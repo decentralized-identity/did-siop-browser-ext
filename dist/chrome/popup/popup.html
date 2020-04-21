@@ -8,26 +8,45 @@
             <h1>SIOP-DID</h1>
 
             <div class="did-wrapper">
-                <h5>Set User DID</h5>
-                DID: <input type="text" id="did">
-                <button id="setDID" style="margin-top: 5px;">Set</button>
+                <p class="param-label">User DID:</p> <input class="param" type="text" id="did">
+                <button id="setDID" style="margin-top: 5px; float: right;">Set</button>
             </div>
 
             <div class="signing-wrapper">
-                <h5>Set Signing Info</h5>
-                Algorithm: <select name="" id="algorithm">
+                <p class="param-label">Algorithm:</p> <select class="param" name="" id="algorithm">
                     <option value="RS256">RS256</option>
                     <option value="ES256K">ES256k</option>
                     <option value="ES256K-R">ES256K-R</option>
                     <option value="EdDSA">EdDSA</option>
                 </select> <br>
-                Kid value: <input type="text" id="kid"> <br>
-                Private Key: <input type="text" id="signing_key"> <br>
-                <button id="setSigningInfo" style="margin-top: 5px;">Set</button>
+                <p class="param-label">Kid value:</p> <input class="param" type="text" id="kid"> <br>
+                <p class="param-label">Private Key:</p> <input class="param" type="text" id="signing_key"> <br>
+                <button id="setSigningInfo" style="margin-top: 5px; float: right;">Set</button>
             </div>
 
             <div class="error-wrapper">
                 <p id="error-view"></p>
+            </div>
+
+            <div class="guides">
+                <p>Guides</p>
+                <ul>
+                    <li>
+                        <p><a href="https://medium.com/publicaio/a-complete-guide-to-using-metamask-updated-version-cd0d6f8c338f">How to get a
+                                DID
+                                using Metamask.</a> A full DID is did:ethr:"metamask address"</p>
+                    </li>
+                    <li>
+                        <p>Algorithm is ES256k-R for metamask (ethereum) accounts</p>
+                    </li>
+                    <li>
+                        <p>Kid value is user_DID + #owner for metamask (etheruem) accounts</p>
+                    </li>
+                    <li>
+                        <a href="https://metamask.zendesk.com/hc/en-us/articles/360015289632-How-to-Export-an-Account-Private-Key">How to
+                            retrieve private key from Metamask</a>
+                    </li>
+                </ul>
             </div>
         </div>
         <script src="popup.bundle.js"></script>

@@ -1,6 +1,7 @@
 const { Resolver } = require('did-resolver');
 const ethr = require('ethr-did-resolver');
 const web = require('web-did-resolver');
+const $ = require('jquery');
 const { resolverRpcUrls } = require('./config');
 
 const ethrResolver = ethr.getResolver({ rpcUrl: resolverRpcUrls.ethr});
@@ -11,8 +12,10 @@ const methodRegistry = {
     ...webResolver
 }
 
-const resolver = function () {
-    return new Resolver(methodRegistry);
+const resolve = async function (did) {
+    let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
+    if (resolverResult.didDocument) return resolverResult.didDocument;
+    throw new Error('Cannot resolve did document');
 }
 
-module.exports = resolver;
+module.exports = { resolve }
