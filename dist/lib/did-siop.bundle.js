@@ -25732,30 +25732,35 @@ arguments[4][84][0].apply(exports,arguments)
 arguments[4][85][0].apply(exports,arguments)
 },{"bn.js":175,"dup":85,"minimalistic-assert":249,"minimalistic-crypto-utils":250}],200:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic",
+  "_args": [
+    [
+      "elliptic@6.5.2",
+      "F:\\temp\\GitHub\\did-siop-chrome-ext"
+    ]
+  ],
+  "_from": "elliptic@6.5.2",
   "_id": "elliptic@6.5.2",
   "_inBundle": false,
   "_integrity": "sha512-f4x70okzZbIQl/NSRLkI/+tteV/9WqL98zx+SQ69KbXxmVrmjwsNUPn/gYJJ0sHvEak24cZgHIPegRePAtA/xw==",
   "_location": "/elliptic",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
+    "type": "version",
     "registry": true,
-    "raw": "elliptic",
+    "raw": "elliptic@6.5.2",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "",
+    "rawSpec": "6.5.2",
     "saveSpec": null,
-    "fetchSpec": "latest"
+    "fetchSpec": "6.5.2"
   },
   "_requiredBy": [
-    "#USER",
-    "/"
+    "/",
+    "/secp256k1"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.2.tgz",
-  "_shasum": "05c5678d7173c049d8ca433552224a495d0e3762",
-  "_spec": "elliptic",
-  "_where": "F:\\temp\\GitHub\\did-siop",
+  "_spec": "6.5.2",
+  "_where": "F:\\temp\\GitHub\\did-siop-chrome-ext",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -25763,7 +25768,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -25773,7 +25777,6 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
-  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -49346,6 +49349,7 @@ module.exports = {
 const { Resolver } = require('did-resolver');
 const ethr = require('ethr-did-resolver');
 const web = require('web-did-resolver');
+const $ = require('jquery');
 const { resolverRpcUrls } = require('./config');
 
 const ethrResolver = ethr.getResolver({ rpcUrl: resolverRpcUrls.ethr});
@@ -49356,12 +49360,14 @@ const methodRegistry = {
     ...webResolver
 }
 
-const resolver = function () {
-    return new Resolver(methodRegistry);
+const resolve = async function (did) {
+    let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
+    if (resolverResult.didDocument) return resolverResult.didDocument;
+    throw new Error('Cannot resolve did document');
 }
 
-module.exports = resolver;
-},{"./config":294,"did-resolver":182,"ethr-did-resolver":221,"web-did-resolver":292}],300:[function(require,module,exports){
+module.exports = { resolve }
+},{"./config":294,"did-resolver":182,"ethr-did-resolver":221,"jquery":239,"web-did-resolver":292}],300:[function(require,module,exports){
 //OAuth 2.0
 const invalid_request = {
     err: new Error('invalid_request'),
@@ -49689,7 +49695,7 @@ module.exports = {
 }
 },{"./jwk":296,"./jwt":297,"./util":302,"ethereum-private-key-to-public-key":202}],302:[function(require,module,exports){
 const ethereumAddress = require('ethereum-checksum-address');
-const resolver = require('./resolver')();
+const resolver = require('./resolver');
 const $ = require('jquery');
 
 const getPublicKeyFromDifferentTypes = function (key) {
