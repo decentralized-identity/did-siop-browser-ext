@@ -35,8 +35,21 @@ Note: _Please note, the current version of SIOP DID available only as a Chrome E
 
 ## Current Status ##
 ### Features Implemented ###
+* Generate SIOP request using client library
+  * Supports both request and request_uri query parameters
+  * Request JWT signing supports RS256, ES256K, ES256K-R, EdDSA algorithms.
+* Capture, verify and validate SIOP request using chrome extension.
+  * Extension uses either authentication section from RP DID Document or jwks/jwks_uri from registration (rp meta data) section in request JWT to verify the request JWT.
+* Get End User confirmation.
+* Generate and send SIOP id_token response based on End User DID using chrome extension.
+  * id_token is returned as a URL fragment (hash parameter) to the redirect_uri via the user agent (browser).
+* Verify id_token using client library.
+  * Library uses either authentication section of End User DID document or sub_jwk in the id_token to verify the id_token.
+* Set End User DID and id token signing parameters in the extension.
 
 ### Features NOT Implemented ###
+* id_token encryption.
+* Handling optional request parameters.
 
 ## Development Roadmap ##
 - Implement features marked as OPTIONAL in the [DID-SIOP Spec](https://identity.foundation/did-siop/)
