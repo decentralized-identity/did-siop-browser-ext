@@ -8,19 +8,21 @@
             <h1>SIOP-DID</h1>
 
             <div class="did-wrapper">
-                <p class="param-label">User DID:</p> <input class="param" type="text" id="did">
+                <div class="param"><p class="param-label">User DID:</p> <input class="param-value" type="text" id="did"></div>
                 <button id="setDID" style="margin-top: 5px; float: right;">Set</button>
             </div>
 
             <div class="signing-wrapper">
-                <p class="param-label">Algorithm:</p> <select class="param" name="" id="algorithm">
-                    <option value="RS256">RS256</option>
-                    <option value="ES256K">ES256k</option>
-                    <option value="ES256K-R">ES256K-R</option>
-                    <option value="EdDSA">EdDSA</option>
-                </select> <br>
-                <p class="param-label">Kid value:</p> <input class="param" type="text" id="kid"> <br>
-                <p class="param-label">Private Key:</p> <input class="param" type="text" id="signing_key"> <br>
+                <div class="param">
+                    <p class="param-label">Algorithm:</p> <select class="param-value" name="" id="algorithm">
+                        <option value="RS256">RS256</option>
+                        <option value="ES256K">ES256k</option>
+                        <option value="ES256K-R">ES256K-R</option>
+                        <option value="EdDSA">EdDSA</option>
+                    </select> <br>
+                </div>
+                <div class="param"><p class="param-label">Kid value:</p> <input class="param-value" type="text" id="kid"> <br></div>
+                <div class="param"><p class="param-label">Private Key:</p> <input class="param-value" type="text" id="signing_key"> <br></div>
                 <button id="setSigningInfo" style="margin-top: 5px; float: right;">Set</button>
             </div>
 
@@ -34,7 +36,7 @@
                     <li>
                         <p><a href="https://medium.com/publicaio/a-complete-guide-to-using-metamask-updated-version-cd0d6f8c338f">How to get a
                                 DID
-                                using Metamask.</a> A full DID is did:ethr:"metamask address"</p>
+                                using Metamask.</a> A full DID is did:ethr: + metamask address</p>
                     </li>
                     <li>
                         <p>Algorithm is ES256k-R for metamask (ethereum) accounts</p>

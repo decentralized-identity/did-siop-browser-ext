@@ -1,5 +1,5 @@
 .main{
-    width: 250px;
+    width: 500px;
     height: 525px;
     margin: auto;
 }
@@ -31,8 +31,13 @@ input, select{
     width: 62px;
 }
 
+.param-value{
+    flex-grow: 4;
+}
+
 .param{
-    width: 72%;
+    display: flex;
+
 }
 
 .guides{
