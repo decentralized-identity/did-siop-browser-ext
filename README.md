@@ -17,8 +17,8 @@ Even though the OIDC specifications have defined protocols to to be independent 
 
 ### Protocol Flow ###
 * User click on a button on RP Application to login to RP using SIOP DID
-* This initiate a redirection to SIOP DID (in this case the browser extension) (_openid://<SIOP Request>_)
-* The SIOP generate a response _<SIOP Response>_ based on the DID Method it supports. This response is signed using 'ES256K-R' (optional Encryption capabilities will be introduced later)
+* This initiate a redirection to SIOP DID (in this case the browser extension) (_*openid://<SIOP Request>*_)
+* The SIOP generate a response _*<SIOP Response>*_ based on the DID Method it supports. This response is signed using 'ES256K-R' (optional Encryption capabilities will be introduced later)
 
 
 ## See in Action ##
@@ -38,7 +38,11 @@ Note: _Please note, the current version of SIOP DID available only as a Chrome E
 
 ### Features NOT Implemented ###
 
-### Development Roadmap ###
+## Development Roadmap ##
+- Implement features marked as OPTIONAL in the [DID-SIOP Spec](https://identity.foundation/did-siop/)
+- Convert DID-SIOP core functionality to a npm package
+- Build ReactNative iOS app
+- Build ReactNative Android app
 
 # How to test
 * Load ***dist>chrome*** folder into chrome extensions using developer mode
