@@ -54,8 +54,8 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 ## Development Roadmap ##
 - Implement features marked as OPTIONAL in the [DID-SIOP Spec](https://identity.foundation/did-siop/)
 - Convert DID-SIOP core functionality to a npm package
-- Build ReactNative iOS app
-- Build ReactNative Android app
+- Build an iOS app
+- Build an Android app
 
 ## How to integrate did-siop login to a client apps ##
 * Use ***did-siop relying party library*** from ***https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js*** to communicate with the Chrome extension.
