@@ -13,8 +13,12 @@ const methodRegistry = {
 }
 
 const resolve = async function (did) {
-    let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
-    if (resolverResult.didDocument) return resolverResult.didDocument;
+    try {
+        let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
+        if (resolverResult.didDocument) return resolverResult.didDocument;
+    } catch (err) {
+        throw new Error('Cannot resolve did document');
+    }
     throw new Error('Cannot resolve did document');
 }
 

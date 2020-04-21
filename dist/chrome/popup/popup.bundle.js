@@ -42920,6 +42920,9 @@ const setME = async function () {
         if (validateDidDoc(did, doc)) {
             localStorage.setItem('did_siop_user_did', did);
             localStorage.setItem('did_siop_user_did_doc', JSON.stringify(doc));
+            localStorage.removeItem('did_siop_singing_info');
+            document.getElementById('kid').value = '';
+            document.getElementById('signing_key').value = '';
             document.getElementById('error-view').innerHTML = '';
         } else {
             document.getElementById('error-view').innerHTML = 'Invalid DID and DID Document';
@@ -43253,8 +43256,12 @@ const methodRegistry = {
 }
 
 const resolve = async function (did) {
-    let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
-    if (resolverResult.didDocument) return resolverResult.didDocument;
+    try {
+        let resolverResult = await $.get('https://uniresolver.io/1.0/identifiers/' + did);
+        if (resolverResult.didDocument) return resolverResult.didDocument;
+    } catch (err) {
+        throw new Error('Cannot resolve did document');
+    }
     throw new Error('Cannot resolve did document');
 }
 

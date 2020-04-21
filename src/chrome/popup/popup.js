@@ -42,6 +42,9 @@ const setME = async function () {
         if (validateDidDoc(did, doc)) {
             localStorage.setItem('did_siop_user_did', did);
             localStorage.setItem('did_siop_user_did_doc', JSON.stringify(doc));
+            localStorage.removeItem('did_siop_singing_info');
+            document.getElementById('kid').value = '';
+            document.getElementById('signing_key').value = '';
             document.getElementById('error-view').innerHTML = '';
         } else {
             document.getElementById('error-view').innerHTML = 'Invalid DID and DID Document';
