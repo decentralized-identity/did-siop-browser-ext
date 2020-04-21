@@ -26,14 +26,19 @@ Follow steps below to see the SIOP in action.
 Note: _Please note, the current version of SIOP DID available only as a Chrome Extension and tested on  Version 80.0.3987.163_
 
 - Download the Chrome Extension from [this link](https://drive.google.com/file/d/1H6lrjISG3WxxYtwXA1FSowB9Q1lojOJU/view?usp=sharing)
-- Manually install the downloaded extension to your browser [steps to follow](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/). With successful installation you will see a extension icon with a D letter in it.
-- Click on the D icon to see the default settings used for testing. Just use defaults to test the app or create/ use your own Decentralised Identity (DID) to test the app.
-- Browse into sample Relying Party website via [this link](https://did-siop-rp-test.herokuapp.com/)
-- Click on "DID SIOP Login" button to start the authentication process
+- Manually install the downloaded extension to your browser ([steps to follow](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)). With successful installation you will see a extension icon with a D letter in it.
+- Click on the D icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
+- Browse into sample Relying Party app [https://did-siop-rp-test.herokuapp.com](https://did-siop-rp-test.herokuapp.com/)
+- Click on "DID SIOP Login" button to start the authorization process
 - You will navigate to a new tab and it will prompt for the confirmation to Sign in using DID-SIOP.
 - Upon acceptance you will navigate to the secure area of the app and you will see the DID used for the authorization.
 
+## Current Status ##
+### Features Implemented ###
 
+### Features NOT Implemented ###
+
+### Development Roadmap ###
 
 # How to test
 * Load ***dist>chrome*** folder into chrome extensions using developer mode
