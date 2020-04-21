@@ -22,7 +22,7 @@ Even though the OIDC specifications have defined protocols to to be independent 
 
 
 ## See in Action ##
-Follow steps below to see the DID-SIOP in action.
+Follow the steps below to see the DID-SIOP in action.
 Note: _Please note, the current version of DID-SIOP available only as a Chrome Extension and tested on  Version 80.0.3987.163_
 
 - Download the Chrome Extension from [this link](https://drive.google.com/file/d/1JdUYNxjan7pE_W4qB4dUHZdCuG1_056s/view?usp=sharing)
@@ -57,7 +57,7 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 - Build ReactNative iOS app
 - Build ReactNative Android app
 
-## How to integrate did-siop login in client web apps ##
+## How to integrate did-siop login to a client apps ##
 * Use ***did-siop relying party library*** from ***https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js*** to communicate with the Chrome extension.
   * Include the library in any html page using script tag.
   * Create new instance using ***const siop_rp = new DID_SIOP.RP()***.
