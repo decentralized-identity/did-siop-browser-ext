@@ -1,3 +1,4 @@
+require("@babel/polyfill");
 const { generateRequest } = require('./request');
 const { validateResponse } = require('./response');
 
