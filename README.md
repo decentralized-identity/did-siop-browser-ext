@@ -25,7 +25,7 @@ Even though the OIDC specifications have defined protocols to to be independent 
 Follow steps below to see the SIOP in action.
 Note: _Please note, the current version of SIOP DID available only as a Chrome Extension and tested on  Version 80.0.3987.163_
 
-- Download the Chrome Extension from [this link](https://drive.google.com/file/d/1H6lrjISG3WxxYtwXA1FSowB9Q1lojOJU/view?usp=sharing)
+- Download the Chrome Extension from [this link](https://drive.google.com/file/d/1JdUYNxjan7pE_W4qB4dUHZdCuG1_056s/view?usp=sharing)
 - Manually install the downloaded extension to your browser ([steps to follow](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)). With successful installation you will see a extension icon with a D letter in it.
 - Click on the D icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
 - Browse into sample Relying Party app [https://did-siop-rp-test.herokuapp.com](https://did-siop-rp-test.herokuapp.com/)
