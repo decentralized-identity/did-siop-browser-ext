@@ -71,8 +71,9 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
   * To validate, capture the response fragment in the callback page and use ***siop_rp.validateResponse(response).then(decodedJWT => {}).catch(err => {})*** to validate the response.
 
 
-## Code snippets
-### index.html
+### Code snippets
+#### index.html
+Public page where user could request to login to the relying party app
 ```html
 <button id="did-siop-login" onclick="login()">DID SIOP Login</button>
 <button id="did-siop-login" onclick="loginWithError()">DID SIOP Login with error</button>
@@ -80,7 +81,7 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 <script src="https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js"></script>
 <script>
 	const siop_rp = new DID_SIOP.RP();
-	
+
 	siop_rp.initialize(
 		'localhost:8080/home.html', // RP redirect uri
 		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',// RP DID
@@ -89,19 +90,19 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
             "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
 		} // RP meta data
 	);
-	
+
 	siop_rp.setSigningParams(
 		'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964', //RP private key
 		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',// RP public key uri for kid
 		'ES256K-R'// Algorithm
 	);
-	
+
 	async function login(){
 		let request = await siop_rp.generateRequest();
 		let url = new URL(request);
 		window.open(url);
 	}
-	
+
 	async function loginWithError(){
 		let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
 		let url = new URL(request);
@@ -110,24 +111,25 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 </script>
 
 ```
-### home.html
+#### home.html
+User has been authenticated and authorised to access the restricted area of the application.
 ```html
 <p id='responseView'></p>
 
 <script src="https://res.cloudinary.com/sanlw/raw/upload/v1587449606/did-siop/did-siop.bundle.compiled.minified_b1piyh.js"></script>
 <script>
-	
+
 	let response = window.location.href.split('#')[1];
-	
+
 	const siop_rp = new DID_SIOP.RP();
-	
+
 	siop_rp.validateResponse(response).then(function(decoded){
 		document.getElementById('responseView').innerHTML = JSON.stringify(decoded);
 	})
 	.catch(function(err){
 		document.getElementById('responseView').innerHTML = JSON.stringify(err);
 	});
-	
+
 </script>
 
 ```
