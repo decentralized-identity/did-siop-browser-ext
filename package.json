@@ -29,7 +29,7 @@
     "ethereum-private-key-to-public-key": "0.0.3",
     "ethereum-public-key-to-address": "0.0.2",
     "ethr-did-resolver": "^2.2.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "jwa": "^2.0.0",
     "node-rsa": "^1.0.8",
     "query-string": "^6.12.0",
