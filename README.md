@@ -19,6 +19,7 @@ Even though the OIDC specifications have defined protocols to to be independent 
 * User click on a button on RP Application to login to RP using DID SIOP
 * This initiate a redirection to DID SIOP (in this case the browser extension) (_openid://<SIOP Request>_)
 * The DID SIOP generate a response _*<SIOP Response>*_ based on the DID Method it supports. This response is signed using 'ES256K-R' (optional Encryption capabilities will be introduced later)
+* RP receives an id_token 
 
 
 ## See in Action ##
