@@ -59,7 +59,7 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 - Build an Android app
 
 ## How to integrate ##
-You could find a working solution with minimum dependencies [here](https://github.com/RadicalLedger/did-siop-rp-web-min).
+
 ### Steps
 * Use ***did-siop relying party library*** from ***https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js*** to communicate with the Chrome extension.
   * Include the library in any html page using script tag.
@@ -136,3 +136,4 @@ User has been authenticated and authorised to access the restricted area of the 
 </script>
 
 ```
+You could find a working solution with minimum dependencies which could run on your local machine [here](https://github.com/RadicalLedger/did-siop-rp-web-min).
