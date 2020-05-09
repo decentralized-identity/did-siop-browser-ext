@@ -58,7 +58,9 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 - Build an iOS app
 - Build an Android app
 
-## How to integrate did-siop login to a client apps ##
+## How to integrate ##
+You could find a working solution with minimum dependencies [here](https://github.com/RadicalLedger/did-siop-rp-web-min).
+### Steps
 * Use ***did-siop relying party library*** from ***https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js*** to communicate with the Chrome extension.
   * Include the library in any html page using script tag.
   * Create new instance using ***const siop_rp = new DID_SIOP.RP()***.
