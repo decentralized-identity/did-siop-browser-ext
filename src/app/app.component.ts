@@ -10,19 +10,19 @@ export class AppComponent {
   title = 'did-siop-ext';
   currentDID: string;
   provider: Provider;
-  signingInfoSet: any[] = [];
+  signingInfoSet: any[];
   @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
 
   constructor(){
     this.provider = new Provider();
-    let did = localStorage.getItem('did-siop-user-did');
-    if(did){
-      this.provider.setUser(did);
-      this.currentDID = did;
-      let keys = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
-      if(keys){
-        this.signingInfoSet = keys;
-      }
+    this.currentDID = localStorage.getItem('did_siop_user_did');
+    this.signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
+    if(this.currentDID && this.signingInfoSet && this.signingInfoSet.length){
+      this.provider.setUser(this.currentDID).then(() => {
+        this.signingInfoSet.forEach(signingInfo => {
+          this.provider.addSigningParams(signingInfo.key, signingInfo.kid, signingInfo.format, signingInfo.alg);
+        });
+      });
     }
     else{
       this.currentDID = 'No DID provided';
@@ -38,7 +38,7 @@ export class AppComponent {
           let provider = new Provider();
           await provider.setUser(did);
           this.provider = provider;
-          localStorage.setItem('did-siop-user-did', did);
+          localStorage.setItem('did_siop_user_did', did);
           localStorage.removeItem('did_siop_singing_info_set');
           this.signingInfoSet = [];
           this.currentDID = did;
