@@ -26,6 +26,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
+            "vendorChunk": false,
             "assets": [
               "src/favicon.ico",
               "src/assets",
