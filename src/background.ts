@@ -1,6 +1,7 @@
 /// <reference types="chrome"/>
 
-import { Provider } from 'did-siop';
+import { Provider, ERROR_RESPONSES} from 'did-siop';
+import * as queryString from 'query-string';
 
 let provider: Provider;
 
@@ -36,11 +37,27 @@ chrome.tabs.onCreated.addListener(async function(){
                         })
                     })
                     .catch(err => {
-                        alert(err.message);
+                        let uri = queryString.parseUrl(request).query.client_id;
+                        if (uri) {
+                            uri = uri + '#' + provider.generateErrorResponse(err.message);
+                            chrome.tabs.update(tabs[0].id, {
+                                url: uri,
+                            });
+                        } else {
+                            alert('Error: invalid redirect url');
+                        }
                     });
                 }
                 else{
-                    console.log('no siop');
+                    let uri = queryString.parseUrl(request).query.client_id;
+                    if (uri) {
+                        uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
+                        chrome.tabs.update(tabs[0].id, {
+                            url: uri,
+                        });
+                    } else {
+                        alert('Error: invalid redirect url');
+                    }
                 }
             }
             catch(err){
