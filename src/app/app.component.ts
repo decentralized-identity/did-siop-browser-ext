@@ -1,5 +1,11 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Provider } from 'did-siop';
+
+enum TASKS{
+  CHANGE_DID,
+  ADD_KEY,
+  REMOVE_KEY,
+}
 
 @Component({
   selector: 'app-root',
@@ -9,82 +15,93 @@ import { Provider } from 'did-siop';
 export class AppComponent {
   title = 'did-siop-ext';
   currentDID: string;
-  provider: Provider;
-  signingInfoSet: any[];
-  @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
+  signingInfoSet: any[] = [];
 
-  constructor(){
-    this.provider = new Provider();
-    this.currentDID = localStorage.getItem('did_siop_user_did');
-    this.signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
-    if(this.currentDID && this.signingInfoSet && this.signingInfoSet.length){
-      this.provider.setUser(this.currentDID).then(() => {
-        this.signingInfoSet.forEach(signingInfo => {
-          this.provider.addSigningParams(signingInfo.key, signingInfo.kid, signingInfo.format, signingInfo.alg);
-        });
-      });
+  @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
+  @ViewChild('newKeyString') newKeyString: ElementRef;
+  @ViewChild('newKeyKID') newKeyKID: ElementRef;
+
+  constructor(private changeDetector: ChangeDetectorRef){
+    let did = localStorage.getItem('did_siop_user_did');
+    let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
+    if(did){
+      this.currentDID = did;
+      this.signingInfoSet = signingInfoSet;
     }
     else{
       this.currentDID = 'No DID provided';
     }
   }
 
-
   async changeDID(){
-    try{
-      if(confirm('Are you sure you want to change identity? This will remove all related data and keys.')){
-        let did = prompt('Enter new DID');
-        if(did){
-          let provider = new Provider();
-          await provider.setUser(did);
-          this.provider = provider;
-          localStorage.setItem('did_siop_user_did', did);
-          localStorage.removeItem('did_siop_singing_info_set');
-          this.signingInfoSet = [];
-          this.currentDID = did;
-          alert('Identity changed successfully');
+    let did = prompt('Enter new DID');
+    if(did){
+      chrome.runtime.sendMessage({
+        task: TASKS.CHANGE_DID,
+        did: did,
+        }, 
+        (response) =>{
+          if(response.result){
+            alert(response.result);
+            this.currentDID = did;
+            this.signingInfoSet = [];
+            this.changeDetector.detectChanges();
+          }
+          else{
+            alert(response.err);
+          }
         }
-      }
-    }
-    catch(err){
-      alert(err.message);
+      );
     }
   }
 
   addNewKey(keyString: string, kid: string, format: string, algorithm: string){
-    try{
-      this.provider.addSigningParams(keyString, kid, format, algorithm);
-      this.signingInfoSet.push({
-        alg: algorithm,
-        kid: kid,
-        key: keyString,
-        format: format,
-      });
-      localStorage.setItem('did_siop_singing_info_set', JSON.stringify(this.signingInfoSet));
-      alert('New key added successfully');
-      this.addNewModalClose.nativeElement.click();
-    }
-    catch(err){
-      alert(err.message);
+    let keyInfo = {
+      alg: algorithm,
+      kid: kid,
+      key: keyString,
+      format: format,
     }
 
+    chrome.runtime.sendMessage({
+      task: TASKS.ADD_KEY,
+      keyInfo: keyInfo,
+      }, 
+      (response) =>{
+        if(response.result){
+          alert(response.result);
+          this.signingInfoSet.push(keyInfo);
+          this.addNewModalClose.nativeElement.click();
+          this.newKeyString.nativeElement.value = '';
+          this.newKeyKID.nativeElement.value = '';
+          this.changeDetector.detectChanges();
+        }
+        else{
+          alert(response.err);
+        }
+      }
+    );
   }
 
   removeKey(kid: string){
-    try{
-      if(confirm('You are about to remove a key.')){
-        if(confirm('Are you sure?')){
-          this.provider.removeSigningParams(kid);
-          this.signingInfoSet = this.signingInfoSet.filter(key => {
-            return key.kid !== kid;
-          })
-          localStorage.setItem('did_siop_singing_info_set', JSON.stringify(this.signingInfoSet));
-          alert('Key removed successfully');
+    if(confirm('You are about to remove a key. Are you sure?')){
+      chrome.runtime.sendMessage({
+        task: TASKS.REMOVE_KEY,
+        kid: kid,
+        }, 
+        (response) =>{
+          if(response.result){
+            alert(response.result);
+            this.signingInfoSet = this.signingInfoSet.filter(key => {
+              return key.kid !== kid;
+            });
+            this.changeDetector.detectChanges();
+          }
+          else{
+            alert(response.err);
+          }
         }
-      }
-    }
-    catch(err){
-      alert(err.message);
+      );
     }
   }
 }
