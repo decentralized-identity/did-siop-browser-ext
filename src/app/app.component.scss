@@ -1,3 +1,7 @@
+.main{
+    width: 440px;
+}
+
 .title-description{
     margin-bottom: 50px;
 }
@@ -9,7 +13,7 @@
 .signing-keys{
     .card-header{
         h5{
-            min-width: 525px;
+            min-width: 350px;
         }
     }
 
@@ -22,4 +26,8 @@
 
 .input-group-text{
     width: 100px;
+}
+
+.guides{
+    width: 350px;
 }
