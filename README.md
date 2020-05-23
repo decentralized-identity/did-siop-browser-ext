@@ -26,7 +26,7 @@ Even though the OIDC specifications have defined protocols to to be independent 
 Follow the steps below to see the DID-SIOP in action.
 Note: _Please note, the current version of DID-SIOP available only as a Chrome Extension and tested on  Version 80.0.3987.163_
 
-- Download the Chrome Extension from [this link](https://drive.google.com/file/d/1JdUYNxjan7pE_W4qB4dUHZdCuG1_056s/view?usp=sharing)
+- Download the Chrome Extension from [this link](https://drive.google.com/file/d/1zjv_Gvr2DxtjCQIacA60Gvtoi2iYIBCs/view?usp=sharing)
 - Manually install the downloaded extension to your browser ([steps to follow](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)). With successful installation you will see a extension icon with a D letter in it.
 - Click on the D icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
 - Browse into sample Relying Party app [https://did-siop-rp-test.herokuapp.com](https://did-siop-rp-test.herokuapp.com/)
@@ -38,7 +38,7 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 ### Features Implemented ###
 * Generate SIOP request using client library
   * Supports both request and request_uri query parameters
-  * Request JWT signing supports RS256, ES256K, ES256K-R, EdDSA algorithms.
+  * Request JWT signing supports RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512, ES256K, ES256K-R, EdDSA algorithms.
 * Capture, verify and validate SIOP request using chrome extension.
   * Extension uses either authentication section from RP DID Document or jwks/jwks_uri from registration (rp meta data) section in request JWT to verify the request JWT.
 * Get End User confirmation.
@@ -61,12 +61,12 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 ## How to integrate ##
 
 ### Steps
-* Use ***did-siop relying party library*** from ***https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js*** to communicate with the Chrome extension.
-  * Include the library in any html page using script tag.
-  * Create new instance using ***const siop_rp = new DID_SIOP.RP()***.
-  * Initialize ***siop_rp.initialize(rp_redirect_uri, rp_did, rp_meta_data_object)***.
-  * Set signing parameters ***siop_rp.setSigningParams(rp_private_key, rp_public_key_uri, algorithm)***.
-    * Algorithms supported : RS256, ES256K, ES256K-R, EdDSA
+* Use ***did-siop relying party library*** from ***https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js*** or via npm ***https://www.npmjs.com/package/did-siop*** to communicate with the Chrome extension.
+  * Include the library in any html page using script tag or in any Node.js based web project via npm.
+  * Create new instance using ***const siop_rp = new DID_SIOP.RP.getRP(rp_redirect_uri, rp_did, rp_meta_data_object)***.
+  * Set signing parameters ***siop_rp.addSigningParams(rp_private_key, rp_public_key_id, key_format, algorithm)***.
+    * Algorithms supported : RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512, ES256K, ES256K-R, EdDSA
+    * Key Formats : PKCS8_PEM, PKCS1_PEM, HEX, BASE58, BASE64
   * Create request ***siop_rp.generateRequest().then(request => {}).catch(err => {})***.
   * Note: Since Chrome does not load urls with custom protocols in ***window.location.href***, the request needed to be loaded using ***window.open(new URL(request))***.
   * When the request is loaded to new tab, the extension will capture it and asks for user confirmation.
@@ -81,36 +81,35 @@ Public page where user could request to login to the relying party app
 <button id="did-siop-login" onclick="login()">DID SIOP Login</button>
 <button id="did-siop-login" onclick="loginWithError()">DID SIOP Login with error</button>
 
-<script src="https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>
 <script>
-	const siop_rp = new DID_SIOP.RP();
+  const rp = await DID_SIOP.RP.getRP(
+    'localhost:8080/home.html', // RP's redirect_uri
+    'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83', // RP's did
+    {
+      "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+      "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
+    } // RP's registration meta data
+  );
+			
+  rp.addSigningParams(
+    'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964', // Private key
+    'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
+    DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied.
+    DID_SIOP.ALGORITHMS['ES256K-R'] //Algorithm.
+  );
+  
+  async function login(){
+    let request = await siop_rp.generateRequest();
+    let url = new URL(request);
+    window.open(url);
+  }
 
-	siop_rp.initialize(
-		'localhost:8080/home.html', // RP redirect uri
-		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',// RP DID
-		{
-			"jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
-            "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
-		} // RP meta data
-	);
-
-	siop_rp.setSigningParams(
-		'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964', //RP private key
-		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',// RP public key uri for kid
-		'ES256K-R'// Algorithm
-	);
-
-	async function login(){
-		let request = await siop_rp.generateRequest();
-		let url = new URL(request);
-		window.open(url);
-	}
-
-	async function loginWithError(){
-		let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
-		let url = new URL(request);
-		window.open(url);
-	}
+  async function loginWithError(){
+    let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
+    let url = new URL(request);
+    window.open(url);
+  }
 </script>
 
 ```
@@ -119,19 +118,25 @@ User has been authenticated and authorised to access the restricted area of the 
 ```html
 <p id='responseView'></p>
 
-<script src="https://res.cloudinary.com/sanlw/raw/upload/v1587449606/did-siop/did-siop.bundle.compiled.minified_b1piyh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>
 <script>
-
-	let response = window.location.href.split('#')[1];
-
-	const siop_rp = new DID_SIOP.RP();
-
-	siop_rp.validateResponse(response).then(function(decoded){
-		document.getElementById('responseView').innerHTML = JSON.stringify(decoded);
-	})
-	.catch(function(err){
-		document.getElementById('responseView').innerHTML = JSON.stringify(err);
-	});
+  let response = window.location.href.split('#')[1];
+  
+  const rp = await DID_SIOP.RP.getRP(
+    'localhost:8080/home.html', // RP's redirect_uri
+    'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83', // RP's did
+    {
+      "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+      "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
+    } // RP's registration meta data
+  );
+  
+  siop_rp.validateResponse(response).then(function(decoded){
+    document.getElementById('responseView').innerHTML = JSON.stringify(decoded);
+  })
+  .catch(function(err){
+    document.getElementById('responseView').innerHTML = JSON.stringify(err);
+  });
 
 </script>
 
