@@ -1,10 +1,12 @@
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { Provider } from 'did-siop';
+/// <reference types="chrome"/>
+/// <reference types="firefox-webext-browser"/>
 
 enum TASKS{
   CHANGE_DID,
   ADD_KEY,
   REMOVE_KEY,
+  PROCESS_REQUEST,
 }
 
 @Component({
@@ -16,12 +18,22 @@ export class AppComponent {
   title = 'did-siop-ext';
   currentDID: string;
   signingInfoSet: any[] = [];
+  env: any;
 
   @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
   @ViewChild('newKeyKID') newKeyKID: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef){
+    if(chrome){
+      this.env = chrome;
+    }
+    else if(browser){
+        this.env = browser;
+    }
+    else{
+        console.log('DID-SIOP ERROR: No runtime detected');
+    }
     let did = localStorage.getItem('did_siop_user_did');
     let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
     if(did){
@@ -36,7 +48,7 @@ export class AppComponent {
   async changeDID(){
     let did = prompt('Enter new DID');
     if(did){
-      chrome.runtime.sendMessage({
+      env.runtime.sendMessage({
         task: TASKS.CHANGE_DID,
         did: did,
         }, 
@@ -63,7 +75,7 @@ export class AppComponent {
       format: format,
     }
 
-    chrome.runtime.sendMessage({
+    env.runtime.sendMessage({
       task: TASKS.ADD_KEY,
       keyInfo: keyInfo,
       }, 
@@ -85,7 +97,7 @@ export class AppComponent {
 
   removeKey(kid: string){
     if(confirm('You are about to remove a key. Are you sure?')){
-      chrome.runtime.sendMessage({
+      env.runtime.sendMessage({
         task: TASKS.REMOVE_KEY,
         kid: kid,
         }, 
