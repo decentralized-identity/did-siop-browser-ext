@@ -20,7 +20,7 @@
             "customWebpackConfig": {
               "path": "./custom-webpack.config.js"
             },
-            "outputPath": "dist/chrome",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,7 +50,7 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "all",
+              "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
