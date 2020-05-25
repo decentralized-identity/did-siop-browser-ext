@@ -51,8 +51,6 @@ const checkSigning = async function(){
     }
 }
 
-checkSigning();
-
 env.runtime.onInstalled.addListener( async function(){
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
     let signingInfoSet = [
@@ -65,6 +63,7 @@ env.runtime.onInstalled.addListener( async function(){
     ];
     localStorage.setItem('did_siop_user_did', did);
     localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+    checkSigning();
 });
 
 env.runtime.onMessage.addListener(function(request, sender, sendResponse) {
