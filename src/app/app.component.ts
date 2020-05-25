@@ -34,6 +34,7 @@ export class AppComponent {
     else{
         console.log('DID-SIOP ERROR: No runtime detected');
     }
+
     let did = localStorage.getItem('did_siop_user_did');
     let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
     if(did){
@@ -48,7 +49,7 @@ export class AppComponent {
   async changeDID(){
     let did = prompt('Enter new DID');
     if(did){
-      env.runtime.sendMessage({
+      this.env.runtime.sendMessage({
         task: TASKS.CHANGE_DID,
         did: did,
         }, 
@@ -75,7 +76,7 @@ export class AppComponent {
       format: format,
     }
 
-    env.runtime.sendMessage({
+    this.env.runtime.sendMessage({
       task: TASKS.ADD_KEY,
       keyInfo: keyInfo,
       }, 
@@ -97,7 +98,7 @@ export class AppComponent {
 
   removeKey(kid: string){
     if(confirm('You are about to remove a key. Are you sure?')){
-      env.runtime.sendMessage({
+      this.env.runtime.sendMessage({
         task: TASKS.REMOVE_KEY,
         kid: kid,
         }, 
