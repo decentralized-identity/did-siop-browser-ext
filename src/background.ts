@@ -1,14 +1,29 @@
 /// <reference types="chrome"/>
+/// <reference types="firefox-webext-browser"/>
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
+
 enum TASKS{
     CHANGE_DID,
     ADD_KEY,
     REMOVE_KEY,
+    PROCESS_REQUEST,
+}
+
+let env: any;
+
+if(chrome){
+    env = chrome;
+}
+else if(browser){
+    env = browser;
+}
+else{
+    console.log('DID-SIOP ERROR: No runtime detected');
 }
 
 const checkSigning = async function(){
@@ -36,9 +51,9 @@ const checkSigning = async function(){
     }
 }
 
-checkSigning().then();
+checkSigning();
 
-chrome.runtime.onInstalled.addListener( async function(){
+env.runtime.onInstalled.addListener( async function(){
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
     let signingInfoSet = [
         {
@@ -52,57 +67,7 @@ chrome.runtime.onInstalled.addListener( async function(){
     localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
 });
 
-chrome.tabs.onCreated.addListener(async function(){
-    chrome.tabs.query({ active: true, lastFocusedWindow: true}, async (tabs) => {
-        let request = tabs[0].pendingUrl;
-        if (request.split('://')[0] === 'openid') {
-            try{
-                await checkSigning();
-                if (confirm('Sign in using did-siop?')){
-                    provider.validateRequest(request).then(decodedRequest => {
-                        provider.generateResponse(decodedRequest.payload).then(response => {
-                            let uri = decodedRequest.payload.client_id + '#' + response;
-                            chrome.tabs.update(tabs[0].id, {
-                                url: uri,
-                            });
-                            console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                        })
-                        .catch(err => {
-                            alert(err.message);
-                        })
-                    })
-                    .catch(err => {
-                        let uri = queryString.parseUrl(request).query.client_id;
-                        if (uri) {
-                            uri = uri + '#' + provider.generateErrorResponse(err.message);
-                            chrome.tabs.update(tabs[0].id, {
-                                url: uri,
-                            });
-                        } else {
-                            alert('Error: invalid redirect url');
-                        }
-                    });
-                }
-                else{
-                    let uri = queryString.parseUrl(request).query.client_id;
-                    if (uri) {
-                        uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
-                        chrome.tabs.update(tabs[0].id, {
-                            url: uri,
-                        });
-                    } else {
-                        alert('Error: invalid redirect url');
-                    }
-                }
-            }
-            catch(err){
-                alert(err.message);
-            }
-        }
-    });
-});
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+env.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(!sender.tab){
         switch(request.task){
             case TASKS.CHANGE_DID: {
@@ -134,6 +99,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({err: err. message});
                 });
                 break;
+            }
+        }
+    }
+    else{
+        switch(request.task){
+            case TASKS.PROCESS_REQUEST: {
+                processRequest(request.openid);
             }
         }
     }
@@ -183,5 +155,52 @@ const removeKey = async function(kid: string): Promise<string>{
       }
     catch(err){
         return err.message;
+    }
+}
+
+const processRequest = async function(request: string){
+    if (queryString.parseUrl(request).url === 'openid://') {
+        try{
+            await checkSigning();
+            if (confirm('Sign in using did-siop?')){
+                provider.validateRequest(request).then(decodedRequest => {
+                    provider.generateResponse(decodedRequest.payload).then(response => {
+                        let uri = decodedRequest.payload.client_id + '#' + response;
+                        env.tabs.create({
+                            url: uri,
+                        });
+                        console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                    })
+                    .catch(err => {
+                        alert(err.message);
+                    })
+                })
+                .catch(err => {
+                    let uri = queryString.parseUrl(request).query.client_id;
+                    if (uri) {
+                        uri = uri + '#' + provider.generateErrorResponse(err.message);
+                        env.tabs.create({
+                            url: uri,
+                        });
+                    } else {
+                        alert('Error: invalid redirect url');
+                    }
+                });
+            }
+            else{
+                let uri = queryString.parseUrl(request).query.client_id;
+                if (uri) {
+                    uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
+                    env.tabs.create({
+                        url: uri,
+                    });
+                } else {
+                    alert('Error: invalid redirect url');
+                }
+            }
+        }
+        catch(err){
+            alert(err.message);
+        }
     }
 }
