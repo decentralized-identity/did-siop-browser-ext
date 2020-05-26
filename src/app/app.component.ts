@@ -19,15 +19,20 @@ export class AppComponent {
   title = 'did-siop-ext';
   currentDID: string;
   signingInfoSet: any[] = [];
+  selectedKeyID: string; 
   env: any;
 
   @ViewChild('newDID') newDID: ElementRef;
   @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
   @ViewChild('changeDIDModalInfo') changeDIDModalInfo: ElementRef;
 
-  @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
+  @ViewChild('addNewKeyModalClose') addNewKeyModalClose: ElementRef;
+  @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
   @ViewChild('newKeyKID') newKeyKID: ElementRef;
+  
+  @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
+  @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService){
     if(chrome){
@@ -81,7 +86,8 @@ export class AppComponent {
     }
   }
 
-  addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+  async addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+    this.addNewKeyModalInfo.nativeElement.innerText = '';
     let keyInfo = {
       alg: algorithm,
       kid: kid,
@@ -95,36 +101,44 @@ export class AppComponent {
       }, 
       (response) =>{
         if(response.result){
-          alert(response.result);
           this.signingInfoSet.push(keyInfo);
-          this.addNewModalClose.nativeElement.click();
+          this.addNewKeyModalClose.nativeElement.click();
           this.newKeyString.nativeElement.value = '';
           this.newKeyKID.nativeElement.value = '';
           this.changeDetector.detectChanges();
+          this.toastrService.success(response.result, 'DID_SIOP', {
+            onActivateTick: true,
+            positionClass: 'toast-bottom-center',
+          });
         }
         else{
-          alert(response.err);
+          this.addNewKeyModalInfo.nativeElement.innerText = response.err;
         }
       }
     );
   }
 
-  removeKey(kid: string){
-    if(confirm('You are about to remove a key. Are you sure?')){
+  async removeKey(kid: string){
+    this.removeKeyModalInfo.nativeElement.innerText = '';
+    if(kid){
       this.env.runtime.sendMessage({
         task: TASKS.REMOVE_KEY,
         kid: kid,
         }, 
         (response) =>{
           if(response.result){
-            alert(response.result);
             this.signingInfoSet = this.signingInfoSet.filter(key => {
               return key.kid !== kid;
             });
+            this.toastrService.success(response.result, 'DID_SIOP', {
+              onActivateTick: true,
+              positionClass: 'toast-bottom-center',
+            });
+            this.removeKeyModalClose.nativeElement.click();
             this.changeDetector.detectChanges();
           }
           else{
-            alert(response.err);
+            this.removeKeyModalInfo.nativeElement.innerText = response.err;
           }
         }
       );
