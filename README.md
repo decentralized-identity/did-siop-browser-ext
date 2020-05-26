@@ -78,40 +78,48 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 #### index.html
 Public page where user could request to login to the relying party app
 ```html
-<button id="did-siop-login" onclick="login()">DID SIOP Login</button>
-<button id="did-siop-login" onclick="loginWithError()">DID SIOP Login with error</button>
+<body>
+    <h1>Index Page</h1>
+    <button id="did-siop-login" onclick="login()">DID SIOP Login</button>
+    <button id="did-siop-login" onclick="loginWithError()">DID SIOP Login with error</button>    
+    <script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>
+    <script>        
+        let siop_rp = null;
+        startProcess();
 
-<script src="https://res.cloudinary.com/sanlw/raw/upload/v1587477454/did-siop/did-siop.bundle.compiled.minified_nj0qmc.js"></script>
-<script>
-	const siop_rp = new DID_SIOP.RP();
-
-	siop_rp.initialize(
-		'localhost:8080/home.html', // RP redirect uri
-		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83',// RP DID
-		{
-			"jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
-            "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
-		} // RP meta data
-	);
-
-	siop_rp.setSigningParams(
-		'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964', //RP private key
-		'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',// RP public key uri for kid
-		'ES256K-R'// Algorithm
-	);
-
-	async function login(){
-		let request = await siop_rp.generateRequest();
-		let url = new URL(request);
-		window.open(url);
-	}
-
-	async function loginWithError(){
-		let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
-		let url = new URL(request);
-		window.open(url);
-	}
-</script>
+        async function startProcess(){
+            console.log('startProcess');
+    
+            siop_rp = await DID_SIOP.RP.getRP(
+                'localhost:5001/home', // RP's redirect_uri
+                'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6', // RP's did
+                {
+                    "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+                    "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
+                }
+            )
+            console.log('Got RP instance ....');
+            siop_rp.addSigningParams(
+                '8329a21d9ce86fa08e75354469fb8d78834f126415d5b00eef55c2f587f3abca', // Private key
+                'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
+                DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied. List of values is given below
+                DID_SIOP.ALGORITHMS['ES256K-R']
+            );
+        }
+    
+        async function login(){
+            let request = await siop_rp.generateRequest();
+            let url = new URL(request);
+            window.open(url);
+        }
+    
+        async function loginWithError(){
+            let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
+            let url = new URL(request);
+            window.open(url);
+        }
+    </script>
+</body>
 
 ```
 #### home.html
