@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>
 
@@ -20,11 +21,15 @@ export class AppComponent {
   signingInfoSet: any[] = [];
   env: any;
 
+  @ViewChild('newDID') newDID: ElementRef;
+  @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
+  @ViewChild('changeDIDModalInfo') changeDIDModalInfo: ElementRef;
+
   @ViewChild('addNewKeyModalClose') addNewModalClose: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
   @ViewChild('newKeyKID') newKeyKID: ElementRef;
 
-  constructor(private changeDetector: ChangeDetectorRef){
+  constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService){
     if(chrome){
       this.env = chrome;
     }
@@ -46,8 +51,8 @@ export class AppComponent {
     }
   }
 
-  async changeDID(){
-    let did = prompt('Enter new DID');
+  async changeDID(did: string){
+    this.changeDIDModalInfo.nativeElement.innerText = '';
     if(did){
       this.env.runtime.sendMessage({
         task: TASKS.CHANGE_DID,
@@ -55,16 +60,24 @@ export class AppComponent {
         }, 
         (response) =>{
           if(response.result){
-            alert(response.result);
             this.currentDID = did;
             this.signingInfoSet = [];
+            this.newDID.nativeElement.value = '';
+            this.changeDIDModalClose.nativeElement.click();
             this.changeDetector.detectChanges();
+            this.toastrService.success(response.result, 'DID_SIOP', {
+              onActivateTick: true,
+              positionClass: 'toast-bottom-center',
+            });
           }
           else{
-            alert(response.err);
+            this.changeDIDModalInfo.nativeElement.innerText = response.err;
           }
         }
       );
+    }
+    else{
+      this.changeDIDModalInfo.nativeElement.innerText = 'Please enter a valid DID';
     }
   }
 
