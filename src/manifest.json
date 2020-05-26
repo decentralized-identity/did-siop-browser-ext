@@ -2,12 +2,14 @@
   "name": "DID-SIOP",
   "version": "1.0",
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
+  "author": "sanlw",
   "permissions": ["tabs", "activeTab"],
   "background": {
     "scripts": [
       "background-es5.js",
       "runtime-es5.js"
-    ]
+    ],
+    "persistent": false
   },
   "browser_action": {
     "default_title": "DID-SIOP",
