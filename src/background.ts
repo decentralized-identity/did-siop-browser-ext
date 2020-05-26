@@ -104,7 +104,7 @@ env.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     else{
         switch(request.task){
             case TASKS.PROCESS_REQUEST: {
-                processRequest(request.openid);
+                processRequest(request.did_siop);
             }
         }
     }

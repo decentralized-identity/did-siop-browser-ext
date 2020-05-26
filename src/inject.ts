@@ -23,12 +23,12 @@ else{
 const didSIOPLogins = document.getElementsByClassName('did-siop-login');
 let i;
 for(i= 0; i < didSIOPLogins.length; i++){
-    if(didSIOPLogins[i].tagName.toLowerCase() === 'a'){
-        let href = didSIOPLogins[i].getAttribute('href');
+    if(didSIOPLogins[i].getAttribute('data-did-siop')){
+        let did_siop = didSIOPLogins[i].getAttribute('data-did-siop');
         didSIOPLogins[i].addEventListener('click', () => {
             env.runtime.sendMessage({
                 task: TASKS.PROCESS_REQUEST,
-                openid: href,
+                did_siop: did_siop,
                 }
             );
         })
