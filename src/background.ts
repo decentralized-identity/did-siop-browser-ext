@@ -104,7 +104,7 @@ env.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     else{
         switch(request.task){
             case TASKS.PROCESS_REQUEST: {
-                processRequest(request.did_siop);
+                processRequest(request.did_siop, request.confirmation);
             }
         }
     }
@@ -157,11 +157,11 @@ const removeKey = async function(kid: string): Promise<string>{
     }
 }
 
-const processRequest = async function(request: string){
+const processRequest = async function(request: string, confirmation: any){
     if (queryString.parseUrl(request).url === 'openid://') {
         try{
             await checkSigning();
-            if (confirm('Sign in using did-siop?')){
+            if (confirmation){
                 provider.validateRequest(request).then(decodedRequest => {
                     provider.generateResponse(decodedRequest.payload).then(response => {
                         let uri = decodedRequest.payload.client_id + '#' + response;
