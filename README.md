@@ -123,25 +123,54 @@ Public page where user could request to login to the relying party app
 
 ```
 #### home.html
-User has been authenticated and authorised to access the restricted area of the application.
+User has been authenticated and authorised to access the restricted area of the application. Below ut validate the response received as a JWT.
 ```html
-<p id='responseView'></p>
+<body>
+    <h1>Home Page</h1>
+    <h4> id_token: </h4>
+    <div id="idtoken" style="max-width: 400px;line-break:anywhere;"></div><br>
+    <h4> decoded token: </h4>    
+    <div id="decodedToken" style="max-width: 400px;line-break:anywhere;"></div><br>
 
-<script src="https://res.cloudinary.com/sanlw/raw/upload/v1587449606/did-siop/did-siop.bundle.compiled.minified_b1piyh.js"></script>
-<script>
+    <button onclick="gotoJWTIO()">View in jwt.io</button>
+    <script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>            
+    <script>
+        console.log(document.location.hash);
+        let siop_rp = null;        
+        let resJWT = document.location.hash.substr(1);
+        document.getElementById('idtoken').innerHTML = resJWT;
 
-	let response = window.location.href.split('#')[1];
+        processJWT(resJWT);
 
-	const siop_rp = new DID_SIOP.RP();
+        async function processJWT(jwt){
+            siop_rp = await DID_SIOP.RP.getRP(
+                    'localhost:5001/home', // RP's redirect_uri
+                    'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6', // RP's did
+                    {
+                        "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+                        "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
+                    }
+                )
+                console.log('Got RP instance ....');
+                siop_rp.addSigningParams(
+                    '8329a21d9ce86fa08e75354469fb8d78834f126415d5b00eef55c2f587f3abca', // Private key
+                    'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
+                    DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied. List of values is given below
+                    DID_SIOP.ALGORITHMS['ES256K-R']
+                );
+                let valid = await siop_rp.validateResponse(resJWT);
+                console.log('Response validated...');
+                console.log('Validated response',valid); 
+                document.getElementById('decodedToken').innerHTML = JSON.stringify(valid);                
+            }
 
-	siop_rp.validateResponse(response).then(function(decoded){
-		document.getElementById('responseView').innerHTML = JSON.stringify(decoded);
-	})
-	.catch(function(err){
-		document.getElementById('responseView').innerHTML = JSON.stringify(err);
-	});
+        function gotoJWTIO(){
+            var url =  `http://www.jwt.io/?id_token=${resJWT}`;
+            window.open(url, '_blank');
+        }
 
-</script>
+        </script>
+</body>
 
 ```
-You could find a working solution with minimum dependencies which could run on your local machine [here](https://github.com/RadicalLedger/did-siop-rp-web-min).
+You could find a working solution with minimum dependencies which could run on your local machine [here](https://github.com/RadicalLedger/did-siop-rp-web-min). You should have the browser extension installed for this sample to work.
