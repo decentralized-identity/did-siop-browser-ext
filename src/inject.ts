@@ -10,10 +10,10 @@ enum TASKS{
 
 let env: any;
 
-if(chrome){
+if(window.chrome && window.chrome.runtime && window.chrome.runtime.onMessage){
     env = chrome;
 }
-else if(browser){
+else if(window.browser && window.browser.runtime && window.browser.runtime.onMessage){
     env = browser;
 }
 else{

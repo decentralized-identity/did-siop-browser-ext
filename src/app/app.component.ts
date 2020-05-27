@@ -35,15 +35,15 @@ export class AppComponent {
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService){
-    if(chrome){
+    if(window.chrome && window.chrome.runtime && window.chrome.runtime.onMessage){
       this.env = chrome;
-    }
-    else if(browser){
-        this.env = browser;
-    }
-    else{
-        console.log('DID-SIOP ERROR: No runtime detected');
-    }
+  }
+  else if(window.browser && window.browser.runtime && window.browser.runtime.onMessage){
+      this.env = browser;
+  }
+  else{
+      console.log('DID-SIOP ERROR: No runtime detected');
+  }
 
     let did = localStorage.getItem('did_siop_user_did');
     let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
