@@ -14,16 +14,21 @@ enum TASKS{
     PROCESS_REQUEST,
 }
 
-let env: any;
+let runtime: any;
+let tabs: any;
 
-if(window.chrome && window.chrome.runtime && window.chrome.runtime.onInstalled){
-    env = chrome;
+try{
+    runtime = browser.runtime;
+    tabs = browser.tabs;
 }
-else if(window.browser && window.browser.runtime && window.browser.runtime.onInstalled){
-    env = browser;
-}
-else{
-    console.log('DID-SIOP ERROR: No runtime detected');
+catch(err){
+    try{
+        runtime = chrome.runtime;
+        tabs = chrome.tabs;
+    }
+    catch(err){
+        console.log('DID-SIOP ERROR: No runtime detected');
+    }
 }
 
 const checkSigning = async function(){
@@ -51,7 +56,7 @@ const checkSigning = async function(){
     }
 }
 
-env.runtime.onInstalled.addListener( async function(){
+runtime.onInstalled.addListener( async function(){
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
     let signingInfoSet = [
         {
@@ -66,7 +71,7 @@ env.runtime.onInstalled.addListener( async function(){
     checkSigning();
 });
 
-env.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(!sender.tab){
         switch(request.task){
             case TASKS.CHANGE_DID: {
@@ -117,8 +122,8 @@ const changeDID = async function(did: string): Promise<string>{
         await newProvider.setUser(did);
         provider = newProvider;
         localStorage.setItem('did_siop_user_did', did);
-        localStorage.removeItem('did_siop_singing_info_set');
         signingInfoSet = [];
+        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
         return 'Identity changed successfully';
     }
     catch(err){
@@ -165,7 +170,7 @@ const processRequest = async function(request: string, confirmation: any){
                 provider.validateRequest(request).then(decodedRequest => {
                     provider.generateResponse(decodedRequest.payload).then(response => {
                         let uri = decodedRequest.payload.client_id + '#' + response;
-                        env.tabs.create({
+                        tabs.create({
                             url: uri,
                         });
                         console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
@@ -178,7 +183,7 @@ const processRequest = async function(request: string, confirmation: any){
                     let uri = queryString.parseUrl(request).query.client_id;
                     if (uri) {
                         uri = uri + '#' + provider.generateErrorResponse(err.message);
-                        env.tabs.create({
+                        tabs.create({
                             url: uri,
                         });
                     } else {
@@ -190,7 +195,7 @@ const processRequest = async function(request: string, confirmation: any){
                 let uri = queryString.parseUrl(request).query.client_id;
                 if (uri) {
                     uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
-                    env.tabs.create({
+                    tabs.create({
                         url: uri,
                     });
                 } else {

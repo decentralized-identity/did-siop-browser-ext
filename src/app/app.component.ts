@@ -20,7 +20,7 @@ export class AppComponent {
   currentDID: string;
   signingInfoSet: any[] = [];
   selectedKeyID: string; 
-  env: any;
+  runtime: any;
 
   @ViewChild('newDID') newDID: ElementRef;
   @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
@@ -35,15 +35,17 @@ export class AppComponent {
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService){
-    if(window.chrome && window.chrome.runtime && window.chrome.runtime.onMessage){
-      this.env = chrome;
-  }
-  else if(window.browser && window.browser.runtime && window.browser.runtime.onMessage){
-      this.env = browser;
-  }
-  else{
-      console.log('DID-SIOP ERROR: No runtime detected');
-  }
+    try{
+      this.runtime = browser.runtime;
+    }
+    catch(err){
+      try{
+          this.runtime = chrome.runtime;
+      }
+      catch(err){
+          console.log('DID-SIOP ERROR: No runtime detected');
+      }
+    }
 
     let did = localStorage.getItem('did_siop_user_did');
     let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
@@ -59,7 +61,7 @@ export class AppComponent {
   async changeDID(did: string){
     this.changeDIDModalInfo.nativeElement.innerText = '';
     if(did){
-      this.env.runtime.sendMessage({
+      this.runtime.sendMessage({
         task: TASKS.CHANGE_DID,
         did: did,
         }, 
@@ -95,7 +97,7 @@ export class AppComponent {
       format: format,
     }
 
-    this.env.runtime.sendMessage({
+    this.runtime.sendMessage({
       task: TASKS.ADD_KEY,
       keyInfo: keyInfo,
       }, 
@@ -121,7 +123,7 @@ export class AppComponent {
   async removeKey(kid: string){
     this.removeKeyModalInfo.nativeElement.innerText = '';
     if(kid){
-      this.env.runtime.sendMessage({
+      this.runtime.sendMessage({
         task: TASKS.REMOVE_KEY,
         kid: kid,
         }, 

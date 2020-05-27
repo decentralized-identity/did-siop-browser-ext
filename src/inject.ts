@@ -8,16 +8,18 @@ enum TASKS{
     PROCESS_REQUEST,
 }
 
-let env: any;
+let runtime: any;
 
-if(window.chrome && window.chrome.runtime && window.chrome.runtime.onMessage){
-    env = chrome;
+try{
+    runtime = browser.runtime;
 }
-else if(window.browser && window.browser.runtime && window.browser.runtime.onMessage){
-    env = browser;
-}
-else{
-    console.log('DID-SIOP ERROR: No runtime detected');
+catch(err){
+    try{
+        runtime = chrome.runtime;
+    }
+    catch(err){
+        console.log('DID-SIOP ERROR: No runtime detected');
+    }
 }
 
 const didSIOPLogins = document.getElementsByClassName('did-siop-login');
@@ -27,7 +29,7 @@ for(i= 0; i < didSIOPLogins.length; i++){
         let did_siop = didSIOPLogins[i].getAttribute('data-did-siop');
         didSIOPLogins[i].addEventListener('click', () => {
             let confirmation = confirm('Sign in with DID-SIOP?');
-            env.runtime.sendMessage({
+            runtime.sendMessage({
                 task: TASKS.PROCESS_REQUEST,
                 did_siop: did_siop,
                 confirmation: confirmation,
