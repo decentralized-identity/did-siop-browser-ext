@@ -33,6 +33,14 @@ for(i= 0; i < didSIOPLogins.length; i++){
                 task: TASKS.PROCESS_REQUEST,
                 did_siop: did_siop,
                 confirmation: confirmation,
+            },
+            (response)=>{
+                if(response.result){
+                    console.log(response.result);
+                }
+                if(response.err){
+                    alert('DID_SIOP ERROR: ' + response.err);
+                }
             }
             );
         })

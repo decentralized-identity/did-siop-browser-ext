@@ -109,7 +109,13 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
     else{
         switch(request.task){
             case TASKS.PROCESS_REQUEST: {
-                processRequest(request.did_siop, request.confirmation);
+                processRequest(request.did_siop, request.confirmation)
+                .then(result=>{
+                    sendResponse({result: result});
+                })
+                .catch(err=>{
+                    sendResponse({err:err.message});
+                });
             }
         }
     }
@@ -163,23 +169,27 @@ const removeKey = async function(kid: string): Promise<string>{
 }
 
 const processRequest = async function(request: string, confirmation: any){
+    let processError: Error;
     if (queryString.parseUrl(request).url === 'openid://') {
         try{
             await checkSigning();
             if (confirmation){
-                provider.validateRequest(request).then(decodedRequest => {
-                    provider.generateResponse(decodedRequest.payload).then(response => {
+                try{
+                    let decodedRequest = await provider.validateRequest(request);
+                    try{
+                        let response = await provider.generateResponse(decodedRequest.payload);
                         let uri = decodedRequest.payload.client_id + '#' + response;
                         tabs.create({
                             url: uri,
                         });
                         console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                    })
-                    .catch(err => {
-                        alert(err.message);
-                    })
-                })
-                .catch(err => {
+                        return 'Successfully logged into ' + decodedRequest.payload.client_id;
+                    }
+                    catch(err){
+                        processError = err;
+                    }
+                }
+                catch(err){
                     let uri = queryString.parseUrl(request).query.client_id;
                     if (uri) {
                         uri = uri + '#' + provider.generateErrorResponse(err.message);
@@ -187,9 +197,9 @@ const processRequest = async function(request: string, confirmation: any){
                             url: uri,
                         });
                     } else {
-                        alert('Error: invalid redirect url');
+                        processError = new Error('invalid redirect url');
                     }
-                });
+                }
             }
             else{
                 let uri = queryString.parseUrl(request).query.client_id;
@@ -199,12 +209,13 @@ const processRequest = async function(request: string, confirmation: any){
                         url: uri,
                     });
                 } else {
-                    alert('Error: invalid redirect url');
+                    processError = new Error('invalid redirect url');
                 }
             }
         }
         catch(err){
-            alert(err.message);
+            processError = err;
         }
     }
+    if(processError) throw processError;
 }
