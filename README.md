@@ -18,20 +18,22 @@ Even though the OIDC specifications have defined protocols to to be independent 
 ### Protocol Flow ###
 * User click on a button on RP Application to login to RP using DID SIOP
 * This initiate a redirection to DID SIOP (in this case the browser extension) (_openid://<SIOP Request>_)
-* The DID SIOP generate a response _*<SIOP Response>*_ based on the DID Method it supports. This response is signed using 'ES256K-R' (optional Encryption capabilities will be introduced later)
+* The DID SIOP generate a response _*<SIOP Response>*_ based on the DID Method it supports.
 * RP receives an id_token 
 
 
 ## See in Action ##
 Follow the steps below to see the DID-SIOP in action.
-Note: _Please note, the current version of DID-SIOP available only as a Chrome Extension and tested on  Version 80.0.3987.163_
 
-- Download the Chrome Extension from [this link](https://drive.google.com/file/d/1zjv_Gvr2DxtjCQIacA60Gvtoi2iYIBCs/view?usp=sharing)
-- Manually install the downloaded extension to your browser ([steps to follow](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)). With successful installation you will see a extension icon with a D letter in it.
-- Click on the D icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
+- Download the Extension from [this link](https://drive.google.com/drive/folders/1h6Ow_ibp_Pet8oBkGKfCOSzKVFHgZM18). Works on Chrome, Firefox and Microsoft Edge
+- Manually install the downloaded extension to your browser.
+  * [Chrome](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/).
+  * [Firefox](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/).
+  * [Edge](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/adding-and-removing-extensions).
+- Click on the extension/add-on icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
 - Browse into sample Relying Party app [https://did-siop-rp-test.herokuapp.com](https://did-siop-rp-test.herokuapp.com/)
 - Click on "DID SIOP Login" button to start the authorization process
-- You will navigate to a new tab and it will prompt for the confirmation to Sign in using DID-SIOP.
+- You will be asked for the confirmation to Sign in using DID-SIOP.
 - Upon acceptance you will navigate to the secure area of the app and you will see the DID used for the authorization.
 
 ## Current Status ##
@@ -67,10 +69,15 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
   * Set signing parameters ***siop_rp.addSigningParams(rp_private_key, rp_public_key_id, key_format, algorithm)***.
     * Algorithms supported : RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512, ES256K, ES256K-R, EdDSA
     * Key Formats : PKCS8_PEM, PKCS1_PEM, HEX, BASE58, BASE64
-  * Create request ***siop_rp.generateRequest().then(request => {}).catch(err => {})***.
-  * Note: Since Chrome does not load urls with custom protocols in ***window.location.href***, the request needed to be loaded using ***window.open(new URL(request))***.
-  * When the request is loaded to new tab, the extension will capture it and asks for user confirmation.
-  * Upon confirmation, extension will redirect the page to the url provided as ***rp_redirect_uri*** with the response JWT as a fragment.
+  * Generate request ***siop_rp.generateRequest().then(request => {}).catch(err => {})***.
+  * The generated request needed to be added as the value for attribute named ***data-did-siop*** of the desired HTML element. This attribute value is required for the content_script of the extension to bind necessary events.
+      * Example: - 
+      ```html 
+        <button data-did-siop="request">DID SIOP Login </button>
+      ```
+  * Ideal use case is to use a pre-generated request.
+  * If the event binding is successful, clicking on the element will initiate the login flow and ask for the confirmation.
+  * Upon confirmation, extension will open a new page with the url provided as ***rp_redirect_uri*** with the response JWT as a fragment.
   * To validate, capture the response fragment in the callback page and use ***siop_rp.validateResponse(response).then(decodedJWT => {}).catch(err => {})*** to validate the response.
 
 
@@ -78,8 +85,7 @@ Note: _Please note, the current version of DID-SIOP available only as a Chrome E
 #### index.html
 Public page where user could request to login to the relying party app
 ```html
-<button id="did-siop-login" onclick="login()">DID SIOP Login</button>
-<button id="did-siop-login" onclick="loginWithError()">DID SIOP Login with error</button>
+<button data-did-siop="pre-generated-request">DID SIOP Login</button>
 
 <script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>
 <script>
@@ -99,17 +105,10 @@ Public page where user could request to login to the relying party app
     DID_SIOP.ALGORITHMS['ES256K-R'] //Algorithm.
   );
   
-  async function login(){
-    let request = await siop_rp.generateRequest();
-    let url = new URL(request);
-    window.open(url);
-  }
-
-  async function loginWithError(){
-    let request = 'openid://?response_type=id_token&client_id=localhost:8080/home.html&scope=openid did_authn&request=';
-    let url = new URL(request);
-    window.open(url);
-  }
+  rp.generateRequest()
+  .then(request=>{
+    //Use this request as data-did-siop attribute value of the button
+  })
 </script>
 
 ```
@@ -131,7 +130,7 @@ User has been authenticated and authorised to access the restricted area of the 
     } // RP's registration meta data
   );
   
-  siop_rp.validateResponse(response).then(function(decoded){
+  rp.validateResponse(response).then(function(decoded){
     document.getElementById('responseView').innerHTML = JSON.stringify(decoded);
   })
   .catch(function(err){
