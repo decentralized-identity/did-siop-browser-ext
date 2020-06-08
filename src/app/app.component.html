@@ -46,9 +46,9 @@
                   </div>
                   <p #changeDIDModalInfo class="error"></p>
               </div>
-              <div class="modal-footer">
-                <button #changeDIDModalClose type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" (click)="changeDID(newDID.value)">Change DID</button>
+              <div class="modal-footer d-flex justify-content-start">
+                <button type="button" class="btn btn-primary btn-ok" (click)="changeDID(newDID.value)">Change DID</button>
+                <button #changeDIDModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>
@@ -192,13 +192,13 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text" id="inputGroup-sizing-sm">KID</span>
                     </div>
-                    <input #toRemoveKeyKID type="text" value="{{selectedKeyID}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
+                    <textarea #toRemoveKeyKID value="{{selectedKeyID}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                   </div>
                   <p class="error" #removeKeyModalInfo></p>
               </div>
-              <div class="modal-footer">
-                <button #removeKeyModalClose type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
+              <div class="modal-footer d-flex justify-content-start">
+                <button type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
+                <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>

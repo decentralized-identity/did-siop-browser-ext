@@ -158,6 +158,21 @@ $app-section-background: #f0f0f0;
     color: red;
 }
 
+.modal-header, .modal-body{
+    border-bottom: 1px solid $app-primary;
+}
+
+.btn-ok{
+    background-color: $app-primary;
+    border: 1px solid $app-primary;
+    border-radius: 40px;
+    min-width: 100px;
+}
+
+.btn-cancel{
+    color: $app-primary;
+}
+
 .guides{
     width: 100%;
     padding-left: 26px;
