@@ -1,23 +1,131 @@
+$app-primary: #24c1b6;
+$app-section-background: #f0f0f0;
+
 .main{
-    width: 440px;
+    width: 430px;
 }
 
-.title-description{
-    margin-bottom: 50px;
+.header{
+    margin-bottom: 4px;
+}
+
+.header-top{
+    width: 100%;
+    padding-top: 28px;
+    padding-left: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid $app-primary;
+}
+
+.did-siop-logo{
+    height: 32px;
+}
+
+.did-siop-title{
+    margin-left: 22px;
+    font-size: 18px;
+    padding-top: 4px;
+    font-weight: 500;
+}
+
+.header-bottom{
+    padding-top: 20px;
+    padding-left: 26px;
+    padding-right: 26px;
 }
 
 .identity{
-    margin-bottom: 50px;
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 17px;
+    margin-bottom: 30px;
+}
+
+.identity-inner{
+    background-color: $app-section-background;
+    padding-top: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 2px;
+}
+
+.identity-top{
+    height: 38px;
+}
+
+.change-did-btn{
+    button{
+        color: $app-primary;
+        padding-top: 0px;
+        padding-right: 0px;
+        font-size: 18px;
+        margin-top: -12px;
+    }
+}
+
+.current-did{
+    p{
+        word-break: break-all;
+    }
 }
 
 .signing-keys{
-    .card-header{
-        h5{
-            min-width: 350px;
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 17px;
+    margin-bottom: 28px;
+}
+
+.signing-keys-inner{
+    background-color: $app-section-background;
+    padding-bottom: 2px;
+}
+
+.signing-keys-top{
+    height: 65px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #d6d4d4;
+}
+
+.new-key-btn{
+    button{
+        color: $app-primary;
+        padding-top: 0px;
+        padding-right: 0px;
+        font-size: 18px;
+        margin-top: -12px;
+    }
+}
+
+.signing-keys-bottom{
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    .col{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+#keyAccordion{
+    .card{
+        .card-header{
+            padding-top: 18px;
+            h5{
+                padding-left: 4px;
+                padding-right: 4px;
+                a{
+                    font-size: 17px;
+                    color: $app-primary !important;
+                }
+            }
         }
     }
-
-    margin-bottom: 50px;
 }
 
 .input-group-sm{
@@ -26,6 +134,16 @@
 
 .input-group-text{
     width: 100px;
+}
+
+.input-group-sm{
+    textarea{
+        resize: none;
+    }
+}
+
+.remove-key-btn{
+    color: $app-primary !important;
 }
 
 .warning{
@@ -41,5 +159,16 @@
 }
 
 .guides{
-    width: 350px;
+    width: 100%;
+    padding-left: 26px;
+    padding-right: 26px;
+    ul{
+        width: 320px;
+        padding-left: 20px;
+        li{
+            a{
+                color: $app-primary;
+            }
+        }
+    }
 }
