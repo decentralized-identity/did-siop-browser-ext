@@ -111,9 +111,10 @@ Public page where user could request to login to the relying party app
   })
 </script>
 
+
 ```
 #### home.html
-User has been authenticated and authorised to access the restricted area of the application.
+User has been authenticated and authorised to access the restricted area of the application. Below ut validate the response received as a JWT.
 ```html
 <p id='responseView'></p>
 
@@ -138,6 +139,5 @@ User has been authenticated and authorised to access the restricted area of the 
   });
 
 </script>
-
 ```
-You could find a working solution with minimum dependencies which could run on your local machine [here](https://github.com/RadicalLedger/did-siop-rp-web-min).
+You could find a working solution with minimum dependencies which could run on your local machine [here](https://github.com/RadicalLedger/did-siop-rp-web-min). You should have the browser extension installed for this sample to work.
