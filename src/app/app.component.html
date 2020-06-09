@@ -21,7 +21,7 @@
           </div>
           <div class="row identity-bottom">
             <div class="col current-did">
-              <p><span class="text-muted">did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83</span></p>
+              <p><span class="text-muted">{{currentDID}}</span></p>
             </div>
           </div>
         </div>
@@ -38,11 +38,9 @@
               </div>
               <div class="modal-body">
                   <p class="warning">Warning! Changing DID will remove all the keys related to current DID</p>
+                  <p>New DID</p>
                   <div class="input-group input-group-sm">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm">DID</span>
-                      </div>
-                      <input id="newDID" #newDID type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                      <textarea id="newDID" #newDID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                   </div>
                   <p #changeDIDModalInfo class="error"></p>
               </div>
@@ -115,63 +113,63 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text" id="inputGroup-sizing-sm">KID</span>
-                        </div>
-                        <input id="newKeyKID" #newKeyKID type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                    <div class="new-key-kid">
+                      <p class="new-key-modal-input-label">KID</p>
+                      <div class="input-group input-group-sm new-key-modal-input">
+                          <textarea id="newKeyKID" #newKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
+                      </div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text" id="inputGroup-sizing-sm">Algorithm</span>
-                        </div>
-                        <select id="newKeyAlgorithm" #newKeyAlgorithm class="custom-select">
-                            <option value="RS256">RS256</option>
-                            <option value="RS384">RS384</option>
-                            <option value="RS512">RS512</option>
+                    <div class="new-key-algorithm">
+                      <p class="new-key-modal-input-label">Algorithm</p>
+                      <div class="input-group input-group-sm new-key-modal-input">
+                          <select id="newKeyAlgorithm" #newKeyAlgorithm class="custom-select">
+                              <option value="RS256">RS256</option>
+                              <option value="RS384">RS384</option>
+                              <option value="RS512">RS512</option>
 
-                            <option value="PS256">PS256</option>
-                            <option value="PS384">PS384</option>
-                            <option value="PS512">PS512</option>
+                              <option value="PS256">PS256</option>
+                              <option value="PS384">PS384</option>
+                              <option value="PS512">PS512</option>
 
-                            <option value="ES256">ES256</option>
-                            <option value="ES384">ES384</option>
-                            <option value="ES512">ES512</option>
-                            <option value="ES256K">ES256K</option>
-                            <option value="ES256K-R">ES256K-R</option>
+                              <option value="ES256">ES256</option>
+                              <option value="ES384">ES384</option>
+                              <option value="ES512">ES512</option>
+                              <option value="ES256K">ES256K</option>
+                              <option value="ES256K-R">ES256K-R</option>
 
-                            <option value="EdDSA">EdDSA</option>
-                        </select>
+                              <option value="EdDSA">EdDSA</option>
+                          </select>
+                      </div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text" id="inputGroup-sizing-sm">Key Format</span>
-                        </div>
-                        <select id="newKeyFormat" #newKeyFormat class="custom-select">
-                            <option value="HEX">HEX</option>
-                            <option value="BASE58">BASE58</option>
-                            <option value="BASE64">BASE64</option>
+                    <div class="new-key-format">
+                      <p class="new-key-modal-input-label">Format</p>
+                      <div class="input-group input-group-sm new-key-modal-input">
+                          <select id="newKeyFormat" #newKeyFormat class="custom-select">
+                              <option value="HEX">HEX</option>
+                              <option value="BASE58">BASE58</option>
+                              <option value="BASE64">BASE64</option>
 
-                            <option value="PKCS8_PEM">PKCS8_PEM</option>
-                            <option value="PKCS1_PEM">PKCS1_PEM</option>
-                        </select>
+                              <option value="PKCS8_PEM">PKCS8_PEM</option>
+                              <option value="PKCS1_PEM">PKCS1_PEM</option>
+                          </select>
+                      </div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text" id="inputGroup-sizing-sm">Key</span>
-                        </div>
-                        <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                    <div class="new-key-key">
+                      <p class="new-key-modal-input-label">Key</p>
+                      <div class="input-group input-group-sm new-key-modal-input">
+                          <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                      </div>
                     </div>
                 </div>
                 <p class="error" #addNewKeyModalInfo></p>
-                <div class="modal-footer">
-                  <button #addNewKeyModalClose type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary" (click)='addNewKey(
+                <div class="modal-footer d-flex justify-content-start">
+                  <button type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
                       newKeyString.value,
                       newKeyKID.value,
                       newKeyFormat.value,
                       newKeyAlgorithm.value
                     )'>Add Key</button>
+                  <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>
@@ -188,10 +186,8 @@
               </div>
               <div class="modal-body">
                   <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
+                  <p>KID</p>
                   <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" id="inputGroup-sizing-sm">KID</span>
-                    </div>
                     <textarea #toRemoveKeyKID value="{{selectedKeyID}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                   </div>
                   <p class="error" #removeKeyModalInfo></p>
