@@ -38,11 +38,9 @@
               </div>
               <div class="modal-body">
                   <p class="warning">Warning! Changing DID will remove all the keys related to current DID</p>
+                  <p>New DID</p>
                   <div class="input-group input-group-sm">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm">DID</span>
-                      </div>
-                      <input id="newDID" #newDID type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                      <textarea id="newDID" #newDID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                   </div>
                   <p #changeDIDModalInfo class="error"></p>
               </div>
@@ -188,10 +186,8 @@
               </div>
               <div class="modal-body">
                   <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
+                  <p>KID</p>
                   <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" id="inputGroup-sizing-sm">KID</span>
-                    </div>
                     <textarea #toRemoveKeyKID value="{{selectedKeyID}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                   </div>
                   <p class="error" #removeKeyModalInfo></p>
