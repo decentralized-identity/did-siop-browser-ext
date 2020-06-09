@@ -1,45 +1,67 @@
 {
-  "name": "did-siop",
+  "name": "did-siop-ext",
   "version": "1.0.0",
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "scripts": {
-    "test": "jest --runInBand",
-    "chrome-build": "browserify src/chrome/background.js -o dist/chrome/background/background.bundle.js && browserify src/chrome/popup/popup.js -o dist/chrome/popup/popup.bundle.js",
-    "lib-compile": "babel dist/lib/did-siop.bundle.js --out-file dist/lib/did-siop.bundle.compiled.js --presets=@babel/preset-env",
-    "lib-minify": "uglifyjs --compress --mangle --output dist/lib/did-siop.bundle.compiled.minified.js -- dist/lib/did-siop.bundle.compiled.js",
-    "lib-build": "browserify src/common/index.js --s DID_SIOP > dist/lib/did-siop.bundle.js && npm run-script lib-compile && npm run-script lib-minify"
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
   },
+  "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SanujaLW/did-siop.git"
+    "url": "git+https://github.com/RadicalLedger/did-siop-chrome-ext.git"
   },
-  "author": "SanujaLW",
-  "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/SanujaLW/did-siop/issues"
+    "url": "https://github.com/RadicalLedger/did-siop-chrome-ext/issues"
   },
-  "homepage": "https://github.com/SanujaLW/did-siop#readme",
+  "homepage": "https://github.com/RadicalLedger/did-siop-chrome-ext#readme",
+  "author": "SanujaLW",
+  "license": "MIT",
   "dependencies": {
-    "@babel/polyfill": "^7.8.7",
-    "base64url": "^3.0.1",
-    "did-resolver": "^1.1.0",
-    "ecdsa-sig-formatter": "^1.0.11",
-    "elliptic": "^6.5.2",
-    "ethereum-checksum-address": "0.0.5",
-    "ethereum-private-key-to-public-key": "0.0.3",
-    "ethereum-public-key-to-address": "0.0.2",
-    "ethr-did-resolver": "^2.2.0",
-    "jquery": "^3.4.1",
-    "jwa": "^2.0.0",
-    "node-rsa": "^1.0.8",
-    "query-string": "^6.12.0",
-    "web-did-resolver": "^1.2.1"
+    "@angular/animations": "^9.0.7",
+    "@angular/common": "~9.0.6",
+    "@angular/compiler": "~9.0.6",
+    "@angular/core": "~9.0.6",
+    "@angular/forms": "~9.0.6",
+    "@angular/platform-browser": "~9.0.6",
+    "@angular/platform-browser-dynamic": "~9.0.6",
+    "@angular/router": "~9.0.6",
+    "@popperjs/core": "^2.4.0",
+    "bootstrap": "^4.5.0",
+    "did-siop": "^1.3.0",
+    "jquery": "^3.5.1",
+    "ngx-toastr": "^12.0.1",
+    "query-string": "^6.12.1",
+    "rxjs": "~6.5.4",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "jest": "^25.1.0",
-    "nock": "^12.0.3",
-    "uglify-js": "^3.9.1"
+    "@angular-builders/custom-webpack": "^9.1.0",
+    "@angular-devkit/build-angular": "~0.900.6",
+    "@angular/cli": "~9.0.6",
+    "@angular/compiler-cli": "~9.0.6",
+    "@angular/language-service": "~9.0.6",
+    "@types/chrome": "0.0.112",
+    "@types/firefox-webext-browser": "^70.0.1",
+    "@types/jasmine": "~3.5.0",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "codelyzer": "^5.1.2",
+    "jasmine-core": "~3.5.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~2.1.0",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
+    "protractor": "~5.4.3",
+    "ts-node": "~8.3.0",
+    "tslint": "~5.18.0",
+    "typescript": "~3.7.5"
   }
 }
