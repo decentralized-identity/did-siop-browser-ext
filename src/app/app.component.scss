@@ -173,6 +173,18 @@ $app-section-background: #f0f0f0;
     color: $app-primary;
 }
 
+.btn-link{
+    &:active{
+        &:focus{
+            background-color: transparent;
+        }
+    }
+    &:focus{
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+
 .guides{
     width: 100%;
     padding-left: 26px;
