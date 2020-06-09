@@ -158,8 +158,29 @@ $app-section-background: #f0f0f0;
     color: red;
 }
 
-.modal-header, .modal-body{
+.modal-header{
     border-bottom: 1px solid $app-primary;
+}
+
+.modal-footer{
+    border: none;
+}
+
+.new-key-kid, .new-key-algorithm, .new-key-format{
+    margin-bottom: 25px;
+    p{
+        margin-bottom: 8px !important;
+    }
+}
+
+.new-key-modal-input-label{
+    padding-left: 10px;
+}
+
+.new-key-modal-input{
+    select, input, textarea{
+        background-color: $app-section-background;
+    }
 }
 
 .btn-ok{
