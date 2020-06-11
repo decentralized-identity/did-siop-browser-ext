@@ -18,8 +18,10 @@
 }
 
 .login-controls{
-    input{
-        margin-bottom: 20px;
+    form{
+        input{
+            margin-bottom: 20px;
+        }
     }
 }
 
@@ -36,6 +38,13 @@
             outline: none !important;
             box-shadow: none;
         }
+    }
+}
+
+.invalid-password{
+    &::placeholder{
+        color: red;
+        font-size: 12px;
     }
 }
 

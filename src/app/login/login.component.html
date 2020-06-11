@@ -5,11 +5,13 @@
     <div class="description">
         <p>Self-issued OpenIDConnect Provider based on <br> Decentralized Identities</p>
     </div>
-    <div class="d-flex flex-column justify-content-center align-items-center login-controls">
-        <div class="input-group input-group-sm">
-            <input id="password" type="password" placeholder="Enter Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-        </div>
-        <button type="button" class="btn btn-primary btn-ok">Login</button>
+    <div class="login-controls">
+        <form class="d-flex flex-column justify-content-center align-items-center">
+            <div class="input-group input-group-sm">
+                <input id="password" type="password" placeholder="Enter Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #password>
+            </div>
+            <button type="button" class="btn btn-primary btn-ok" (click)="login(password.value)">Login</button>
+        </form>
     </div>
     <div class="init-controls"></div>
 </div>
