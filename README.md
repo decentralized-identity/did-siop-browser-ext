@@ -25,7 +25,7 @@ Even though the OIDC specifications have defined protocols to to be independent 
 ## See in Action ##
 Follow the steps below to see the DID-SIOP in action.
 
-- Download the Extension from [this link](https://drive.google.com/drive/folders/1h6Ow_ibp_Pet8oBkGKfCOSzKVFHgZM18). Works on Chrome, Firefox and Microsoft Edge
+- Download the Extension from [this link](https://drive.google.com/file/d/11Rs35ZmczmDtB6fslG88SAzEdFzrYzEu/view?usp=sharing). Works on Chrome, Firefox and Microsoft Edge
 - Manually install the downloaded extension to your browser.
   * [Chrome](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/).
   * [Firefox](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/).
