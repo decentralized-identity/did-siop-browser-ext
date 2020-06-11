@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { keys } from 'src/storage';
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>
 
@@ -47,8 +48,8 @@ export class MainComponent {
       }
     }
 
-    let did = localStorage.getItem('did_siop_user_did');
-    let signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
+    let did = localStorage.getItem(keys.userDID);
+    let signingInfoSet = JSON.parse(localStorage.getItem(keys.signingInfoSet));
     if(did){
       this.currentDID = did;
       this.signingInfoSet = signingInfoSet;

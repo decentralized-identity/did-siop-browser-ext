@@ -3,6 +3,7 @@
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
+import { keys } from './storage';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
@@ -35,12 +36,12 @@ const checkSigning = async function(){
     try{
         if(!provider){
             provider = new Provider();
-            let did = localStorage.getItem('did_siop_user_did');
+            let did = localStorage.getItem(keys.userDID);
             await provider.setUser(did);
         }
 
         if(signingInfoSet.length < 1){
-            signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
+            signingInfoSet = JSON.parse(localStorage.getItem(keys.signingInfoSet));
             if(!signingInfoSet){
                 signingInfoSet = [];
             }
@@ -66,8 +67,8 @@ runtime.onInstalled.addListener( async function(){
             format: 'HEX',
         },
     ];
-    localStorage.setItem('did_siop_user_did', did);
-    localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+    localStorage.setItem(keys.userDID, did);
+    localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
     checkSigning();
 });
 
@@ -127,9 +128,9 @@ const changeDID = async function(did: string): Promise<string>{
         let newProvider = new Provider();
         await newProvider.setUser(did);
         provider = newProvider;
-        localStorage.setItem('did_siop_user_did', did);
+        localStorage.setItem(keys.userDID, did);
         signingInfoSet = [];
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'Identity changed successfully';
     }
     catch(err){
@@ -146,7 +147,7 @@ const addKey = async function(keyInfo: any): Promise<string>{
           key: keyInfo.key,
           format: keyInfo.format,
         });
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'New key added successfully';
     }
     catch(err){
@@ -160,7 +161,7 @@ const removeKey = async function(kid: string): Promise<string>{
         signingInfoSet = signingInfoSet.filter(key => {
             return key.kid !== kid;
         })
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'Key removed successfully';
       }
     catch(err){
