@@ -1,8 +1,7 @@
-$app-primary: #24c1b6;
-$app-section-background: #f0f0f0;
+@import "../../colors";
 
-.main{
-    width: 430px;
+.main-wrapper{
+    width: 100%;
 }
 
 .header{
