@@ -1,15 +1,8 @@
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { keys } from 'src/storage';
+import { STORAGE_KEYS, TASKS } from 'src/globals';
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>
-
-enum TASKS{
-  CHANGE_DID,
-  ADD_KEY,
-  REMOVE_KEY,
-  PROCESS_REQUEST,
-}
 
 @Component({
   selector: 'app-main',
@@ -48,8 +41,8 @@ export class MainComponent {
       }
     }
 
-    let did = localStorage.getItem(keys.userDID);
-    let signingInfoSet = JSON.parse(localStorage.getItem(keys.signingInfoSet));
+    let did = localStorage.getItem(STORAGE_KEYS.userDID);
+    let signingInfoSet = JSON.parse(localStorage.getItem(STORAGE_KEYS.signingInfoSet));
     if(did){
       this.currentDID = did;
       this.signingInfoSet = signingInfoSet;

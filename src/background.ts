@@ -3,17 +3,10 @@
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
-import { keys } from './storage';
+import { keys, TASKS } from './globals';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
-
-enum TASKS{
-    CHANGE_DID,
-    ADD_KEY,
-    REMOVE_KEY,
-    PROCESS_REQUEST,
-}
 
 let runtime: any;
 let tabs: any;
