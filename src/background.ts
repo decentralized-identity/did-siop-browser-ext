@@ -117,6 +117,12 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse({result: initExtAuthentication(request.password)});
                 break;
             }
+            case TASKS.GET_IDENTITY: {
+                let did = localStorage.getItem(STORAGE_KEYS.userDID);
+                let keys = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+                sendResponse({ did, keys });
+                break;
+            }
         }
     }
     else{

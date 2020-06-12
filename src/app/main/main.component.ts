@@ -2,8 +2,6 @@ import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/co
 import { ToastrService } from 'ngx-toastr';
 import { STORAGE_KEYS, TASKS } from 'src/globals';
 import { BackgroundMessageService } from '../background-message.service';
-/// <reference types="chrome"/>
-/// <reference types="firefox-webext-browser"/>
 
 @Component({
   selector: 'app-main',
@@ -14,7 +12,6 @@ export class MainComponent {
   title = 'did-siop-ext';
   currentDID: string;
   signingInfoSet: any[] = [];
-  selectedKeyID: string;
 
   @ViewChild('newDID') newDID: ElementRef;
   @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
@@ -27,19 +24,25 @@ export class MainComponent {
   
   @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
+  @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
-    
-
-    let did = localStorage.getItem(STORAGE_KEYS.userDID);
-    let signingInfoSet = JSON.parse(localStorage.getItem(STORAGE_KEYS.signingInfoSet));
-    if(did){
-      this.currentDID = did;
-      this.signingInfoSet = signingInfoSet;
-    }
-    else{
-      this.currentDID = 'No DID provided';
-    }
+    this.messageService.sendMessage(
+      {
+        task: TASKS.GET_IDENTITY
+      }
+      ,
+      (response) => {
+        if(response.did){
+          this.currentDID = response.did;
+          this.signingInfoSet = JSON.parse(response.keys);
+        }
+        else{
+          this.currentDID = 'No DID provided';
+        }
+        this.changeDetector.detectChanges();
+      }
+    )
   }
 
   async changeDID(did: string){
@@ -129,6 +132,10 @@ export class MainComponent {
         }
       );
     }
+  }
+
+  selectKey(keyid){
+    this.toRemoveKeyKID.nativeElement.value = keyid;
   }
 
 }

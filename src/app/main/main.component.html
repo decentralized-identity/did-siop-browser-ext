@@ -92,7 +92,7 @@
                             </div>
                             <input value="{{key.format}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
                         </div>
-                        <button class="btn btn-link remove-key-btn" (click)='this.selectedKeyID = key.kid' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
+                        <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
                     </div>
                   </div>
                 </div>
@@ -186,7 +186,7 @@
                   <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
                   <p>KID</p>
                   <div class="input-group input-group-sm">
-                    <textarea #toRemoveKeyKID value="{{selectedKeyID}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
+                    <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                   </div>
                   <p class="error" #removeKeyModalInfo></p>
               </div>
