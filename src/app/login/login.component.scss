@@ -25,6 +25,15 @@
     }
 }
 
+.init-controls{
+    form{
+        input{
+            margin-bottom: 20px;
+        }
+    }
+}
+
+
 .input-group-sm{
     input{
         font-size: 16px;
@@ -41,7 +50,7 @@
     }
 }
 
-.invalid-password{
+.invalid-input{
     &::placeholder{
         color: red;
         font-size: 12px;

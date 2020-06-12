@@ -3,10 +3,12 @@
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
-import { keys, TASKS } from './globals';
+import { STORAGE_KEYS, TASKS } from './globals';
+import { authenticate, checkExtAuthenticationState, initExtAuthentication } from './AuthUtils';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
+let loggedInState: boolean = false;
 
 let runtime: any;
 let tabs: any;
@@ -29,12 +31,12 @@ const checkSigning = async function(){
     try{
         if(!provider){
             provider = new Provider();
-            let did = localStorage.getItem(keys.userDID);
+            let did = localStorage.getItem(STORAGE_KEYS.userDID);
             await provider.setUser(did);
         }
 
         if(signingInfoSet.length < 1){
-            signingInfoSet = JSON.parse(localStorage.getItem(keys.signingInfoSet));
+            signingInfoSet = JSON.parse(localStorage.getItem(STORAGE_KEYS.signingInfoSet));
             if(!signingInfoSet){
                 signingInfoSet = [];
             }
@@ -60,8 +62,8 @@ runtime.onInstalled.addListener( async function(){
             format: 'HEX',
         },
     ];
-    localStorage.setItem(keys.userDID, did);
-    localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
+    localStorage.setItem(STORAGE_KEYS.userDID, did);
+    localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
     checkSigning();
 });
 
@@ -74,7 +76,7 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
                 break;
             }
@@ -84,7 +86,7 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
                 break;
             }
@@ -94,8 +96,25 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
+                break;
+            }
+            case TASKS.CHECK_LOGIN_STATE: {
+                sendResponse({result: checkLoggedInState()});
+                break;
+            }
+            case TASKS.LOGIN: {
+                sendResponse({result: login(request.password)});
+                break;
+            }
+            case TASKS.CHECK_EXT_AUTHENTICATION: {
+                let result = checkExtAuthenticationState();
+                sendResponse({result: result});
+                break;
+            }
+            case TASKS.INIT_EXT_AUTHENTICATION: {
+                sendResponse({result: initExtAuthentication(request.password)});
                 break;
             }
         }
@@ -116,14 +135,27 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
 });
 
-const changeDID = async function(did: string): Promise<string>{
+
+function checkLoggedInState(): boolean{
+    return loggedInState;
+}
+
+function login(password: string): boolean{
+    if(authenticate(password)){
+        loggedInState = true;
+    }
+    return loggedInState;
+}
+
+
+async function changeDID(did: string): Promise<string>{
     try{
         let newProvider = new Provider();
         await newProvider.setUser(did);
         provider = newProvider;
-        localStorage.setItem(keys.userDID, did);
+        localStorage.setItem(STORAGE_KEYS.userDID, did);
         signingInfoSet = [];
-        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'Identity changed successfully';
     }
     catch(err){
@@ -131,7 +163,7 @@ const changeDID = async function(did: string): Promise<string>{
     }
 }
 
-const addKey = async function(keyInfo: any): Promise<string>{
+async function addKey(keyInfo: any): Promise<string>{
     try{
         provider.addSigningParams(keyInfo.key, keyInfo.kid, keyInfo.format,  keyInfo.alg);
         signingInfoSet.push({
@@ -140,7 +172,7 @@ const addKey = async function(keyInfo: any): Promise<string>{
           key: keyInfo.key,
           format: keyInfo.format,
         });
-        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'New key added successfully';
     }
     catch(err){
@@ -148,13 +180,13 @@ const addKey = async function(keyInfo: any): Promise<string>{
     }
 }
 
-const removeKey = async function(kid: string): Promise<string>{
+async function removeKey(kid: string): Promise<string>{
     try{
         provider.removeSigningParams(kid);
         signingInfoSet = signingInfoSet.filter(key => {
             return key.kid !== kid;
         })
-        localStorage.setItem(keys.signingInfoSet, JSON.stringify(signingInfoSet));
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
         return 'Key removed successfully';
       }
     catch(err){
@@ -162,7 +194,7 @@ const removeKey = async function(kid: string): Promise<string>{
     }
 }
 
-const processRequest = async function(request: string, confirmation: any){
+async function processRequest(request: string, confirmation: any){
     let processError: Error;
     if (queryString.parseUrl(request).url === 'openid://') {
         try{

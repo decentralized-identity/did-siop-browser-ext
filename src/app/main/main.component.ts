@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { STORAGE_KEYS, TASKS } from 'src/globals';
+import { BackgroundMessageService } from '../background-message.service';
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>
 
@@ -13,8 +14,7 @@ export class MainComponent {
   title = 'did-siop-ext';
   currentDID: string;
   signingInfoSet: any[] = [];
-  selectedKeyID: string; 
-  runtime: any;
+  selectedKeyID: string;
 
   @ViewChild('newDID') newDID: ElementRef;
   @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
@@ -28,18 +28,8 @@ export class MainComponent {
   @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
 
-  constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService) {
-    try{
-      this.runtime = browser.runtime;
-    }
-    catch(err){
-      try{
-          this.runtime = chrome.runtime;
-      }
-      catch(err){
-          console.log('DID-SIOP ERROR: No runtime detected');
-      }
-    }
+  constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
+    
 
     let did = localStorage.getItem(STORAGE_KEYS.userDID);
     let signingInfoSet = JSON.parse(localStorage.getItem(STORAGE_KEYS.signingInfoSet));
@@ -55,7 +45,7 @@ export class MainComponent {
   async changeDID(did: string){
     this.changeDIDModalInfo.nativeElement.innerText = '';
     if(did){
-      this.runtime.sendMessage({
+      this.messageService.sendMessage({
         task: TASKS.CHANGE_DID,
         did: did,
         }, 
@@ -91,7 +81,7 @@ export class MainComponent {
       format: format,
     }
 
-    this.runtime.sendMessage({
+    this.messageService.sendMessage({
       task: TASKS.ADD_KEY,
       keyInfo: keyInfo,
       }, 
@@ -117,7 +107,7 @@ export class MainComponent {
   async removeKey(kid: string){
     this.removeKeyModalInfo.nativeElement.innerText = '';
     if(kid){
-      this.runtime.sendMessage({
+      this.messageService.sendMessage({
         task: TASKS.REMOVE_KEY,
         kid: kid,
         }, 

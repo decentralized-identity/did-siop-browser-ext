@@ -1,11 +1,11 @@
-<div class="d-flex flex-column align-items-center w-100 login-wrapper">
+<div *ngIf="compDisplay" class="d-flex flex-column align-items-center w-100 login-wrapper">
     <div class="logo">
         <img class="img-fluid" src="assets/logo.svg" alt="did siop logo">
     </div>
     <div class="description">
         <p>Self-issued OpenIDConnect Provider based on <br> Decentralized Identities</p>
     </div>
-    <div class="login-controls">
+    <div *ngIf="extAuthenticationState" class="login-controls">
         <form class="d-flex flex-column justify-content-center align-items-center">
             <div class="input-group input-group-sm">
                 <input id="password" type="password" placeholder="Enter Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #password>
@@ -13,5 +13,15 @@
             <button type="button" class="btn btn-primary btn-ok" (click)="login(password.value)">Login</button>
         </form>
     </div>
-    <div class="init-controls"></div>
+    <div *ngIf="!extAuthenticationState" class="init-controls">
+        <form class="d-flex flex-column justify-content-center align-items-center">
+            <div class="input-group input-group-sm">
+                <input id="newPassword" type="password" placeholder="Enter New Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #newPassword>
+            </div>
+            <div class="input-group input-group-sm">
+                <input id="confirmNewPassword" type="password" placeholder="Confirm New Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #confirmNewPassword>
+            </div>
+            <button type="button" class="btn btn-primary btn-ok" (click)="register(newPassword.value, confirmNewPassword.value)">Save</button>
+        </form>
+    </div>
 </div>
