@@ -33,15 +33,21 @@
     margin-bottom: 40px;
 }
 
-.settings-icon{
+.navigation{
     position: absolute;
     top: 132px;
     right: 5px;
+    button{
+        color: $app-primary;
+        font-size: 12px;
+        padding-right: 0px;
+        padding-left: 0px;
+        margin-left: 10px;
+    }
 }
 
 .main-content{
     height: 100%;
-    overflow-y: scroll;
 }
 
 .identity{
