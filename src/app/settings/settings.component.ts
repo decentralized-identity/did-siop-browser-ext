@@ -32,6 +32,8 @@ export class SettingsComponent implements OnInit {
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
+  @ViewChild('testDataModalClose') testDataModalClose: ElementRef;
+
   @Output() clickedBack = new EventEmitter<boolean>();
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
@@ -196,6 +198,48 @@ export class SettingsComponent implements OnInit {
     else{
       this.newPasswordModalInfo.nativeElement.innerText = 'Please fill all data';
       console.log('error');
+    }
+  }
+
+  async initializeTestData(){
+    let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
+    if(did){
+      this.messageService.sendMessage({
+        task: TASKS.CHANGE_DID,
+        did: did,
+        }, 
+        (response) =>{
+          if(response.result){
+            this.currentDID = did;
+            let keyInfo = {
+              alg: 'ES256K-R',
+              kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
+              key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
+              format: 'HEX',
+            }
+        
+            this.messageService.sendMessage({
+              task: TASKS.ADD_KEY,
+              keyInfo: keyInfo,
+              }, 
+              (response) =>{
+                if(response.result){
+                  this.signingInfoSet.push(keyInfo);
+                  this.testDataModalClose.nativeElement.click();
+                  this.changeDetector.detectChanges();
+                  this.toastrService.success('Successful', 'DID_SIOP', {
+                    onActivateTick: true,
+                    positionClass: 'toast-bottom-center',
+                  });
+                }
+              }
+            );
+          }
+        }
+      );
+    }
+    else{
+      this.changeDIDModalInfo.nativeElement.innerText = 'Please enter a valid DID';
     }
   }
 
