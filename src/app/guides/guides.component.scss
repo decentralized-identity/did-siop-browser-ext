@@ -1,0 +1,16 @@
+@import "../../colors";
+
+.guides{
+    width: 100%;
+    padding-left: 26px;
+    padding-right: 26px;
+    ul{
+        width: 320px;
+        padding-left: 20px;
+        li{
+            a{
+                color: $app-primary;
+            }
+        }
+    }
+}

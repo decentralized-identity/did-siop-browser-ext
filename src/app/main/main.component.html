@@ -7,9 +7,13 @@
     </div>
     <div class="separator"></div>
 
-    <div class="main-content">
+    <div *ngIf="displayMainContent" class="main-content">
       <div class="settings-icon">
         <img src="assets/gear.svg" alt="settings icon" (click)="logout()">
+      </div>
+
+      <div class="guides-icon">
+        <img src="assets/gear.svg" alt="settings icon" (click)="showGuides()">
       </div>
   
       <div class="identity container-fluid">
@@ -203,20 +207,6 @@
             </div>
           </div>
       </div>
-  
-      <div class="container-fluid guides">
-        <p>Guides</p>
-        <ul>
-            <li>
-                <p><a class="out-link" href="https://siop-tools.herokuapp.com/">Create an Etheruem DID.</a> A full DID is did:ethr: + etheruem address</p>
-            </li>
-            <li>
-                <p>Algorithm is ES256k-R for ethereum keys</p>
-            </li>
-            <li>
-                <p>Kid value is user_DID + #owner for etheruem keys</p>
-            </li>
-        </ul>
-      </div>
     </div>
+    <app-guides *ngIf="displayGuides" (clickedBack)="showMainContent()"></app-guides>
 </div>

@@ -28,6 +28,9 @@ export class MainComponent {
 
   @Output() loggedOut = new EventEmitter<boolean>();
 
+  displayMainContent: boolean = true;
+  displayGuides: boolean = false;
+
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
     this.messageService.sendMessage(
       {
@@ -150,6 +153,18 @@ export class MainComponent {
         }
       }
     );
+  }
+
+  showMainContent(){
+    this.displayMainContent = true;
+    this.displayGuides = false;
+    this.changeDetector.detectChanges();
+  }
+
+  showGuides(){
+    this.displayGuides = true;
+    this.displayMainContent = false;
+    this.changeDetector.detectChanges();
   }
 
 }

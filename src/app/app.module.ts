@@ -9,13 +9,15 @@ import { ToastrModule } from 'ngx-toastr';
 import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
 import { SettingsComponent } from './settings/settings.component';
+import { GuidesComponent } from './guides/guides.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MainComponent,
-    SettingsComponent
+    SettingsComponent,
+    GuidesComponent
   ],
   imports: [
     BrowserModule,
