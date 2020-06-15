@@ -5,6 +5,7 @@ import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
 import { STORAGE_KEYS, TASKS } from './globals';
 import { authenticate, checkExtAuthenticationState, initExtAuthentication } from './AuthUtils';
+import { encrypt, decrypt } from './CryptoUtils';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
@@ -31,12 +32,12 @@ const checkSigning = async function(){
     try{
         if(!provider){
             provider = new Provider();
-            let did = localStorage.getItem(STORAGE_KEYS.userDID);
+            let did = decrypt(localStorage.getItem(STORAGE_KEYS.userDID), loggedInState);
             await provider.setUser(did);
         }
 
         if(signingInfoSet.length < 1){
-            signingInfoSet = JSON.parse(localStorage.getItem(STORAGE_KEYS.signingInfoSet));
+            signingInfoSet = JSON.parse(decrypt(localStorage.getItem(STORAGE_KEYS.signingInfoSet), loggedInState));
             if(!signingInfoSet){
                 signingInfoSet = [];
             }
@@ -51,21 +52,6 @@ const checkSigning = async function(){
         throw err;
     }
 }
-
-runtime.onInstalled.addListener( async function(){
-    let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
-    let signingInfoSet = [
-        {
-            alg: 'ES256K-R',
-            kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
-            key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
-            format: 'HEX',
-        },
-    ];
-    localStorage.setItem(STORAGE_KEYS.userDID, did);
-    localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
-    checkSigning();
-});
 
 runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(!sender.tab){
@@ -126,8 +112,19 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 break;
             }
             case TASKS.GET_IDENTITY: {
-                let did = localStorage.getItem(STORAGE_KEYS.userDID);
-                let keys = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+                let did = '';
+                let keys = '';
+
+                try{
+                    let encryptedDID = localStorage.getItem(STORAGE_KEYS.userDID);
+                    let encryptedSigningInfo = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+                    if(encryptedDID){
+                        did = decrypt(encryptedDID, loggedInState);
+                        keys = decrypt(encryptedSigningInfo, loggedInState);
+                    }
+                }
+                catch(err){}
+
                 sendResponse({ did, keys });
                 break;
             }
@@ -186,9 +183,11 @@ async function changeDID(did: string): Promise<string>{
         let newProvider = new Provider();
         await newProvider.setUser(did);
         provider = newProvider;
-        localStorage.setItem(STORAGE_KEYS.userDID, did);
+        let encryptedDID = encrypt(did, loggedInState);
+        localStorage.setItem(STORAGE_KEYS.userDID, encryptedDID);
         signingInfoSet = [];
-        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'Identity changed successfully';
     }
     catch(err){
@@ -205,7 +204,8 @@ async function addKey(keyInfo: any): Promise<string>{
           key: keyInfo.key,
           format: keyInfo.format,
         });
-        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'New key added successfully';
     }
     catch(err){
@@ -219,7 +219,8 @@ async function removeKey(kid: string): Promise<string>{
         signingInfoSet = signingInfoSet.filter(key => {
             return key.kid !== kid;
         })
-        localStorage.setItem(STORAGE_KEYS.signingInfoSet, JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'Key removed successfully';
       }
     catch(err){

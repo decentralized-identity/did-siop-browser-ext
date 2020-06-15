@@ -1,4 +1,4 @@
-import { createHash } from 'crypto-browserify';
+import { createHash, createCipher, createDecipher } from 'crypto-browserify';
 
 export function hash(value: string, salt: string): string{
     let sha256 = createHash('sha256');
@@ -9,6 +9,16 @@ export function hash(value: string, salt: string): string{
     return result;
   }
 
-export function encode(value: string, key: string): string{
-    return 'Not supported';
+export function encrypt(value: string, password: string): string{
+    const cipher = createCipher('aes-128-cbc', password);
+    let encrypted = cipher.update(value, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+}
+
+export function decrypt(value: string, password: string){
+    const decipher = createDecipher('aes-128-cbc', password);
+    let decrypted = decipher.update(value, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
 }
