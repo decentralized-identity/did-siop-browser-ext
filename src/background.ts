@@ -8,7 +8,7 @@ import { authenticate, checkExtAuthenticationState, initExtAuthentication } from
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
-let loggedInState: boolean = false;
+let loggedInState: string = undefined;
 
 let runtime: any;
 let tabs: any;
@@ -151,12 +151,15 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 function checkLoggedInState(): boolean{
-    return loggedInState;
+    if(loggedInState){
+        return true;
+    }
+    return false;
 }
 
 function login(password: string): boolean{
     if(authenticate(password)){
-        loggedInState = true;
+        loggedInState = password;
         return true;
     }
     return false;
@@ -164,7 +167,7 @@ function login(password: string): boolean{
 
 function logout(): boolean{
     if(loggedInState){
-        loggedInState = false;
+        loggedInState = undefined;
         return true;
     }
     return false;
