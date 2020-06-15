@@ -1,6 +1,6 @@
-import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { STORAGE_KEYS, TASKS } from 'src/globals';
+import { TASKS } from 'src/globals';
 import { BackgroundMessageService } from '../background-message.service';
 
 @Component({
@@ -25,6 +25,8 @@ export class MainComponent {
   @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
+
+  @Output() loggedOut = new EventEmitter<boolean>();
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
     this.messageService.sendMessage(
@@ -136,6 +138,18 @@ export class MainComponent {
 
   selectKey(keyid){
     this.toRemoveKeyKID.nativeElement.value = keyid;
+  }
+
+  logout(){
+    this.messageService.sendMessage({
+      task: TASKS.LOGOUT
+    },
+      (response)=>{
+        if(response.result){
+          this.loggedOut.emit(true);
+        }
+      }
+    );
   }
 
 }

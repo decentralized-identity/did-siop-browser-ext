@@ -108,6 +108,10 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse({result: login(request.password)});
                 break;
             }
+            case TASKS.LOGOUT: {
+                sendResponse({result: logout()});
+                break;
+            }
             case TASKS.CHECK_EXT_AUTHENTICATION: {
                 let result = checkExtAuthenticationState();
                 sendResponse({result: result});
@@ -151,6 +155,14 @@ function login(password: string): boolean{
         loggedInState = true;
     }
     return loggedInState;
+}
+
+function logout(): boolean{
+    if(loggedInState){
+        loggedInState = false;
+        return true;
+    }
+    return false;
 }
 
 

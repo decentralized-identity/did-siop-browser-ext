@@ -12,8 +12,8 @@ export class AppComponent {
   constructor(private changeDetector: ChangeDetectorRef){}
 
   showLogin(){
-    this.displayLogin = true;
     this.displayMain = false;
+    this.displayLogin = true;
     this.changeDetector.detectChanges();
   }
 
