@@ -1,6 +1,4 @@
-import { Component } from '@angular/core';
-/// <reference types="chrome"/>
-/// <reference types="firefox-webext-browser"/>
+import { Component, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +6,20 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(){}
+  displayLogin: boolean = true;
+  displayMain: boolean = false;
+
+  constructor(private changeDetector: ChangeDetectorRef){}
+
+  showLogin(){
+    this.displayLogin = true;
+    this.displayMain = false;
+    this.changeDetector.detectChanges();
+  }
+
+  showMain(){
+    this.displayLogin = false;
+    this.displayMain = true;
+    this.changeDetector.detectChanges();
+  }
 }

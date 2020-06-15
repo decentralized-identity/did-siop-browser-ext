@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { TASKS } from 'src/globals';
 import { BackgroundMessageService } from '../background-message.service';
@@ -10,7 +10,7 @@ import { BackgroundMessageService } from '../background-message.service';
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-  compDisplay: boolean = true;
+  @Output() loggedIn = new EventEmitter<boolean>();
 
   loginState: boolean = false;
   extAuthenticationState:boolean = false;
@@ -34,9 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
           },
             (response)=>{
               if(response.result){
-                this.router.navigate(['/main']);
-                this.compDisplay = false;
-                this.changeDetector.detectChanges();
+                this.loggedIn.emit(true);
               }
             }
           )
@@ -56,9 +54,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       },
         (response)=>{
           if(response.result){
-            this.router.navigate(['/main']);
-            this.compDisplay = false;
-            this.changeDetector.detectChanges();
+            this.loggedIn.emit(true);
           }
           else{
             this.password.nativeElement.value = '';

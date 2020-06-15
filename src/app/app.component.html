@@ -1,3 +1,4 @@
 <div class="mx-auto top-wrapper">
-    <router-outlet></router-outlet>
+    <app-login *ngIf="displayLogin" (loggedIn)="showMain()"></app-login>
+    <app-main *ngIf="displayMain"></app-main>
 </div>

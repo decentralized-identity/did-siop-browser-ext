@@ -7,210 +7,216 @@
     </div>
     <div class="separator"></div>
 
-    <div class="identity container-fluid">
-        <div class="identity-inner">
-          <div class="row identity-top">
-            <div class="col">
-              <p>Current Identity</p>
-            </div>
-            <div class="col d-flex justify-content-end change-did-btn">
-              <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal"><small>Change</small></button>
-            </div>
-          </div>
-          <div class="row identity-bottom">
-            <div class="col current-did">
-              <p><span class="text-muted">{{currentDID}}</span></p>
-            </div>
-          </div>
-        </div>
-        
-        
-        <div class="modal" id="changeDIDModal" tabindex="-1" role="dialog" aria-labelledby="changeDIDModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="changeDIDModalLabel">Enter New DID</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+    <div class="main-content">
+      <div class="settings-icon">
+        <img src="assets/gear.svg" alt="settings icon">
+      </div>
+  
+      <div class="identity container-fluid">
+          <div class="identity-inner">
+            <div class="row identity-top">
+              <div class="col">
+                <p>Current Identity</p>
               </div>
-              <div class="modal-body">
-                  <p class="warning">Warning! Changing DID will remove all the keys related to current DID</p>
-                  <p>New DID</p>
-                  <div class="input-group input-group-sm">
-                      <textarea id="newDID" #newDID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                  </div>
-                  <p #changeDIDModalInfo class="error"></p>
+              <div class="col d-flex justify-content-end change-did-btn">
+                <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal"><small>Change</small></button>
               </div>
-              <div class="modal-footer d-flex justify-content-start">
-                <button type="button" class="btn btn-primary btn-ok" (click)="changeDID(newDID.value)">Change DID</button>
-                <button #changeDIDModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
+            </div>
+            <div class="row identity-bottom">
+              <div class="col current-did">
+                <p><span class="text-muted">{{currentDID}}</span></p>
               </div>
             </div>
           </div>
-        </div>
-    </div>
-
-    <div class="container-fluid signing-keys">
-        <div class="signing-keys-inner">
-          <div class="row signing-keys-top">
-            <div class="col">
-              <p>Signing Keys</p>
-            </div>
-            <div class="col d-flex justify-content-end new-key-btn">
-              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal"><small>Add New Key</small></button>
-            </div>
-          </div>
-          <div class="row signing-keys-bottom">
-            <div class="col">
-              <div id="keyAccordion" role="tablist">
-                <div class="card" *ngFor="let key of signingInfoSet; let i = index">
-                  <div class="card-header" role="tab" id="{{'key' + i}}">
-                    <h5 class="mb-0">
-                      <a data-toggle="collapse" href="{{'#keyCollapse' + i}}" aria-expanded="true" attr.aria-controls="{{'keyCollapse' + i}}">
-                        Key - {{i}}
-                      </a>
-                    </h5>
-                  </div>
-                  <div id="{{'keyCollapse' + i}}" class="collapse" role="tabpanel" attr.aria-labelledby="{{'key' + i}}">
-                    <div class="card-body">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Key id</span>
-                            </div>
-                            <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
-                        </div>
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Algorithm</span>
-                            </div>
-                            <input value="{{key.alg}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
-                        </div>
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Key format</span>
-                            </div>
-                            <input value="{{key.format}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
-                        </div>
-                        <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true">
+          
+          
+          <div class="modal" id="changeDIDModal" tabindex="-1" role="dialog" aria-labelledby="changeDIDModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="newKeyModalLabel">Add New Key</h5>
+                  <h5 class="modal-title" id="changeDIDModalLabel">Enter New DID</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
-                    <div class="new-key-kid">
-                      <p class="new-key-modal-input-label">KID</p>
-                      <div class="input-group input-group-sm new-key-modal-input">
-                          <textarea id="newKeyKID" #newKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                      </div>
+                    <p class="warning">Warning! Changing DID will remove all the keys related to current DID</p>
+                    <p>New DID</p>
+                    <div class="input-group input-group-sm">
+                        <textarea id="newDID" #newDID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                     </div>
-                    <div class="new-key-algorithm">
-                      <p class="new-key-modal-input-label">Algorithm</p>
-                      <div class="input-group input-group-sm new-key-modal-input">
-                          <select id="newKeyAlgorithm" #newKeyAlgorithm class="custom-select">
-                              <option value="RS256">RS256</option>
-                              <option value="RS384">RS384</option>
-                              <option value="RS512">RS512</option>
-
-                              <option value="PS256">PS256</option>
-                              <option value="PS384">PS384</option>
-                              <option value="PS512">PS512</option>
-
-                              <option value="ES256">ES256</option>
-                              <option value="ES384">ES384</option>
-                              <option value="ES512">ES512</option>
-                              <option value="ES256K">ES256K</option>
-                              <option value="ES256K-R">ES256K-R</option>
-
-                              <option value="EdDSA">EdDSA</option>
-                          </select>
-                      </div>
-                    </div>
-                    <div class="new-key-format">
-                      <p class="new-key-modal-input-label">Format</p>
-                      <div class="input-group input-group-sm new-key-modal-input">
-                          <select id="newKeyFormat" #newKeyFormat class="custom-select">
-                              <option value="HEX">HEX</option>
-                              <option value="BASE58">BASE58</option>
-                              <option value="BASE64">BASE64</option>
-
-                              <option value="PKCS8_PEM">PKCS8_PEM</option>
-                              <option value="PKCS1_PEM">PKCS1_PEM</option>
-                          </select>
-                      </div>
-                    </div>
-                    <div class="new-key-key">
-                      <p class="new-key-modal-input-label">Key</p>
-                      <div class="input-group input-group-sm new-key-modal-input">
-                          <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                      </div>
-                    </div>
+                    <p #changeDIDModalInfo class="error"></p>
                 </div>
-                <p class="error" #addNewKeyModalInfo></p>
                 <div class="modal-footer d-flex justify-content-start">
-                  <button type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
-                      newKeyString.value,
-                      newKeyKID.value,
-                      newKeyFormat.value,
-                      newKeyAlgorithm.value
-                    )'>Add Key</button>
-                  <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary btn-ok" (click)="changeDID(newDID.value)">Change DID</button>
+                  <button #changeDIDModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                 </div>
-              </div>
-            </div>
-        </div>
-
-        <div class="modal" id="removeKeyModal" tabindex="-1" role="dialog" aria-labelledby="removeKeyModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="removeKeyModalLabel">Remove Key</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                  <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
-                  <p>KID</p>
-                  <div class="input-group input-group-sm">
-                    <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
-                  </div>
-                  <p class="error" #removeKeyModalInfo></p>
-              </div>
-              <div class="modal-footer d-flex justify-content-start">
-                <button type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
-                <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>
-        </div>
-    </div>
-
-    <div class="container-fluid guides">
-      <p>Guides</p>
-      <ul>
-          <li>
-              <p><a class="out-link" href="https://siop-tools.herokuapp.com/">Create an Etheruem DID.</a> A full DID is did:ethr: + etheruem address</p>
-          </li>
-          <li>
-              <p>Algorithm is ES256k-R for ethereum keys</p>
-          </li>
-          <li>
-              <p>Kid value is user_DID + #owner for etheruem keys</p>
-          </li>
-      </ul>
+      </div>
+  
+      <div class="container-fluid signing-keys">
+          <div class="signing-keys-inner">
+            <div class="row signing-keys-top">
+              <div class="col">
+                <p>Signing Keys</p>
+              </div>
+              <div class="col d-flex justify-content-end new-key-btn">
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal"><small>Add New Key</small></button>
+              </div>
+            </div>
+            <div class="row signing-keys-bottom">
+              <div class="col">
+                <div id="keyAccordion" role="tablist">
+                  <div class="card" *ngFor="let key of signingInfoSet; let i = index">
+                    <div class="card-header" role="tab" id="{{'key' + i}}">
+                      <h5 class="mb-0">
+                        <a data-toggle="collapse" href="{{'#keyCollapse' + i}}" aria-expanded="true" attr.aria-controls="{{'keyCollapse' + i}}">
+                          Key - {{i}}
+                        </a>
+                      </h5>
+                    </div>
+                    <div id="{{'keyCollapse' + i}}" class="collapse" role="tabpanel" attr.aria-labelledby="{{'key' + i}}">
+                      <div class="card-body">
+                          <div class="input-group input-group-sm">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text" id="inputGroup-sizing-sm">Key id</span>
+                              </div>
+                              <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
+                          </div>
+                          <div class="input-group input-group-sm">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text" id="inputGroup-sizing-sm">Algorithm</span>
+                              </div>
+                              <input value="{{key.alg}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
+                          </div>
+                          <div class="input-group input-group-sm">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text" id="inputGroup-sizing-sm">Key format</span>
+                              </div>
+                              <input value="{{key.format}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
+                          </div>
+                          <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="newKeyModalLabel">Add New Key</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="new-key-kid">
+                        <p class="new-key-modal-input-label">KID</p>
+                        <div class="input-group input-group-sm new-key-modal-input">
+                            <textarea id="newKeyKID" #newKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
+                        </div>
+                      </div>
+                      <div class="new-key-algorithm">
+                        <p class="new-key-modal-input-label">Algorithm</p>
+                        <div class="input-group input-group-sm new-key-modal-input">
+                            <select id="newKeyAlgorithm" #newKeyAlgorithm class="custom-select">
+                                <option value="RS256">RS256</option>
+                                <option value="RS384">RS384</option>
+                                <option value="RS512">RS512</option>
+  
+                                <option value="PS256">PS256</option>
+                                <option value="PS384">PS384</option>
+                                <option value="PS512">PS512</option>
+  
+                                <option value="ES256">ES256</option>
+                                <option value="ES384">ES384</option>
+                                <option value="ES512">ES512</option>
+                                <option value="ES256K">ES256K</option>
+                                <option value="ES256K-R">ES256K-R</option>
+  
+                                <option value="EdDSA">EdDSA</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="new-key-format">
+                        <p class="new-key-modal-input-label">Format</p>
+                        <div class="input-group input-group-sm new-key-modal-input">
+                            <select id="newKeyFormat" #newKeyFormat class="custom-select">
+                                <option value="HEX">HEX</option>
+                                <option value="BASE58">BASE58</option>
+                                <option value="BASE64">BASE64</option>
+  
+                                <option value="PKCS8_PEM">PKCS8_PEM</option>
+                                <option value="PKCS1_PEM">PKCS1_PEM</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="new-key-key">
+                        <p class="new-key-modal-input-label">Key</p>
+                        <div class="input-group input-group-sm new-key-modal-input">
+                            <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                      </div>
+                  </div>
+                  <p class="error" #addNewKeyModalInfo></p>
+                  <div class="modal-footer d-flex justify-content-start">
+                    <button type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
+                        newKeyString.value,
+                        newKeyKID.value,
+                        newKeyFormat.value,
+                        newKeyAlgorithm.value
+                      )'>Add Key</button>
+                    <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+  
+          <div class="modal" id="removeKeyModal" tabindex="-1" role="dialog" aria-labelledby="removeKeyModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="removeKeyModalLabel">Remove Key</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
+                    <p>KID</p>
+                    <div class="input-group input-group-sm">
+                      <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
+                    </div>
+                    <p class="error" #removeKeyModalInfo></p>
+                </div>
+                <div class="modal-footer d-flex justify-content-start">
+                  <button type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
+                  <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+  
+      <div class="container-fluid guides">
+        <p>Guides</p>
+        <ul>
+            <li>
+                <p><a class="out-link" href="https://siop-tools.herokuapp.com/">Create an Etheruem DID.</a> A full DID is did:ethr: + etheruem address</p>
+            </li>
+            <li>
+                <p>Algorithm is ES256k-R for ethereum keys</p>
+            </li>
+            <li>
+                <p>Kid value is user_DID + #owner for etheruem keys</p>
+            </li>
+        </ul>
+      </div>
     </div>
 </div>
