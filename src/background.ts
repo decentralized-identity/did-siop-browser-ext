@@ -172,7 +172,24 @@ function logout(): boolean{
 
 function changePassword(oldPassword: string, newPassword: string): boolean{
     if(login(oldPassword)){
-        return initExtAuthentication(newPassword);
+        let changed = initExtAuthentication(newPassword);
+        if(changed){
+            let encryptedDID = localStorage.getItem(STORAGE_KEYS.userDID);
+            let encryptedSigningInfo = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+            if(encryptedDID){
+                let didRecrypted = encrypt(decrypt(encryptedDID, oldPassword), newPassword);
+                localStorage.setItem(STORAGE_KEYS.userDID, didRecrypted);
+            }
+            if(encryptedSigningInfo){
+                let keysRecrypted = encrypt(decrypt(encryptedSigningInfo, oldPassword), newPassword);
+                localStorage.setItem(STORAGE_KEYS.signingInfoSet, keysRecrypted);
+            }
+            loggedInState = newPassword;
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     return false;
 }
