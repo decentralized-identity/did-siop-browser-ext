@@ -19,21 +19,7 @@ export class MainComponent {
   displayGuides: boolean = false;
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
-    this.messageService.sendMessage(
-      {
-        task: TASKS.GET_IDENTITY
-      }
-      ,
-      (response) => {
-        if(response.did){
-          this.currentDID = response.did;
-        }
-        else{
-          this.currentDID = 'No DID provided';
-        }
-        this.changeDetector.detectChanges();
-      }
-    )
+    this.loadIdentity();
   }
 
   
@@ -53,6 +39,7 @@ export class MainComponent {
     this.displayMainContent = true;
     this.displayGuides = false;
     this.displaySettings = false;
+    this.loadIdentity();
     this.changeDetector.detectChanges();
   }
 
@@ -68,6 +55,24 @@ export class MainComponent {
     this.displayGuides = false;
     this.displayMainContent = false;
     this.changeDetector.detectChanges();
+  }
+
+  private loadIdentity(){
+    this.messageService.sendMessage(
+      {
+        task: TASKS.GET_IDENTITY
+      }
+      ,
+      (response) => {
+        if(response.did){
+          this.currentDID = response.did;
+        }
+        else{
+          this.currentDID = 'No DID provided';
+        }
+        this.changeDetector.detectChanges();
+      }
+    )
   }
 
 }
