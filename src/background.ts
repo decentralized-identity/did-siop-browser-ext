@@ -121,6 +121,10 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse({result: initExtAuthentication(request.password)});
                 break;
             }
+            case TASKS.CHANGE_EXT_AUTHENTICATION: {
+                sendResponse({result: changePassword(request.oldPassword, request.newPassword)});
+                break;
+            }
             case TASKS.GET_IDENTITY: {
                 let did = localStorage.getItem(STORAGE_KEYS.userDID);
                 let keys = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
@@ -153,14 +157,22 @@ function checkLoggedInState(): boolean{
 function login(password: string): boolean{
     if(authenticate(password)){
         loggedInState = true;
+        return true;
     }
-    return loggedInState;
+    return false;
 }
 
 function logout(): boolean{
     if(loggedInState){
         loggedInState = false;
         return true;
+    }
+    return false;
+}
+
+function changePassword(oldPassword: string, newPassword: string): boolean{
+    if(login(oldPassword)){
+        return initExtAuthentication(newPassword);
     }
     return false;
 }

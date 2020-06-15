@@ -1,0 +1,237 @@
+@import "../../colors";
+
+.settings{
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.identity{
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 17px;
+    margin-bottom: 30px;
+}
+
+.identity-inner{
+    background-color: $app-section-background;
+    padding-top: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 2px;
+}
+
+.identity-top{
+    height: 38px;
+}
+
+.change-did-btn{
+    button{
+        color: $app-primary;
+        padding-top: 0px;
+        padding-right: 0px;
+        font-size: 18px;
+        margin-top: -12px;
+    }
+}
+
+.current-did{
+    p{
+        word-break: break-all;
+    }
+}
+
+#newDID{
+    background-color: $app-section-background;
+}
+
+.signing-keys{
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 17px;
+    margin-bottom: 28px;
+}
+
+.signing-keys-inner{
+    background-color: $app-section-background;
+    padding-bottom: 2px;
+}
+
+.signing-keys-top{
+    height: 65px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #d6d4d4;
+}
+
+.new-key-btn{
+    button{
+        color: $app-primary;
+        padding-top: 0px;
+        padding-right: 0px;
+        font-size: 18px;
+        margin-top: -12px;
+    }
+}
+
+.signing-keys-bottom{
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    .col{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+#keyAccordion{
+    .card{
+        .card-header{
+            padding-top: 18px;
+            h5{
+                padding-left: 4px;
+                padding-right: 4px;
+                a{
+                    font-size: 17px;
+                    color: $app-primary !important;
+                }
+            }
+        }
+    }
+}
+
+.input-group-sm{
+    margin-bottom: 10px;
+}
+
+.input-group-text{
+    width: 100px;
+}
+
+.input-group-sm{
+    textarea{
+        resize: none;
+    }
+}
+
+.remove-key-btn{
+    color: $app-primary !important;
+}
+
+.warning{
+    color: orangered;
+}
+
+.success{
+    color: green;
+}
+
+.error{
+    color: red;
+}
+
+.modal-header{
+    border-bottom: 1px solid $app-primary;
+}
+
+.modal-footer{
+    border: none;
+}
+
+.new-key-kid, .new-key-algorithm, .new-key-format{
+    margin-bottom: 25px;
+    p{
+        margin-bottom: 8px !important;
+    }
+}
+
+.new-key-modal-input-label{
+    padding-left: 10px;
+}
+
+.new-key-modal-input{
+    select, input, textarea{
+        background-color: $app-section-background;
+    }
+}
+
+.btn-ok{
+    background-color: $app-primary;
+    border: 1px solid $app-primary;
+    border-radius: 40px;
+    min-width: 100px;
+}
+
+.btn-cancel{
+    color: $app-primary;
+}
+
+.btn-link{
+    &:active{
+        &:focus{
+            background-color: transparent;
+        }
+    }
+    &:focus{
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+
+.password{
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 17px;
+    margin-bottom: 28px;
+}
+
+.password-inner{
+    background-color: $app-section-background;
+    padding-bottom: 2px;
+}
+
+.password-top{
+    height: 65px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #d6d4d4;
+}
+
+.new-password-btn{
+    button{
+        color: $app-primary;
+        padding-top: 0px;
+        padding-right: 0px;
+        font-size: 18px;
+        margin-top: -12px;
+    }
+}
+
+.new-password-modal-input-label{
+    padding-left: 10px;
+}
+
+.old-password, .new-password, .new-password-2{
+    margin-bottom: 25px;
+    p{
+        margin-bottom: 8px !important;
+    }
+}
+
+.new-password-modal-input{
+    select, input, textarea{
+        background-color: $app-section-background;
+    }
+}
+
+.btn-back{
+    color: $app-primary;
+    font-size: 18px;
+    margin-left: 25px;
+}

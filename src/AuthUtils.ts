@@ -12,10 +12,6 @@ export function initExtAuthentication(password: string): boolean{
     catch(err){
       return false;
     }
-  }
-
-export function updateCredentials(newPassword: string, oldPassword: string){
-  
 }
 
 export function authenticate(password: string): boolean{
