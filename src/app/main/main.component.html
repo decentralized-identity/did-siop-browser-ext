@@ -1,0 +1,23 @@
+<div class="d-flex flex-column align-items-center justify-content-center mx-auto main-wrapper">
+    <div class="header">
+      <div class="d-flex flex-column align-items-center header-top">
+        <img class="did-siop-logo" src="assets/logo.svg" alt="did-siop logo">
+        <p class="title-description">Self-issued OpenIDConnect Provider based on <br> Decentralized Identities</p>
+      </div>
+    </div>
+    <div class="separator"></div>
+
+    <div *ngIf="displayMainContent" class="main-content">
+      <div class="d-flex flex-column align-items-center identity">
+        <img src="assets/avatar.png" alt="identity avatar">
+        <p>{{currentDID}}</p>
+        <div class="d-flex justify-content-center navigation">
+          <button class="btn btn-link" (click)="showGuides()">Guides</button>
+          <button class="btn btn-link" (click)="showSettings()">Settings</button>
+          <button class="btn btn-link" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+    <app-guides *ngIf="displayGuides" (clickedBack)="showMainContent()"></app-guides>
+    <app-settings *ngIf="displaySettings" (clickedBack)="showMainContent()"></app-settings>
+</div>
