@@ -3,16 +3,13 @@
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
+import { STORAGE_KEYS, TASKS } from './globals';
+import { authenticate, checkExtAuthenticationState, initExtAuthentication } from './AuthUtils';
+import { encrypt, decrypt } from './CryptoUtils';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
-
-enum TASKS{
-    CHANGE_DID,
-    ADD_KEY,
-    REMOVE_KEY,
-    PROCESS_REQUEST,
-}
+let loggedInState: string = undefined;
 
 let runtime: any;
 let tabs: any;
@@ -35,12 +32,12 @@ const checkSigning = async function(){
     try{
         if(!provider){
             provider = new Provider();
-            let did = localStorage.getItem('did_siop_user_did');
+            let did = decrypt(localStorage.getItem(STORAGE_KEYS.userDID), loggedInState);
             await provider.setUser(did);
         }
 
         if(signingInfoSet.length < 1){
-            signingInfoSet = JSON.parse(localStorage.getItem('did_siop_singing_info_set'));
+            signingInfoSet = JSON.parse(decrypt(localStorage.getItem(STORAGE_KEYS.signingInfoSet), loggedInState));
             if(!signingInfoSet){
                 signingInfoSet = [];
             }
@@ -56,21 +53,6 @@ const checkSigning = async function(){
     }
 }
 
-runtime.onInstalled.addListener( async function(){
-    let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
-    let signingInfoSet = [
-        {
-            alg: 'ES256K-R',
-            kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
-            key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
-            format: 'HEX',
-        },
-    ];
-    localStorage.setItem('did_siop_user_did', did);
-    localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
-    checkSigning();
-});
-
 runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(!sender.tab){
         switch(request.task){
@@ -80,7 +62,7 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
                 break;
             }
@@ -90,7 +72,7 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
                 break;
             }
@@ -100,8 +82,50 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({result: result});
                 })
                 .catch(err => {
-                    sendResponse({err: err. message});
+                    sendResponse({err: err.message});
                 });
+                break;
+            }
+            case TASKS.CHECK_LOGIN_STATE: {
+                sendResponse({result: checkLoggedInState()});
+                break;
+            }
+            case TASKS.LOGIN: {
+                sendResponse({result: login(request.password)});
+                break;
+            }
+            case TASKS.LOGOUT: {
+                sendResponse({result: logout()});
+                break;
+            }
+            case TASKS.CHECK_EXT_AUTHENTICATION: {
+                let result = checkExtAuthenticationState();
+                sendResponse({result: result});
+                break;
+            }
+            case TASKS.INIT_EXT_AUTHENTICATION: {
+                sendResponse({result: initExtAuthentication(request.password)});
+                break;
+            }
+            case TASKS.CHANGE_EXT_AUTHENTICATION: {
+                sendResponse({result: changePassword(request.oldPassword, request.newPassword)});
+                break;
+            }
+            case TASKS.GET_IDENTITY: {
+                let did = '';
+                let keys = '';
+
+                try{
+                    let encryptedDID = localStorage.getItem(STORAGE_KEYS.userDID);
+                    let encryptedSigningInfo = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+                    if(encryptedDID){
+                        did = decrypt(encryptedDID, loggedInState);
+                        keys = decrypt(encryptedSigningInfo, loggedInState);
+                    }
+                }
+                catch(err){}
+
+                sendResponse({ did, keys });
                 break;
             }
         }
@@ -122,14 +146,65 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
 });
 
-const changeDID = async function(did: string): Promise<string>{
+
+function checkLoggedInState(): boolean{
+    if(loggedInState){
+        return true;
+    }
+    return false;
+}
+
+function login(password: string): boolean{
+    if(authenticate(password)){
+        loggedInState = password;
+        return true;
+    }
+    return false;
+}
+
+function logout(): boolean{
+    if(loggedInState){
+        loggedInState = undefined;
+        return true;
+    }
+    return false;
+}
+
+function changePassword(oldPassword: string, newPassword: string): boolean{
+    if(login(oldPassword)){
+        let changed = initExtAuthentication(newPassword);
+        if(changed){
+            let encryptedDID = localStorage.getItem(STORAGE_KEYS.userDID);
+            let encryptedSigningInfo = localStorage.getItem(STORAGE_KEYS.signingInfoSet);
+            if(encryptedDID){
+                let didRecrypted = encrypt(decrypt(encryptedDID, oldPassword), newPassword);
+                localStorage.setItem(STORAGE_KEYS.userDID, didRecrypted);
+            }
+            if(encryptedSigningInfo){
+                let keysRecrypted = encrypt(decrypt(encryptedSigningInfo, oldPassword), newPassword);
+                localStorage.setItem(STORAGE_KEYS.signingInfoSet, keysRecrypted);
+            }
+            loggedInState = newPassword;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    return false;
+}
+
+
+async function changeDID(did: string): Promise<string>{
     try{
         let newProvider = new Provider();
         await newProvider.setUser(did);
         provider = newProvider;
-        localStorage.setItem('did_siop_user_did', did);
+        let encryptedDID = encrypt(did, loggedInState);
+        localStorage.setItem(STORAGE_KEYS.userDID, encryptedDID);
         signingInfoSet = [];
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'Identity changed successfully';
     }
     catch(err){
@@ -137,7 +212,7 @@ const changeDID = async function(did: string): Promise<string>{
     }
 }
 
-const addKey = async function(keyInfo: any): Promise<string>{
+async function addKey(keyInfo: any): Promise<string>{
     try{
         provider.addSigningParams(keyInfo.key, keyInfo.kid, keyInfo.format,  keyInfo.alg);
         signingInfoSet.push({
@@ -146,7 +221,8 @@ const addKey = async function(keyInfo: any): Promise<string>{
           key: keyInfo.key,
           format: keyInfo.format,
         });
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'New key added successfully';
     }
     catch(err){
@@ -154,13 +230,14 @@ const addKey = async function(keyInfo: any): Promise<string>{
     }
 }
 
-const removeKey = async function(kid: string): Promise<string>{
+async function removeKey(kid: string): Promise<string>{
     try{
         provider.removeSigningParams(kid);
         signingInfoSet = signingInfoSet.filter(key => {
             return key.kid !== kid;
         })
-        localStorage.setItem('did_siop_singing_info_set', JSON.stringify(signingInfoSet));
+        let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
+        localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
         return 'Key removed successfully';
       }
     catch(err){
@@ -168,7 +245,7 @@ const removeKey = async function(kid: string): Promise<string>{
     }
 }
 
-const processRequest = async function(request: string, confirmation: any){
+async function processRequest(request: string, confirmation: any){
     let processError: Error;
     if (queryString.parseUrl(request).url === 'openid://') {
         try{

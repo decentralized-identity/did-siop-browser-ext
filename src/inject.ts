@@ -25,8 +25,8 @@ catch(err){
 const didSIOPLogins = document.querySelectorAll('[data-did-siop]');
 let i;
 for(i= 0; i < didSIOPLogins.length; i++){
-    let did_siop = didSIOPLogins[i].getAttribute('data-did-siop');
-    didSIOPLogins[i].addEventListener('click', () => {
+    didSIOPLogins[i].addEventListener('click', function(){
+        let did_siop = this.getAttribute('data-did-siop');
         let confirmation = confirm('Sign in with DID-SIOP?');
         runtime.sendMessage({
             task: TASKS.PROCESS_REQUEST,
