@@ -28,7 +28,7 @@ catch(err){
     }
 }
 
-const checkSigning = async function(){
+async function checkSigning(){
     try{
         if(!provider){
             provider = new Provider();
@@ -49,6 +49,8 @@ const checkSigning = async function(){
         }
     }
     catch(err){
+        provider = undefined;
+        signingInfoSet = [];
         throw err;
     }
 }
@@ -250,26 +252,39 @@ async function processRequest(request: string, confirmation: any){
     if (queryString.parseUrl(request).url === 'openid://') {
         try{
             await checkSigning();
-            if (confirmation){
-                try{
-                    let decodedRequest = await provider.validateRequest(request);
+            try{
+                if (confirmation){
                     try{
-                        let response = await provider.generateResponse(decodedRequest.payload);
-                        let uri = decodedRequest.payload.client_id + '#' + response;
-                        tabs.create({
-                            url: uri,
-                        });
-                        console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
-                        return 'Successfully logged into ' + decodedRequest.payload.client_id;
+                        let decodedRequest = await provider.validateRequest(request);
+                        try{
+                            let response = await provider.generateResponse(decodedRequest.payload);
+                            let uri = decodedRequest.payload.client_id + '#' + response;
+                            tabs.create({
+                                url: uri,
+                            });
+                            console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                            return 'Successfully logged into ' + decodedRequest.payload.client_id;
+                        }
+                        catch(err){
+                            processError = err;
+                        }
                     }
                     catch(err){
-                        processError = err;
+                        let uri = queryString.parseUrl(request).query.client_id;
+                        if (uri) {
+                            uri = uri + '#' + provider.generateErrorResponse(err.message);
+                            tabs.create({
+                                url: uri,
+                            });
+                        } else {
+                            processError = new Error('invalid redirect url');
+                        }
                     }
                 }
-                catch(err){
+                else{
                     let uri = queryString.parseUrl(request).query.client_id;
                     if (uri) {
-                        uri = uri + '#' + provider.generateErrorResponse(err.message);
+                        uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
                         tabs.create({
                             url: uri,
                         });
@@ -278,20 +293,12 @@ async function processRequest(request: string, confirmation: any){
                     }
                 }
             }
-            else{
-                let uri = queryString.parseUrl(request).query.client_id;
-                if (uri) {
-                    uri = uri + '#' + provider.generateErrorResponse(ERROR_RESPONSES.access_denied.err.message);
-                    tabs.create({
-                        url: uri,
-                    });
-                } else {
-                    processError = new Error('invalid redirect url');
-                }
+            catch(err){
+                processError = err;
             }
         }
         catch(err){
-            processError = err;
+            processError = new Error('Error retrieving credentials. Please check Identity and Signing keys');
         }
     }
     if(processError) throw processError;
