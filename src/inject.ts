@@ -1,12 +1,7 @@
+import { TASKS } from './globals';
+
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>
-
-enum TASKS{
-    CHANGE_DID,
-    ADD_KEY,
-    REMOVE_KEY,
-    PROCESS_REQUEST,
-}
 
 let runtime: any;
 
@@ -27,18 +22,16 @@ let i;
 for(i= 0; i < didSIOPLogins.length; i++){
     didSIOPLogins[i].addEventListener('click', function(){
         let did_siop = this.getAttribute('data-did-siop');
-        let confirmation = confirm('Sign in with DID-SIOP?');
         runtime.sendMessage({
-            task: TASKS.PROCESS_REQUEST,
+            task: TASKS.MAKE_REQUEST,
             did_siop: did_siop,
-            confirmation: confirmation,
         },
         (response)=>{
             if(response.result){
-                console.log(response.result);
+                console.log('Request sent to DID-SIOP');
             }
-            if(response.err){
-                alert('DID_SIOP ERROR: ' + response.err);
+            else{
+                alert('DID_SIOP ERROR');
             }
         }
         );

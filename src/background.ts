@@ -130,18 +130,28 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse({ did, keys });
                 break;
             }
-        }
-    }
-    else{
-        switch(request.task){
+            case TASKS.GET_REQUESTS: {
+                sendResponse({didSiopRequests: getRequests()});
+                break;
+            }
             case TASKS.PROCESS_REQUEST: {
-                processRequest(request.did_siop, request.confirmation)
+                processRequest(request.did_siop_index, request.confirmation)
                 .then(result=>{
                     sendResponse({result: result});
                 })
                 .catch(err=>{
                     sendResponse({err:err.message});
                 });
+                break;
+            }
+        }
+    }
+    else{
+        switch(request.task){
+            case TASKS.MAKE_REQUEST: {
+                let result = addRequest(request.did_siop);
+                sendResponse({result});
+                break;
             }
         }
     }
@@ -247,8 +257,10 @@ async function removeKey(kid: string): Promise<string>{
     }
 }
 
-async function processRequest(request: string, confirmation: any){
+async function processRequest(request_index: number, confirmation: any){
     let processError: Error;
+    let request = getRequestByIndex(request_index).request;
+    console.log(request);
     if (queryString.parseUrl(request).url === 'openid://') {
         try{
             await checkSigning();
@@ -263,6 +275,7 @@ async function processRequest(request: string, confirmation: any){
                                 url: uri,
                             });
                             console.log('Sent response to ' + decodedRequest.payload.client_id + ' with id_token: ' + response);
+                            removeRequest(request_index);
                             return 'Successfully logged into ' + decodedRequest.payload.client_id;
                         }
                         catch(err){
@@ -302,4 +315,47 @@ async function processRequest(request: string, confirmation: any){
         }
     }
     if(processError) throw processError;
+}
+
+function getRequests(): any[]{
+    let storedRequests:any = localStorage.getItem(STORAGE_KEYS.requests);
+    if(!storedRequests) storedRequests = '[]';
+    return JSON.parse(storedRequests);
+}
+
+function getRequestByIndex(index: number): any{
+    let storedRequests:any = localStorage.getItem(STORAGE_KEYS.requests);
+    if(!storedRequests) storedRequests = '[]';
+    storedRequests = JSON.parse(storedRequests);
+    return storedRequests.filter(sr=>{ return sr.index == index })[0];
+}
+
+function addRequest(request: string): boolean{
+    try{
+        let storedRequests: any = localStorage.getItem(STORAGE_KEYS.requests);
+        if(!storedRequests) storedRequests = '[]';
+        storedRequests = JSON.parse(storedRequests);
+        let index = 0;
+        for(let i = 0; i < storedRequests.length; i++){
+            if(storedRequests[i].index > index) index = storedRequests[i].index;
+        }
+        ++index;
+        let client_id = queryString.parseUrl(request).query.client_id;
+        storedRequests.push({ index, client_id, request });
+        localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(storedRequests));
+        return true;
+    }
+    catch(err){
+        return false;
+    }
+}
+
+function removeRequest(index: number): string{
+    let storedRequests: any = localStorage.getItem(STORAGE_KEYS.requests);
+    if(!storedRequests) storedRequests = '[]';
+    storedRequests = JSON.parse(storedRequests);
+    let request = storedRequests.filter(sr=>{ return sr.index == index })[0];
+    storedRequests = storedRequests.filter(sr=>{ return sr.index != index });
+    localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(storedRequests));
+    return request.request;
 }

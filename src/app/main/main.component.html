@@ -7,14 +7,41 @@
     </div>
     <div class="separator"></div>
 
-    <div *ngIf="displayMainContent" class="main-content">
+    <div *ngIf="displayMainContent" class="d-flex flex-column align-items-center main-content">
+      
       <div class="d-flex flex-column align-items-center identity">
         <img src="assets/avatar.png" alt="identity avatar">
-        <p>{{currentDID}}</p>
         <div class="d-flex justify-content-center navigation">
           <button class="btn btn-link" (click)="showGuides()">Guides</button>
           <button class="btn btn-link" (click)="showSettings()">Settings</button>
           <button class="btn btn-link" (click)="logout()">Logout</button>
+        </div>
+        <p>{{currentDID}}</p>
+      </div>
+      <p class="requests-title">Pending Requests</p>
+      <div class="d-flex flex-column align-items-center container-fluid requests">
+        <button *ngFor="let request of currentRequests" class="btn btn-success btn-request" (click)="selectRequest(request)" data-toggle="modal" data-target="#requestModal">{{request.client_id}}</button>
+        
+        <div class="modal" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">Confirm login request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <p>Confirm login to {{selectedRequestClientID}} </p>
+                  <p #requestModalInfo></p>
+              </div>
+              <div class="modal-footer d-flex justify-content-start">
+                <button #requestModalYes type="button" class="btn btn-primary btn-ok" (click)="processRequest(true)">Yes</button>
+                <button #requestModalNo type="button" class="btn btn-link btn-cancel" (click)="processRequest(false)">No</button>
+                <button #requestModalClose type="button" class="btn btn-link ml-auto btn-cancel" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
