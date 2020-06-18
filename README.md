@@ -31,7 +31,7 @@ Follow the steps below to see the DID-SIOP in action.
   * [Firefox](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/).
   * [Edge](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/adding-and-removing-extensions).
 - Click on the extension/add-on icon to see the default attributes available for testing. Just use defaults or create/ use your own Decentralised Identity (DID) attributes to test the app.
-- Browse into sample Relying Party app [https://did-siop-rp-test.herokuapp.com](https://did-siop-rp-test.herokuapp.com/)
+- Browse into sample Relying Party app [http://rp.didsiop.org](http://rp.didsiop.org/)
 - Click on "DID SIOP Login" button to start the authorization process
 - You will be asked for the confirmation to Sign in using DID-SIOP.
 - Upon acceptance you will navigate to the secure area of the app and you will see the DID used for the authorization.
