@@ -30,8 +30,8 @@ for(i= 0; i < didSIOPLogins.length; i++){
             if(response.result){
                 console.log('Request sent to DID-SIOP');
             }
-            else{
-                alert('DID_SIOP ERROR');
+            else if(response.err){
+                throw new Error('DID_SIOP_ERROR: ' + response.err);
             }
         }
         );
