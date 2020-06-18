@@ -300,6 +300,7 @@ async function processRequest(request_index: number, confirmation: any){
                         tabs.create({
                             url: uri,
                         });
+                        removeRequest(request_index);
                     } else {
                         processError = new Error('invalid redirect url');
                     }
