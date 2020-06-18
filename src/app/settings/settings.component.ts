@@ -17,6 +17,7 @@ export class SettingsComponent implements OnInit {
   @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
   @ViewChild('changeDIDModalInfo') changeDIDModalInfo: ElementRef;
 
+  @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
   @ViewChild('addNewKeyModalClose') addNewKeyModalClose: ElementRef;
   @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
@@ -49,6 +50,7 @@ export class SettingsComponent implements OnInit {
         }
         else{
           this.currentDID = 'No DID provided';
+          this.addNewKeyButton.nativeElement.disabled = true;
         }
         this.changeDetector.detectChanges();
       }
@@ -71,6 +73,7 @@ export class SettingsComponent implements OnInit {
             this.signingInfoSet = [];
             this.newDID.nativeElement.value = '';
             this.changeDIDModalClose.nativeElement.click();
+            this.addNewKeyButton.nativeElement.disabled = false;
             this.changeDetector.detectChanges();
             this.toastrService.success(response.result, 'DID_SIOP', {
               onActivateTick: true,
@@ -211,6 +214,7 @@ export class SettingsComponent implements OnInit {
         (response) =>{
           if(response.result){
             this.currentDID = did;
+            this.addNewKeyButton.nativeElement.disabled = false;
             let keyInfo = {
               alg: 'ES256K-R',
               kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
