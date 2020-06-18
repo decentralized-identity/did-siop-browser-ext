@@ -260,7 +260,6 @@ async function removeKey(kid: string): Promise<string>{
 async function processRequest(request_index: number, confirmation: any){
     let processError: Error;
     let request = getRequestByIndex(request_index).request;
-    console.log(request);
     if (queryString.parseUrl(request).url === 'openid://') {
         try{
             await checkSigning();
