@@ -100,8 +100,9 @@ export class MainComponent {
             this.requestModalClose.nativeElement.click();
         }
         if(response.err){
-            this.requestModalInfo.nativeElement.innerHTML = response.err;
+            this.requestModalInfo.nativeElement.classList.remove('waiting');
             this.requestModalInfo.nativeElement.classList.add('error');
+            this.requestModalInfo.nativeElement.innerHTML = response.err;
         }
       }
     );
