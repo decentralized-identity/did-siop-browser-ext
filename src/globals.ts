@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
     password: 'did_siop_authetication_string',
     userDID: 'did_siop_user_did',
     signingInfoSet: 'did_siop_singing_info_set',
+    requests: 'did_siop_requests',
 
 }
 
@@ -18,4 +19,6 @@ export const enum TASKS{
     INIT_EXT_AUTHENTICATION,
     CHANGE_EXT_AUTHENTICATION,
     GET_IDENTITY,
+    GET_REQUESTS,
+    MAKE_REQUEST,
 }

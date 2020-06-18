@@ -12,7 +12,7 @@
 
 .header-top{
     width: 100%;
-    padding-top: 28px;
+    padding-top: 12px;
     img{
         margin-bottom: 5px;
     }
@@ -30,16 +30,17 @@
     width: 100%;
     height: 1px;
     border-bottom: 1px solid $app-primary;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .navigation{
+    margin-bottom: 4px;
+    width: 150px;
     button{
         color: $app-primary;
         font-size: 12px;
         padding-right: 0px;
         padding-left: 0px;
-        margin-left: 10px;
     }
 }
 
@@ -60,17 +61,72 @@
 }
 
 .identity{
-    width: 200px;
-    height: 200px;
+    margin-bottom: 20px;
     img{
-        max-width: 100%;
-        max-height: 100%;
-        margin-bottom: 16px;
+        width: 110px;
+        height: 100px;
     }
     p{
         text-align: center;
         background-color: $app-section-background;
         word-break: break-all;
         width: 300px;
+        margin-bottom: 0px;
     }
+}
+
+.requests{
+    width: 300px;
+    height: 235px;
+    padding-top: 10px;
+    overflow-y: scroll;
+    background-color: $app-section-background;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.btn-request{
+    width: 100%;
+    background-color: $app-primary;
+    margin-bottom: 10px;
+}
+
+.requests-title{
+    margin-bottom: 4px;
+    color: $app-primary;
+    width: 130px;
+    text-align: center;
+}
+
+.btn-ok{
+    background-color: $app-primary;
+    border: 1px solid $app-primary;
+    border-radius: 40px;
+    min-width: 100px;
+}
+
+.btn-cancel{
+    color: $app-primary;
+}
+
+.btn-link{
+    &:active{
+        &:focus{
+            background-color: transparent;
+        }
+    }
+    &:focus{
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+
+.error{
+    color: red;
+}
+
+.waiting{
+    color: $app-primary;
 }
