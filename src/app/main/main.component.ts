@@ -103,6 +103,7 @@ export class MainComponent {
             this.requestModalInfo.nativeElement.classList.remove('waiting');
             this.requestModalInfo.nativeElement.classList.add('error');
             this.requestModalInfo.nativeElement.innerHTML = response.err;
+            this.requestModalClose.nativeElement.disabled = false;
         }
       }
     );
