@@ -35,12 +35,12 @@
 
 .navigation{
     margin-bottom: 4px;
+    width: 150px;
     button{
         color: $app-primary;
         font-size: 12px;
         padding-right: 0px;
         padding-left: 0px;
-        margin-left: 10px;
     }
 }
 
@@ -96,6 +96,8 @@
 .requests-title{
     margin-bottom: 4px;
     color: $app-primary;
+    width: 130px;
+    text-align: center;
 }
 
 .btn-ok{
