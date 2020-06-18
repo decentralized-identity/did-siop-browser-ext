@@ -149,8 +149,13 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
     else{
         switch(request.task){
             case TASKS.MAKE_REQUEST: {
-                let result = addRequest(request.did_siop);
-                sendResponse({result});
+                try{
+                    let result = addRequest(request.did_siop);
+                    sendResponse({result});
+                }
+                catch(err){
+                    sendResponse({err:err.message});
+                }
                 break;
             }
         }
@@ -288,6 +293,7 @@ async function processRequest(request_index: number, confirmation: any){
                             tabs.create({
                                 url: uri,
                             });
+                            removeRequest(request_index);
                         } else {
                             processError = new Error('invalid redirect url');
                         }
@@ -332,6 +338,7 @@ function getRequestByIndex(index: number): any{
 
 function addRequest(request: string): boolean{
     try{
+        if(queryString.parseUrl(request).url != 'openid://') throw new Error('Invalid request');
         let storedRequests: any = localStorage.getItem(STORAGE_KEYS.requests);
         if(!storedRequests) storedRequests = '[]';
         storedRequests = JSON.parse(storedRequests);
@@ -346,7 +353,7 @@ function addRequest(request: string): boolean{
         return true;
     }
     catch(err){
-        return false;
+        throw err;
     }
 }
 
