@@ -1,5 +1,8 @@
 # did-siop #
 
+## How to build ##
+Run ```ng build --prod``` in project root. This will generate the compiled code in ***dist*** folder.
+
 ## Overview ##
 This implements _Self Issued OpenId Connect Provider (SIOP)_ for _Decentralized Identities (DIDs)_. This is implemented  as a browser add-on and allows to integrate _Identity Wallets_ with _Relying Parties_ which uses OpenIDConnect Clients (OIDC Clients) complies the SIOP specification.
 
