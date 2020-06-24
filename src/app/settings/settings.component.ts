@@ -228,6 +228,7 @@ export class SettingsComponent implements OnInit {
               }, 
               (response) =>{
                 if(response.result){
+                  this.signingInfoSet = [];
                   this.signingInfoSet.push(keyInfo);
                   this.testDataModalClose.nativeElement.click();
                   this.changeDetector.detectChanges();
