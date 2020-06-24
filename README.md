@@ -2,7 +2,6 @@
 
 ## How to build ##
 * Run ```npm install``` in project root to install dependencies.
-* Go to ***node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/browser.js*** and replace ```node: false``` (line 99) with ```node: {crypto: true, stream: true}```
 * Run ```ng build --prod``` in project root. This will generate the compiled code in ***dist*** folder.
 
 ## Overview ##
