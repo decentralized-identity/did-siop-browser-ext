@@ -6,7 +6,6 @@
   "icons": {
     "16": "assets/did_siop_favicon.png"
   },
-  "permissions": ["tabs", "activeTab"],
   "background": {
     "scripts": [
       "background-es5.js",
