@@ -4,10 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
 
 
-const routes: Routes = [
-  {path: '', pathMatch: 'full', component: LoginComponent},
-  {path: 'main', component: MainComponent}
-];
+const routes: Routes = [];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
