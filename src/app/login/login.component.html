@@ -6,15 +6,15 @@
         <p>Self-issued OpenIDConnect Provider based on <br> Decentralized Identities</p>
     </div>
     <div *ngIf="extAuthenticationState" class="login-controls">
-        <form class="d-flex flex-column justify-content-center align-items-center">
+        <div class="form d-flex flex-column justify-content-center align-items-center">
             <div class="input-group input-group-sm">
                 <input id="password" type="password" placeholder="Enter Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #password>
             </div>
             <button type="button" class="btn btn-primary btn-ok" (click)="login(password.value)">Login</button>
-        </form>
+        </div>
     </div>
     <div *ngIf="!extAuthenticationState" class="init-controls">
-        <form class="d-flex flex-column justify-content-center align-items-center">
+        <div class="form d-flex flex-column justify-content-center align-items-center">
             <div class="input-group input-group-sm">
                 <input id="newPassword" type="password" placeholder="Enter New Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #newPassword>
             </div>
@@ -22,6 +22,6 @@
                 <input id="confirmNewPassword" type="password" placeholder="Confirm New Password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" #confirmNewPassword>
             </div>
             <button type="button" class="btn btn-primary btn-ok" (click)="register(newPassword.value, confirmNewPassword.value)">Save</button>
-        </form>
+        </div>
     </div>
 </div>
