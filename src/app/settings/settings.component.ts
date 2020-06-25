@@ -34,6 +34,7 @@ export class SettingsComponent implements OnInit {
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
   @ViewChild('testDataModalClose') testDataModalClose: ElementRef;
+  @ViewChild('testDataModalInfo') testDataModalInfo: ElementRef;
 
   @Output() clickedBack = new EventEmitter<boolean>();
 
@@ -205,6 +206,7 @@ export class SettingsComponent implements OnInit {
   }
 
   async initializeTestData(){
+    this.testDataModalInfo.nativeElement.innerText = '';
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
     if(did){
       this.messageService.sendMessage({
@@ -237,8 +239,14 @@ export class SettingsComponent implements OnInit {
                     positionClass: 'toast-bottom-center',
                   });
                 }
+                else if(response.err){
+                  this.testDataModalInfo.nativeElement.innerText = response.err;
+                }
               }
             );
+          }
+          else if(response.err){
+            this.testDataModalInfo.nativeElement.innerText = response.err;
           }
         }
       );

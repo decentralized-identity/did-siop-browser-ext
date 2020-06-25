@@ -54,6 +54,7 @@
                   </div>
                   <div class="modal-body">
                       <p class="warning">Initialize Identity with test data. Warning! This will remove current DID and all the related keys. Are you sure?</p>
+                      <p #testDataModalInfo class="error"></p>
                   </div>
                   <div class="modal-footer d-flex justify-content-start">
                     <button type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
