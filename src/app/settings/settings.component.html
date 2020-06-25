@@ -7,7 +7,7 @@
                   <p>Current Identity</p>
                 </div>
                 <div class="col d-flex justify-content-end change-did-btn">
-                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal"><small>Test Data</small></button>
+                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal" (click)="initializeTestDataButtonClicked()"><small>Test Data</small></button>
                   <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal" (click)="changeDIDButtonClicked()"><small>Change</small></button>
                 </div>
               </div>
@@ -54,10 +54,10 @@
                   </div>
                   <div class="modal-body">
                       <p class="warning">Initialize Identity with test data. Warning! This will remove current DID and all the related keys. Are you sure?</p>
-                      <p #testDataModalInfo class="error"></p>
+                      <p #testDataModalInfo></p>
                   </div>
                   <div class="modal-footer d-flex justify-content-start">
-                    <button type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
+                    <button #testDataModalYes type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
                     <button #testDataModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                   </div>
                 </div>

@@ -37,6 +37,7 @@ export class SettingsComponent implements OnInit {
 
   @ViewChild('testDataModalClose') testDataModalClose: ElementRef;
   @ViewChild('testDataModalInfo') testDataModalInfo: ElementRef;
+  @ViewChild('testDataModalYes') testDataModalYes: ElementRef;
 
   @Output() clickedBack = new EventEmitter<boolean>();
 
@@ -253,8 +254,17 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async initializeTestData(){
+  initializeTestDataButtonClicked(){
     this.testDataModalInfo.nativeElement.innerText = '';
+  }
+
+  async initializeTestData(){
+    this.testDataModalInfo.nativeElement.classList.remove('error');
+    this.testDataModalInfo.nativeElement.classList.add('waiting');
+    this.testDataModalInfo.nativeElement.innerText = 'Please wait';
+    this.testDataModalClose.nativeElement.disabled = true;
+    this.testDataModalYes.nativeElement.disabled = true;
+
     let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
     if(did){
       this.messageService.sendMessage({
@@ -280,6 +290,8 @@ export class SettingsComponent implements OnInit {
                 if(response.result){
                   this.signingInfoSet = [];
                   this.signingInfoSet.push(keyInfo);
+                  this.testDataModalClose.nativeElement.disabled = false;
+                  this.testDataModalYes.nativeElement.disabled = false;
                   this.testDataModalClose.nativeElement.click();
                   this.changeDetector.detectChanges();
                   this.toastrService.success('Successful', 'DID_SIOP', {
@@ -289,18 +301,30 @@ export class SettingsComponent implements OnInit {
                 }
                 else if(response.err){
                   this.testDataModalInfo.nativeElement.innerText = response.err;
+                  this.testDataModalInfo.nativeElement.classList.remove('waiting');
+                  this.testDataModalInfo.nativeElement.classList.add('error');
+                  this.testDataModalClose.nativeElement.disabled = false;
+                  this.testDataModalYes.nativeElement.disabled = false;
                 }
               }
             );
           }
           else if(response.err){
             this.testDataModalInfo.nativeElement.innerText = response.err;
+            this.testDataModalInfo.nativeElement.classList.remove('waiting');
+            this.testDataModalInfo.nativeElement.classList.add('error');
+            this.testDataModalClose.nativeElement.disabled = false;
+            this.testDataModalYes.nativeElement.disabled = false;
           }
         }
       );
     }
     else{
       this.changeDIDModalInfo.nativeElement.innerText = 'Please enter a valid DID';
+      this.testDataModalInfo.nativeElement.classList.remove('waiting');
+      this.testDataModalInfo.nativeElement.classList.add('error');
+      this.testDataModalClose.nativeElement.disabled = false;
+      this.testDataModalYes.nativeElement.disabled = false;
     }
   }
 
