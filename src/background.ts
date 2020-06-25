@@ -258,7 +258,7 @@ async function removeKey(kid: string): Promise<string>{
         return 'Key removed successfully';
       }
     catch(err){
-        return err.message;
+        return Promise.reject(err);
     }
 }
 
