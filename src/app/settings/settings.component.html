@@ -202,10 +202,10 @@
                       <div class="input-group input-group-sm">
                         <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                       </div>
-                      <p class="error" #removeKeyModalInfo></p>
+                      <p #removeKeyModalInfo></p>
                   </div>
                   <div class="modal-footer d-flex justify-content-start">
-                    <button type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
+                    <button #removeKeyModalYes type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
                     <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                   </div>
                 </div>

@@ -33,6 +33,7 @@ export class SettingsComponent implements OnInit {
   
   @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
   @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
+  @ViewChild('removeKeyModalYes') removeKeyModalYes: ElementRef;
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
   @ViewChild('testDataModalClose') testDataModalClose: ElementRef;
@@ -174,7 +175,12 @@ export class SettingsComponent implements OnInit {
   }
 
   async removeKey(kid: string){
-    this.removeKeyModalInfo.nativeElement.innerText = '';
+    this.removeKeyModalInfo.nativeElement.classList.remove('error');
+    this.removeKeyModalInfo.nativeElement.classList.add('waiting');
+    this.removeKeyModalInfo.nativeElement.innerText = 'Please wait';
+    this.removeKeyModalClose.nativeElement.disabled = true;
+    this.removeKeyModalYes.nativeElement.disabled = true;
+
     if(kid){
       this.messageService.sendMessage({
         task: TASKS.REMOVE_KEY,
@@ -189,11 +195,17 @@ export class SettingsComponent implements OnInit {
               onActivateTick: true,
               positionClass: 'toast-bottom-center',
             });
+            this.removeKeyModalClose.nativeElement.disabled = false;
+            this.removeKeyModalYes.nativeElement.disabled = false;
             this.removeKeyModalClose.nativeElement.click();
             this.changeDetector.detectChanges();
           }
-          else{
+          else if(response.err){
             this.removeKeyModalInfo.nativeElement.innerText = response.err;
+            this.removeKeyModalInfo.nativeElement.classList.remove('waiting');
+            this.removeKeyModalInfo.nativeElement.classList.add('error');
+            this.removeKeyModalClose.nativeElement.disabled = false;
+            this.removeKeyModalYes.nativeElement.disabled = false;
           }
         }
       );
@@ -202,6 +214,7 @@ export class SettingsComponent implements OnInit {
 
   selectKey(keyid){
     this.toRemoveKeyKID.nativeElement.value = keyid;
+    this.removeKeyModalInfo.nativeElement.innerText = '';
   }
 
   async changePassword(oldPassword: string, newPassword: string, newPassword2: string){
