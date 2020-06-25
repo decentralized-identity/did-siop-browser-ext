@@ -231,6 +231,7 @@ async function changeDID(did: string): Promise<string>{
 
 async function addKey(keyInfo: any): Promise<string>{
     try{
+        await checkSigning();
         provider.addSigningParams(keyInfo.key, keyInfo.kid, keyInfo.format,  keyInfo.alg);
         signingInfoSet.push({
           alg: keyInfo.alg,
@@ -249,6 +250,7 @@ async function addKey(keyInfo: any): Promise<string>{
 
 async function removeKey(kid: string): Promise<string>{
     try{
+        await checkSigning();
         provider.removeSigningParams(kid);
         signingInfoSet = signingInfoSet.filter(key => {
             return key.kid !== kid;
