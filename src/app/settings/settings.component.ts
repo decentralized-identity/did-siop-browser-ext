@@ -20,6 +20,7 @@ export class SettingsComponent implements OnInit {
 
   @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
   @ViewChild('addNewKeyModalClose') addNewKeyModalClose: ElementRef;
+  @ViewChild('addNewKeyModalYes') addNewKeyModalYes: ElementRef;
   @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
   @ViewChild('newKeyKID') newKeyKID: ElementRef;
@@ -114,36 +115,61 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+  addNewKeyButtonClicked(){
     this.addNewKeyModalInfo.nativeElement.innerText = '';
-    let keyInfo = {
-      alg: algorithm,
-      kid: kid,
-      key: keyString,
-      format: format,
-    }
+    this.newKeyString.nativeElement.value = '';
+    this.newKeyKID.nativeElement.value = '';
+  }
 
-    this.messageService.sendMessage({
-      task: TASKS.ADD_KEY,
-      keyInfo: keyInfo,
-      }, 
-      (response) =>{
-        if(response.result){
-          this.signingInfoSet.push(keyInfo);
-          this.addNewKeyModalClose.nativeElement.click();
-          this.newKeyString.nativeElement.value = '';
-          this.newKeyKID.nativeElement.value = '';
-          this.changeDetector.detectChanges();
-          this.toastrService.success(response.result, 'DID_SIOP', {
-            onActivateTick: true,
-            positionClass: 'toast-bottom-center',
-          });
-        }
-        else{
-          this.addNewKeyModalInfo.nativeElement.innerText = response.err;
-        }
+  async addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+    this.addNewKeyModalInfo.nativeElement.classList.remove('error');
+    this.addNewKeyModalInfo.nativeElement.classList.add('waiting');
+    this.addNewKeyModalInfo.nativeElement.innerText = 'Please wait';
+    this.addNewKeyModalClose.nativeElement.disabled = true;
+    this.addNewKeyModalYes.nativeElement.disabled = true;
+
+    if(keyString && kid){
+      let keyInfo = {
+        alg: algorithm,
+        kid: kid,
+        key: keyString,
+        format: format,
       }
-    );
+  
+      this.messageService.sendMessage({
+        task: TASKS.ADD_KEY,
+        keyInfo: keyInfo,
+        }, 
+        (response) =>{
+          if(response.result){
+            this.signingInfoSet.push(keyInfo);
+            this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
+            this.addNewKeyModalClose.nativeElement.disabled = false;
+            this.addNewKeyModalYes.nativeElement.disabled = false;
+            this.addNewKeyModalClose.nativeElement.click();
+            this.changeDetector.detectChanges();
+            this.toastrService.success(response.result, 'DID_SIOP', {
+              onActivateTick: true,
+              positionClass: 'toast-bottom-center',
+            });
+          }
+          else if(response.err){
+            this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
+            this.addNewKeyModalInfo.nativeElement.classList.add('error');
+            this.addNewKeyModalInfo.nativeElement.innerText = response.err;
+            this.addNewKeyModalClose.nativeElement.disabled = false;
+            this.addNewKeyModalYes.nativeElement.disabled = false;
+          }
+        }
+      );
+    }
+    else{
+      this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
+      this.addNewKeyModalInfo.nativeElement.classList.add('error');
+      this.addNewKeyModalInfo.nativeElement.innerText = 'Please fill all fields';
+      this.addNewKeyModalClose.nativeElement.disabled = false;
+      this.addNewKeyModalYes.nativeElement.disabled = false;
+    }
   }
 
   async removeKey(kid: string){

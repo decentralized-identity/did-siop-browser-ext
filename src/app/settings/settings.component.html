@@ -72,7 +72,7 @@
                   <p>Signing Keys</p>
                 </div>
                 <div class="col d-flex justify-content-end new-key-btn">
-                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal"><small>Add New Key</small></button>
+                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal" (click)="addNewKeyButtonClicked()"><small>Add New Key</small></button>
                 </div>
               </div>
               <div class="row signing-keys-bottom">
@@ -126,7 +126,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="new-key-kid">
-                          <p class="new-key-modal-input-label">KID</p>
+                          <p class="new-key-modal-input-label">Public Key ID</p>
                           <div class="input-group input-group-sm new-key-modal-input">
                               <textarea id="newKeyKID" #newKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                           </div>
@@ -154,7 +154,7 @@
                           </div>
                         </div>
                         <div class="new-key-format">
-                          <p class="new-key-modal-input-label">Format</p>
+                          <p class="new-key-modal-input-label">Private Key Format</p>
                           <div class="input-group input-group-sm new-key-modal-input">
                               <select id="newKeyFormat" #newKeyFormat class="custom-select">
                                   <option value="HEX">HEX</option>
@@ -167,15 +167,15 @@
                           </div>
                         </div>
                         <div class="new-key-key">
-                          <p class="new-key-modal-input-label">Key</p>
+                          <p class="new-key-modal-input-label">Private Key</p>
                           <div class="input-group input-group-sm new-key-modal-input">
                               <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                           </div>
                         </div>
+                        <p #addNewKeyModalInfo></p>
                     </div>
-                    <p class="error" #addNewKeyModalInfo></p>
                     <div class="modal-footer d-flex justify-content-start">
-                      <button type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
+                      <button #addNewKeyModalYes type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
                           newKeyString.value,
                           newKeyKID.value,
                           newKeyFormat.value,
