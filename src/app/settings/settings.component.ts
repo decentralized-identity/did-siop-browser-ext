@@ -26,6 +26,7 @@ export class SettingsComponent implements OnInit {
   @ViewChild('newKeyKID') newKeyKID: ElementRef;
 
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
+  @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
   @ViewChild('newPasswordModalInfo') newPasswordModalInfo: ElementRef;
   @ViewChild('oldPassword') oldPassword: ElementRef;
   @ViewChild('newPassword') newPassword: ElementRef;
@@ -217,8 +218,20 @@ export class SettingsComponent implements OnInit {
     this.removeKeyModalInfo.nativeElement.innerText = '';
   }
 
-  async changePassword(oldPassword: string, newPassword: string, newPassword2: string){
+  changePasswordButtonClicked(){
     this.newPasswordModalInfo.nativeElement.innerText = '';
+    this.newPassword.nativeElement.value = '';
+    this.newPassword2.nativeElement.value = '';
+    this.oldPassword.nativeElement.value = '';
+  }
+
+  async changePassword(oldPassword: string, newPassword: string, newPassword2: string){
+    this.newPasswordModalInfo.nativeElement.classList.remove('error');
+    this.newPasswordModalInfo.nativeElement.classList.add('waiting');
+    this.newPasswordModalInfo.nativeElement.innerText = 'Please wait';
+    this.newPasswordModalClose.nativeElement.disabled = true;
+    this.newPasswordModalYes.nativeElement.disabled = true;
+
     if(oldPassword.length != 0 && newPassword.length != 0 && newPassword2.length != 0){
       if(newPassword === newPassword2){
         this.messageService.sendMessage({
@@ -237,6 +250,8 @@ export class SettingsComponent implements OnInit {
                   this.oldPassword.nativeElement.value = '';
                   this.newPassword.nativeElement.value = '';
                   this.newPassword2.nativeElement.value = '';
+                  this.newPasswordModalClose.nativeElement.disabled = false;
+                  this.newPasswordModalYes.nativeElement.disabled = false;
                   this.newPasswordModalClose.nativeElement.click();
                   this.changeDetector.detectChanges();
                   this.toastrService.success('Password changed successfully', 'DID_SIOP', {
@@ -244,26 +259,40 @@ export class SettingsComponent implements OnInit {
                     positionClass: 'toast-bottom-center',
                   });
                 }
-                else{
+                else if(response.err){
+                  this.newPasswordModalClose.nativeElement.disabled = false;
+                  this.newPasswordModalYes.nativeElement.disabled = false;
+                  this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
+                  this.newPasswordModalInfo.nativeElement.classList.add('error');
                   this.newPasswordModalInfo.nativeElement.innerText = 'An error occurred';
                 }
               }
              );
             }
             else{
+              this.newPasswordModalClose.nativeElement.disabled = false;
+              this.newPasswordModalYes.nativeElement.disabled = false;
+              this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
+              this.newPasswordModalInfo.nativeElement.classList.add('error');
               this.newPasswordModalInfo.nativeElement.innerText = 'Incorrect old password';
-              this.changeDetector.detectChanges();
             }
           }
         );
       }
       else{
+        this.newPasswordModalClose.nativeElement.disabled = false;
+        this.newPasswordModalYes.nativeElement.disabled = false;
+        this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
+        this.newPasswordModalInfo.nativeElement.classList.add('error');
         this.newPasswordModalInfo.nativeElement.innerText = 'Passwords do not match';
       }
     }
     else{
+      this.newPasswordModalClose.nativeElement.disabled = false;
+      this.newPasswordModalYes.nativeElement.disabled = false;
+      this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
+      this.newPasswordModalInfo.nativeElement.classList.add('error');
       this.newPasswordModalInfo.nativeElement.innerText = 'Please fill all data';
-      console.log('error');
     }
   }
 

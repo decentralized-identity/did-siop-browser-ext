@@ -221,7 +221,7 @@
                     <p>Password</p>
                   </div>
                   <div class="col d-flex justify-content-end new-password-btn">
-                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newPasswordModal"><small>Change</small></button>
+                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newPasswordModal" (click)="changePasswordButtonClicked()"><small>Change</small></button>
                   </div>
                 </div>
             </div>
@@ -254,10 +254,10 @@
                                 <input id="newPassword2" #newPassword2 type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                             </div>
                         </div>
+                        <p #newPasswordModalInfo></p>
                     </div>
-                    <p class="error" #newPasswordModalInfo></p>
                     <div class="modal-footer d-flex justify-content-start">
-                      <button type="button" class="btn btn-primary btn-ok" (click)="changePassword(oldPassword.value, newPassword.value, newPassword2.value)">Change Password</button>
+                      <button #newPasswordModalYes type="button" class="btn btn-primary btn-ok" (click)="changePassword(oldPassword.value, newPassword.value, newPassword2.value)">Change Password</button>
                       <button #newPasswordModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                     </div>
                   </div>
