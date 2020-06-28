@@ -86,6 +86,7 @@ Follow the steps below to see the DID-SIOP in action.
 
 
 ### Code snippets
+Functioning project based on code snippets below could be found at [did-siop-rp-web-min](https://github.com/RadicalLedger/did-siop-rp-web-min).
 #### index.html
 Public page where user could request to login to the relying party app
 ```html
@@ -162,7 +163,7 @@ async function generateRequestObject(){
 }
 ```
 #### home.html
-User has been authenticated and authorised to access the restricted area of the application. Below ut validate the response received as a JWT.
+User has been authenticated and authorised to access the restricted area of the application. Below how how to validate the response received as a JWT.
 ```html
 <p id='responseView'></p>
 
