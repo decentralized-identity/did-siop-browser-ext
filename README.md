@@ -89,33 +89,77 @@ Follow the steps below to see the DID-SIOP in action.
 #### index.html
 Public page where user could request to login to the relying party app
 ```html
-<button data-did-siop="pre-generated-request">DID SIOP Login</button>
+    <button id="did-siop-login" data-did-siop="pre-generated-request">DID SIOP Login</button>
+    <script>
+    
+        document.addEventListener('DOMContentLoaded', async function() {
+            getRequestObject();
+            }, false);    
 
-<script src="https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js"></script>
-<script>
-  const rp = await DID_SIOP.RP.getRP(
-    'localhost:8080/home.html', // RP's redirect_uri
-    'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83', // RP's did
-    {
-      "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
-      "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
-    } // RP's registration meta data
-  );
-			
-  rp.addSigningParams(
-    'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964', // Private key
-    'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
-    DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied.
-    DID_SIOP.ALGORITHMS['ES256K-R'] //Algorithm.
-  );
-  
-  rp.generateRequest()
-  .then(request=>{
-    //Use this request as data-did-siop attribute value of the button
-  })
-</script>
+        var siop_rp = null;
 
+        function getRequestObject() {
+            console.log("getRequestObject");
+            var xhr = new XMLHttpRequest();
+            var url = "/get_request_object";
+            xhr.open("GET", url, true);
 
+            //Send the proper header information along with the request
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onreadystatechange = function() { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    // Request finished. Do processing here.
+                    var bodyObj = JSON.parse(xhr.responseText);
+                    console.log(bodyObj);
+                    document.getElementById("did-siop-login").setAttribute("data-did-siop", bodyObj.reqObj);                    
+                }
+                else {
+                    console.log("Error in Data Submission - Status", this.status );
+                }
+            }
+            xhr.send(null);
+        }
+    </script>
+```
+
+On server side, generate the request object using Relying Party DID and Private Key
+```js
+const DID_SIOP = require('did-siop');
+
+async function getRequestObject(req, res, next) {
+    console.log("getRequestObject Invoked");
+    var requestObject;
+    requestObject = await generateRequestObject();
+    res.send(JSON.stringify({'reqObj':requestObject}));
+}
+
+async function generateRequestObject(){
+    console.log('startProcess');
+    var request;
+    
+    siop_rp = await DID_SIOP.RP.getRP(
+        'localhost:5001/home', // RP's redirect_uri
+        'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6', // RP's did
+        {
+            "jwks_uri": "https://uniresolver.io/1.0/identifiers/did:example:0xab;transform-keys=jwks",
+            "id_token_signed_response_alg": ["ES256K-R", "EdDSA", "RS256"]
+        }
+    )
+    console.log('Got RP instance ....');
+    siop_rp.addSigningParams(
+        '8329a21d9ce86fa08e75354469fb8d78834f126415d5b00eef55c2f587f3abca', // Private key
+        'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
+        DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied. List of values is given below
+        DID_SIOP.ALGORITHMS['ES256K-R']
+    );
+
+    console.log('RP SigningParams added ...');
+    request = await siop_rp.generateRequest();
+
+    console.log('Request generated ...', request);
+    return request;
+}
 ```
 #### home.html
 User has been authenticated and authorised to access the restricted area of the application. Below ut validate the response received as a JWT.
