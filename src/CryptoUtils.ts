@@ -1,7 +1,8 @@
-import { createHash, createCipher, createDecipher } from 'crypto-browserify';
+import { createCipher, createDecipher } from 'browserify-aes';
+import  * as hashUtils  from 'hash.js';
 
 export function hash(value: string, salt: string): string{
-    let sha256 = createHash('sha256');
+    let sha256 = hashUtils.sha256();
     let level1 = sha256.update(value).digest('hex');
     let salted = level1 + salt;
     let level2 = sha256.update(salted).digest('hex');
