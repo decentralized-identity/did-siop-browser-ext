@@ -229,19 +229,17 @@ async function changeDID(did: string): Promise<string>{
     }
 }
 
-async function addKey(keyInfo: any): Promise<string>{
+async function addKey(key: string): Promise<string>{
     try{
         await checkSigning();
-        provider.addSigningParams(keyInfo.key, keyInfo.kid, keyInfo.format,  keyInfo.alg);
+        let kid = provider.addSigningParams(key);
         signingInfoSet.push({
-          alg: keyInfo.alg,
-          kid: keyInfo.kid,
-          key: keyInfo.key,
-          format: keyInfo.format,
+          key: key,
+          kid: kid,
         });
         let encryptedSigningInfo = encrypt(JSON.stringify(signingInfoSet), loggedInState);
         localStorage.setItem(STORAGE_KEYS.signingInfoSet, encryptedSigningInfo);
-        return 'New key added successfully';
+        return kid;
     }
     catch(err){
         return Promise.reject(err);
