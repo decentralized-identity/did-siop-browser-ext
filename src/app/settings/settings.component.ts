@@ -23,7 +23,6 @@ export class SettingsComponent implements OnInit {
   @ViewChild('addNewKeyModalYes') addNewKeyModalYes: ElementRef;
   @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
-  @ViewChild('newKeyKID') newKeyKID: ElementRef;
 
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
   @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
@@ -121,35 +120,26 @@ export class SettingsComponent implements OnInit {
   addNewKeyButtonClicked(){
     this.addNewKeyModalInfo.nativeElement.innerText = '';
     this.newKeyString.nativeElement.value = '';
-    this.newKeyKID.nativeElement.value = '';
   }
 
-  async addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+  async addNewKey(keyString: string){
     this.addNewKeyModalInfo.nativeElement.classList.remove('error');
     this.addNewKeyModalInfo.nativeElement.classList.add('waiting');
     this.addNewKeyModalInfo.nativeElement.innerText = 'Please wait';
     this.addNewKeyModalClose.nativeElement.disabled = true;
     this.addNewKeyModalYes.nativeElement.disabled = true;
 
-    if(keyString && kid){
-      let keyInfo = {
-        alg: algorithm,
-        kid: kid,
-        key: keyString,
-        format: format,
-      }
-  
+    if(keyString){
       this.messageService.sendMessage({
         task: TASKS.ADD_KEY,
-        keyInfo: keyInfo,
+        keyInfo: keyString,
         }, 
         (response) =>{
           if(response.result){
-            this.signingInfoSet.push(keyInfo);
+            this.signingInfoSet.push({key: keyString, kid: response.result});
             this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
             this.addNewKeyModalClose.nativeElement.disabled = false;
             this.addNewKeyModalYes.nativeElement.disabled = false;
-            localStorage.setItem('PARTIAL_KEY_INFO', JSON.stringify({kid:'', keyString: ''}));
             this.addNewKeyModalClose.nativeElement.click();
             this.changeDetector.detectChanges();
             this.toastrService.success(response.result, 'DID_SIOP', {
@@ -318,21 +308,16 @@ export class SettingsComponent implements OnInit {
           if(response.result){
             this.currentDID = did;
             this.addNewKeyButton.nativeElement.disabled = false;
-            let keyInfo = {
-              alg: 'ES256K-R',
-              kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
-              key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
-              format: 'HEX',
-            }
+            let keyString = 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964';
         
             this.messageService.sendMessage({
               task: TASKS.ADD_KEY,
-              keyInfo: keyInfo,
+              keyInfo: keyString,
               }, 
               (response) =>{
                 if(response.result){
                   this.signingInfoSet = [];
-                  this.signingInfoSet.push(keyInfo);
+                  this.signingInfoSet.push({key: keyString, kid: response.result});
                   this.testDataModalClose.nativeElement.disabled = false;
                   this.testDataModalYes.nativeElement.disabled = false;
                   this.testDataModalClose.nativeElement.click();
@@ -374,19 +359,4 @@ export class SettingsComponent implements OnInit {
   goBack(){
     this.clickedBack.emit(true);
   }
-
-  savePartialKeyInputs(){
-    let partialInfo = {
-      kid: this.newKeyKID.nativeElement.value,
-      keyString: this.newKeyString.nativeElement.value
-    }
-    localStorage.setItem('PARTIAL_KEY_INFO', JSON.stringify(partialInfo));
-  }
-
-  loadPartialKeyInputs(){
-    let partialInfo = JSON.parse(localStorage.getItem('PARTIAL_KEY_INFO'));
-    this.newKeyKID.nativeElement.value = partialInfo.kid;
-    this.newKeyString.nativeElement.value = partialInfo.keyString;
-  }
-
 }

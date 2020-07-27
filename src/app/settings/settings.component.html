@@ -89,22 +89,7 @@
                       <div id="{{'keyCollapse' + i}}" class="collapse" role="tabpanel" attr.aria-labelledby="{{'key' + i}}">
                         <div class="card-body">
                             <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">Key id</span>
-                                </div>
                                 <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
-                            </div>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">Algorithm</span>
-                                </div>
-                                <input value="{{key.alg}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
-                            </div>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">Key format</span>
-                                </div>
-                                <input value="{{key.format}}" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled>
                             </div>
                             <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
                         </div>
@@ -115,7 +100,7 @@
               </div>
             </div>
     
-            <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true" (focusout)="savePartialKeyInputs()" (focus)="loadPartialKeyInputs()">
+            <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -125,62 +110,16 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                        <div class="new-key-kid">
-                          <p class="new-key-modal-input-label">Public Key ID</p>
-                          <div class="input-group input-group-sm new-key-modal-input">
-                              <textarea id="newKeyKID" #newKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                          </div>
-                        </div>
-                        <div class="new-key-algorithm">
-                          <p class="new-key-modal-input-label">Algorithm</p>
-                          <div class="input-group input-group-sm new-key-modal-input">
-                              <select id="newKeyAlgorithm" #newKeyAlgorithm class="custom-select">
-                                  <option value="RS256">RS256</option>
-                                  <option value="RS384">RS384</option>
-                                  <option value="RS512">RS512</option>
-    
-                                  <option value="PS256">PS256</option>
-                                  <option value="PS384">PS384</option>
-                                  <option value="PS512">PS512</option>
-    
-                                  <option value="ES256">ES256</option>
-                                  <option value="ES384">ES384</option>
-                                  <option value="ES512">ES512</option>
-                                  <option value="ES256K">ES256K</option>
-                                  <option value="ES256K-R">ES256K-R</option>
-    
-                                  <option value="EdDSA">EdDSA</option>
-                              </select>
-                          </div>
-                        </div>
-                        <div class="new-key-format">
-                          <p class="new-key-modal-input-label">Private Key Format</p>
-                          <div class="input-group input-group-sm new-key-modal-input">
-                              <select id="newKeyFormat" #newKeyFormat class="custom-select">
-                                  <option value="HEX">HEX</option>
-                                  <option value="BASE58">BASE58</option>
-                                  <option value="BASE64">BASE64</option>
-    
-                                  <option value="PKCS8_PEM">PKCS8_PEM</option>
-                                  <option value="PKCS1_PEM">PKCS1_PEM</option>
-                              </select>
-                          </div>
-                        </div>
                         <div class="new-key-key">
                           <p class="new-key-modal-input-label">Private Key</p>
                           <div class="input-group input-group-sm new-key-modal-input">
-                              <input id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                              <textarea id="newKeyString" #newKeyString type="password" rows="10" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                           </div>
                         </div>
                         <p #addNewKeyModalInfo></p>
                     </div>
                     <div class="modal-footer d-flex justify-content-start">
-                      <button #addNewKeyModalYes type="button" class="btn btn-primary btn-ok" (click)='addNewKey(
-                          newKeyString.value,
-                          newKeyKID.value,
-                          newKeyFormat.value,
-                          newKeyAlgorithm.value
-                        )'>Add Key</button>
+                      <button #addNewKeyModalYes type="button" class="btn btn-primary btn-ok" (click)='addNewKey(newKeyString.value)'>Add Key</button>
                       <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
                     </div>
                   </div>
