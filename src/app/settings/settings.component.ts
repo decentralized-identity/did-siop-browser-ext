@@ -140,7 +140,6 @@ export class SettingsComponent implements OnInit {
             this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
             this.addNewKeyModalClose.nativeElement.disabled = false;
             this.addNewKeyModalYes.nativeElement.disabled = false;
-            localStorage.setItem('PARTIAL_KEY_INFO', JSON.stringify({kid:'', keyString: ''}));
             this.addNewKeyModalClose.nativeElement.click();
             this.changeDetector.detectChanges();
             this.toastrService.success(response.result, 'DID_SIOP', {
@@ -365,19 +364,4 @@ export class SettingsComponent implements OnInit {
   goBack(){
     this.clickedBack.emit(true);
   }
-
-  savePartialKeyInputs(){
-    let partialInfo = {
-      kid: this.newKeyKID.nativeElement.value,
-      keyString: this.newKeyString.nativeElement.value
-    }
-    localStorage.setItem('PARTIAL_KEY_INFO', JSON.stringify(partialInfo));
-  }
-
-  loadPartialKeyInputs(){
-    let partialInfo = JSON.parse(localStorage.getItem('PARTIAL_KEY_INFO'));
-    this.newKeyKID.nativeElement.value = partialInfo.kid;
-    this.newKeyString.nativeElement.value = partialInfo.keyString;
-  }
-
 }
