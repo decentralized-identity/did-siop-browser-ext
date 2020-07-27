@@ -308,21 +308,16 @@ export class SettingsComponent implements OnInit {
           if(response.result){
             this.currentDID = did;
             this.addNewKeyButton.nativeElement.disabled = false;
-            let keyInfo = {
-              alg: 'ES256K-R',
-              kid: 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83#owner',
-              key: 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964',
-              format: 'HEX',
-            }
+            let keyString = 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964';
         
             this.messageService.sendMessage({
               task: TASKS.ADD_KEY,
-              keyInfo: keyInfo,
+              keyInfo: keyString,
               }, 
               (response) =>{
                 if(response.result){
                   this.signingInfoSet = [];
-                  this.signingInfoSet.push(keyInfo);
+                  this.signingInfoSet.push({key: keyString, kid: response.result});
                   this.testDataModalClose.nativeElement.disabled = false;
                   this.testDataModalYes.nativeElement.disabled = false;
                   this.testDataModalClose.nativeElement.click();
