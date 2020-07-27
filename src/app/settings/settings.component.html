@@ -89,9 +89,6 @@
                       <div id="{{'keyCollapse' + i}}" class="collapse" role="tabpanel" attr.aria-labelledby="{{'key' + i}}">
                         <div class="card-body">
                             <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">Key id</span>
-                                </div>
                                 <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                             </div>
                             <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
@@ -116,7 +113,7 @@
                         <div class="new-key-key">
                           <p class="new-key-modal-input-label">Private Key</p>
                           <div class="input-group input-group-sm new-key-modal-input">
-                              <textarea id="newKeyString" #newKeyString type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
+                              <textarea id="newKeyString" #newKeyString type="password" rows="10" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
                           </div>
                         </div>
                         <p #addNewKeyModalInfo></p>
