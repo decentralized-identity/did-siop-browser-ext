@@ -1,6 +1,6 @@
 {
   "name": "did-siop-ext",
-  "version": "1.0.2",
+  "version": "1.2.0",
   "description": "Self Issued OpenId Connect Provider for decentralized identity implemented as a browser add-on",
   "scripts": {
     "ng": "ng",
