@@ -23,7 +23,6 @@ export class SettingsComponent implements OnInit {
   @ViewChild('addNewKeyModalYes') addNewKeyModalYes: ElementRef;
   @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
-  @ViewChild('newKeyKID') newKeyKID: ElementRef;
 
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
   @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
@@ -121,31 +120,23 @@ export class SettingsComponent implements OnInit {
   addNewKeyButtonClicked(){
     this.addNewKeyModalInfo.nativeElement.innerText = '';
     this.newKeyString.nativeElement.value = '';
-    this.newKeyKID.nativeElement.value = '';
   }
 
-  async addNewKey(keyString: string, kid: string, format: string, algorithm: string){
+  async addNewKey(keyString: string){
     this.addNewKeyModalInfo.nativeElement.classList.remove('error');
     this.addNewKeyModalInfo.nativeElement.classList.add('waiting');
     this.addNewKeyModalInfo.nativeElement.innerText = 'Please wait';
     this.addNewKeyModalClose.nativeElement.disabled = true;
     this.addNewKeyModalYes.nativeElement.disabled = true;
 
-    if(keyString && kid){
-      let keyInfo = {
-        alg: algorithm,
-        kid: kid,
-        key: keyString,
-        format: format,
-      }
-  
+    if(keyString){
       this.messageService.sendMessage({
         task: TASKS.ADD_KEY,
-        keyInfo: keyInfo,
+        keyInfo: keyString,
         }, 
         (response) =>{
           if(response.result){
-            this.signingInfoSet.push(keyInfo);
+            this.signingInfoSet.push({key: keyString, kid: response.result});
             this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
             this.addNewKeyModalClose.nativeElement.disabled = false;
             this.addNewKeyModalYes.nativeElement.disabled = false;
