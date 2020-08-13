@@ -67,12 +67,10 @@ Follow the steps below to see the DID-SIOP in action.
 ## How to integrate ##
 
 ### Steps
-* Use ***did-siop relying party library*** from ***https://cdn.jsdelivr.net/npm/did-siop@1.3.0/dist/browser/did-siop.min.js*** or via npm ***https://www.npmjs.com/package/did-siop*** to communicate with the Chrome extension.
+* Use ***did-siop relying party library*** from ***https://cdn.jsdelivr.net/npm/did-siop@1.4.4/dist/browser/did-siop.min.js*** or via npm ***https://www.npmjs.com/package/did-siop*** to communicate with the Chrome extension.
   * Include the library in any html page using script tag or in any Node.js based web project via npm.
   * Create new instance using ***const siop_rp = new DID_SIOP.RP.getRP(rp_redirect_uri, rp_did, rp_meta_data_object)***.
-  * Set signing parameters ***siop_rp.addSigningParams(rp_private_key, rp_public_key_id, key_format, algorithm)***.
-    * Algorithms supported : RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512, ES256K, ES256K-R, EdDSA
-    * Key Formats : PKCS8_PEM, PKCS1_PEM, HEX, BASE58, BASE64
+  * Set signing parameters ***siop_rp.addSigningParams(rp_private_key)***.
   * Generate request ***siop_rp.generateRequest().then(request => {}).catch(err => {})***.
   * The generated request needed to be added as the value for attribute named ***data-did-siop*** of the desired HTML element. This attribute value is required for the content_script of the extension to bind necessary events.
       * Example: - 
@@ -148,12 +146,7 @@ async function generateRequestObject(){
         }
     )
     console.log('Got RP instance ....');
-    siop_rp.addSigningParams(
-        '8329a21d9ce86fa08e75354469fb8d78834f126415d5b00eef55c2f587f3abca', // Private key
-        'did:ethr:0xA51E8281c201cd6Ed488C3701882A44B1871DAd6#owner', // Corresponding authentication method in RP's did document (to be used as kid value for key)
-        DID_SIOP.KEY_FORMATS.HEX, //Format in which the key is supplied. List of values is given below
-        DID_SIOP.ALGORITHMS['ES256K-R']
-    );
+    siop_rp.addSigningParams('8329a21d9ce86fa08e75354469fb8d78834f126415d5b00eef55c2f587f3abca'); // Add private key
 
     console.log('RP SigningParams added ...');
     request = await siop_rp.generateRequest();
