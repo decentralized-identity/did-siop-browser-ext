@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { BackgroundMessageService } from '../background-message.service';
-import { TASKS } from '../../globals'; 
+import { TASKS } from 'src/const'; 
 
 @Component({
   selector: 'app-settings',

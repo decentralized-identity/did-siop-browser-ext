@@ -1,4 +1,4 @@
-import { TASKS } from './globals';
+import { TASKS } from '../const';
 
 /// <reference types="chrome"/>
 /// <reference types="firefox-webext-browser"/>

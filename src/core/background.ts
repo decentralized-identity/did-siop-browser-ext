@@ -3,7 +3,7 @@
 
 import { Provider, ERROR_RESPONSES} from 'did-siop';
 import * as queryString from 'query-string';
-import { STORAGE_KEYS, TASKS } from './globals';
+import { STORAGE_KEYS, TASKS } from '../const';
 import { authenticate, checkExtAuthenticationState, initExtAuthentication } from './AuthUtils';
 import { encrypt, decrypt } from './CryptoUtils';
 
