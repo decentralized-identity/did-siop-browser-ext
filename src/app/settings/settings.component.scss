@@ -239,3 +239,27 @@
     font-size: 18px;
     margin-left: 25px;
 }
+
+.did-creator-wrapper{
+    height: 320px;
+    .carousel{
+        .carousel-inner{
+            height: 300px !important;
+        }
+
+        .carousel-control-next,
+        .carousel-control-prev
+        {
+            height: 24px;
+        }
+
+
+        .carousel-item{
+            .did-method-title{
+                background-color: $app-primary;
+                color: white;
+                border-radius: 40px;
+            }
+        }
+    }
+}
