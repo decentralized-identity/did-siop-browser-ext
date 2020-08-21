@@ -1,5 +1,9 @@
 import EthrDID from 'ethr-did';
 import W3 from 'web3';
+const nacl = require('tweetnacl');
+import { encode as multibaseEncode} from 'multibase';
+import { addPrefix as mutlicodeAddPrefix } from 'multicodec';
+import * as base58 from 'bs58';
 
 const createEthrDid = async function(network: string){
     const networks = {
@@ -19,6 +23,19 @@ const createEthrDid = async function(network: string){
     }
 }
 
+const createKeyDid = async function(){
+    let keyPair = nacl.sign.keyPair();
+    let methodSpecificBytes = Buffer.from(multibaseEncode('base58btc', mutlicodeAddPrefix('ed25519-pub', keyPair.publicKey)));
+    let did = 'did:key:' + methodSpecificBytes.toString();
+    let privateKeyString = base58.encode(keyPair.secretKey);
+
+    return {
+        did,
+        privateKey: privateKeyString
+    }
+}
+
 export const DidCreators = {
-    ethr: createEthrDid
+    ethr: createEthrDid,
+    key: createKeyDid,
 }
