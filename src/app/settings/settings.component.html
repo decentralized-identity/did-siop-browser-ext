@@ -82,11 +82,18 @@
                             <div class="carousel-item active">
                               <div class="d-flex flex-column justify-content-center">
                                 <h5 class="text-center did-method-title">did:ethr</h5>
+                                <select #ethrNetwork class="form-control w-50 mt-5 mx-auto">
+                                  <option value="mainnet" selected>Mainnet</option>
+                                  <option value="ropsten">Ropsten</option>
+                                  <option value="rinkeby">Rinkeby</option>
+                                </select>
+                                <button type="button" class="btn btn-primary btn-ok w-50 mt-2 mx-auto" (click)="createNewDID('ethr', {network: ethrNetwork.value})">Create DID</button>
                               </div>
                             </div>
                             <div class="carousel-item">
                               <div class="d-flex flex-column justify-content-center">
                                 <h5 class="text-center did-method-title">did:key</h5>
+                                <button type="button" class="btn btn-primary btn-ok w-50 mt-5 mx-auto" (click)="createNewDID('key', {})">Create DID</button>
                               </div>
                             </div>
                           </div>
