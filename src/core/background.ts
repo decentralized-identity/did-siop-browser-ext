@@ -6,6 +6,7 @@ import * as queryString from 'query-string';
 import { STORAGE_KEYS, TASKS } from '../const';
 import { authenticate, checkExtAuthenticationState, initExtAuthentication } from './AuthUtils';
 import { encrypt, decrypt } from './CryptoUtils';
+import { DidCreators } from './DidUtils';
 
 let provider: Provider;
 let signingInfoSet: any[] = [];
@@ -143,6 +144,19 @@ runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     sendResponse({err:err.message});
                 });
                 break;
+            }
+            case TASKS.CREATE_DID: {
+                createDID(request.method, request.data)
+                .then((result)=>{
+                    sendResponse({result: {
+                        did: result.did,
+                        kid: result.kid,
+                        keyString: result.privateKey
+                    }});
+                })
+                .catch(err=>{
+                    sendResponse({err: err.message});
+                })
             }
         }
     }
@@ -365,4 +379,22 @@ function removeRequest(index: number): string{
     storedRequests = storedRequests.filter(sr=>{ return sr.index != index });
     localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(storedRequests));
     return request.request;
+}
+
+async function createDID(method: string, data: any): Promise<any>{
+    try{
+        const create = DidCreators[method];
+        let identity = await create(data);
+        await changeDID(identity.did);
+        let kid = await addKey(identity.privateKey);
+        return {
+            did: identity.did,
+            kid,
+            privateKey: identity.privateKey
+        }
+    }
+    catch(err){
+        return Promise.reject(err);
+    }
+    
 }
