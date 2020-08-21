@@ -10,6 +10,8 @@ const createEthrDid = async function(network: string){
         'mainnet': 'https://mainnet.infura.io/v3/e0a6ac9a2c4a4722970325c36b728415',
         'rinkeby': 'https://rinkeby.infura.io/v3/e0a6ac9a2c4a4722970325c36b728415',
         'ropsten': 'https://ropsten.infura.io/v3/e0a6ac9a2c4a4722970325c36b728415',
+        'goerli': 'https://goerli.infura.io/v3/e0a6ac9a2c4a4722970325c36b728415',
+        'kovan': 'https://kovan.infura.io/v3/e0a6ac9a2c4a4722970325c36b728415',
     }
 
     const ethrProvider = new W3.providers.HttpProvider(networks[network]);
