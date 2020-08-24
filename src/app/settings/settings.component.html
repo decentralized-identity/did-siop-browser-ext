@@ -6,8 +6,8 @@
                 <div class="col">
                   <p>Current Identity</p>
                 </div>
-                <div class="col d-flex justify-content-end change-did-btn">
-                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal" (click)="initializeTestDataButtonClicked()"><small>Test</small></button>
+                <div class="col d-flex justify-content-end identity-actions">
+                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal"><small>Test</small></button>
                   <button class="btn btn-link" data-toggle="modal" data-target="#createDIDModal"><small>Create</small></button>
                   <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal"><small>Change</small></button>
                 </div>
@@ -20,28 +20,9 @@
             </div>
 
             <change-did-modal (didChanged)="didChange($event)"></change-did-modal>
-            
-            <div class="modal" id="testDataModal" tabindex="-1" role="dialog" aria-labelledby="testDataModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="testDataModalLabel">Initialize Test Data</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                      <p class="warning">Initialize Identity with test data. Warning! This will remove current DID and all the related keys. Are you sure?</p>
-                      <p #testDataModalInfo></p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-start">
-                    <button #testDataModalYes type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
-                    <button #testDataModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
+            <test-data-modal (didChanged)="didChange($event)"></test-data-modal>
+            
             <div class="modal" id="createDIDModal" tabindex="-1" role="dialog" aria-labelledby="createDIDModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">

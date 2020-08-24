@@ -1,18 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChangeDIDModalComponent } from './change-did-modal/change-did-modal.component';
+import { TestDataModalComponent } from './test-data-modal/test-data-modal.component';
 
 
 
 @NgModule({
-  declarations: [ChangeDIDModalComponent],
+  declarations: [ChangeDIDModalComponent, TestDataModalComponent],
   imports: [
     CommonModule
   ],
   exports: [
-    ChangeDIDModalComponent
+    ChangeDIDModalComponent,
+    TestDataModalComponent,
   ]
 })
 export class ModalsModule { }
 
-export {ChangeDIDModalComponent}
+export {ChangeDIDModalComponent, TestDataModalComponent}

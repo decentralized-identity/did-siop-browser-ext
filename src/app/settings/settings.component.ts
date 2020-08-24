@@ -32,10 +32,6 @@ export class SettingsComponent implements OnInit {
   @ViewChild('removeKeyModalYes') removeKeyModalYes: ElementRef;
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
-  @ViewChild('testDataModalClose') testDataModalClose: ElementRef;
-  @ViewChild('testDataModalInfo') testDataModalInfo: ElementRef;
-  @ViewChild('testDataModalYes') testDataModalYes: ElementRef;
-
   @ViewChild('createDIDModalInfo') createDIDModalInfo: ElementRef;
   @ViewChild('createDIDModalClose') createDIDModalClose: ElementRef;
 
@@ -240,74 +236,6 @@ export class SettingsComponent implements OnInit {
       this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
       this.newPasswordModalInfo.nativeElement.classList.add('error');
       this.newPasswordModalInfo.nativeElement.innerText = 'Please fill all data';
-    }
-  }
-
-  initializeTestDataButtonClicked(){
-    this.testDataModalInfo.nativeElement.innerText = '';
-  }
-
-  async initializeTestData(){
-    this.testDataModalInfo.nativeElement.classList.remove('error');
-    this.testDataModalInfo.nativeElement.classList.add('waiting');
-    this.testDataModalInfo.nativeElement.innerText = 'Please wait';
-    this.testDataModalClose.nativeElement.disabled = true;
-    this.testDataModalYes.nativeElement.disabled = true;
-
-    let did = 'did:ethr:0xB07Ead9717b44B6cF439c474362b9B0877CBBF83';
-    if(did){
-      this.messageService.sendMessage({
-        task: TASKS.CHANGE_DID,
-        did: did,
-        }, 
-        (response) =>{
-          if(response.result){
-            this.currentDID = did;
-            this.addNewKeyButton.nativeElement.disabled = false;
-            let keyString = 'CE438802C1F0B6F12BC6E686F372D7D495BC5AA634134B4A7EA4603CB25F0964';
-        
-            this.messageService.sendMessage({
-              task: TASKS.ADD_KEY,
-              keyInfo: keyString,
-              }, 
-              (response) =>{
-                if(response.result){
-                  this.signingInfoSet = [];
-                  this.signingInfoSet.push({key: keyString, kid: response.result});
-                  this.testDataModalClose.nativeElement.disabled = false;
-                  this.testDataModalYes.nativeElement.disabled = false;
-                  this.testDataModalClose.nativeElement.click();
-                  this.changeDetector.detectChanges();
-                  this.toastrService.success('Successful', 'DID_SIOP', {
-                    onActivateTick: true,
-                    positionClass: 'toast-bottom-center',
-                  });
-                }
-                else if(response.err){
-                  this.testDataModalInfo.nativeElement.innerText = response.err;
-                  this.testDataModalInfo.nativeElement.classList.remove('waiting');
-                  this.testDataModalInfo.nativeElement.classList.add('error');
-                  this.testDataModalClose.nativeElement.disabled = false;
-                  this.testDataModalYes.nativeElement.disabled = false;
-                }
-              }
-            );
-          }
-          else if(response.err){
-            this.testDataModalInfo.nativeElement.innerText = response.err;
-            this.testDataModalInfo.nativeElement.classList.remove('waiting');
-            this.testDataModalInfo.nativeElement.classList.add('error');
-            this.testDataModalClose.nativeElement.disabled = false;
-            this.testDataModalYes.nativeElement.disabled = false;
-          }
-        }
-      );
-    }
-    else{
-      this.testDataModalInfo.nativeElement.classList.remove('waiting');
-      this.testDataModalInfo.nativeElement.classList.add('error');
-      this.testDataModalClose.nativeElement.disabled = false;
-      this.testDataModalYes.nativeElement.disabled = false;
     }
   }
 
