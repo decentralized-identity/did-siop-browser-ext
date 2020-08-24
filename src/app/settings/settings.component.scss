@@ -40,10 +40,6 @@
     }
 }
 
-#newDID{
-    background-color: $app-section-background;
-}
-
 .signing-keys{
     padding-left: 25px;
     padding-right: 25px;
@@ -103,46 +99,8 @@
     }
 }
 
-.input-group-sm{
-    margin-bottom: 10px;
-}
-
-.input-group-text{
-    width: 100px;
-}
-
-.input-group-sm{
-    textarea{
-        resize: none;
-    }
-}
-
 .remove-key-btn{
     color: $app-primary !important;
-}
-
-.warning{
-    color: orangered;
-}
-
-.success{
-    color: green;
-}
-
-.error{
-    color: red;
-}
-
-.waiting{
-    color: $app-primary;
-}
-
-.modal-header{
-    border-bottom: 1px solid $app-primary;
-}
-
-.modal-footer{
-    border: none;
 }
 
 .new-key-kid, .new-key-algorithm, .new-key-format{
@@ -159,29 +117,6 @@
 .new-key-modal-input{
     select, input, textarea{
         background-color: $app-section-background;
-    }
-}
-
-.btn-ok{
-    background-color: $app-primary;
-    border: 1px solid $app-primary;
-    border-radius: 40px;
-    min-width: 100px;
-}
-
-.btn-cancel{
-    color: $app-primary;
-}
-
-.btn-link{
-    &:active{
-        &:focus{
-            background-color: transparent;
-        }
-    }
-    &:focus{
-        outline: none !important;
-        box-shadow: none;
     }
 }
 
@@ -234,12 +169,6 @@
     }
 }
 
-.btn-back{
-    color: $app-primary;
-    font-size: 18px;
-    margin-left: 25px;
-}
-
 .did-creator-wrapper{
     height: 320px;
     .carousel{
@@ -261,5 +190,17 @@
                 border-radius: 40px;
             }
         }
+    }
+}
+
+.btn-link{
+    &:active{
+        &:focus{
+            background-color: transparent;
+        }
+    }
+    &:focus{
+        outline: none !important;
+        box-shadow: none;
     }
 }
