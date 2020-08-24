@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, EventEmitt
 import { ToastrService } from 'ngx-toastr';
 import { BackgroundMessageService } from '../background-message.service';
 import { TASKS } from 'src/const'; 
+import { IdentityService } from '../identity.service';
 
 @Component({
   selector: 'app-settings',
@@ -13,11 +14,6 @@ export class SettingsComponent implements OnInit {
   currentDID: string;
   signingInfoSet: any[] = [];
   
-  @ViewChild('newDID') newDID: ElementRef;
-  @ViewChild('changeDIDModalClose') changeDIDModalClose: ElementRef;
-  @ViewChild('changeDIDModalInfo') changeDIDModalInfo: ElementRef;
-  @ViewChild('changeDIDModalYes') changeDIDModalYes: ElementRef;
-
   @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
   @ViewChild('addNewKeyModalClose') addNewKeyModalClose: ElementRef;
   @ViewChild('addNewKeyModalYes') addNewKeyModalYes: ElementRef;
@@ -45,7 +41,7 @@ export class SettingsComponent implements OnInit {
 
   @Output() clickedBack = new EventEmitter<boolean>();
 
-  constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService) {
+  constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService, private identityService: IdentityService) {
     this.messageService.sendMessage(
       {
         task: TASKS.GET_IDENTITY
@@ -68,55 +64,12 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  changeDIDButtonClicked(){
-    this.changeDIDModalInfo.nativeElement.innerText = '';
-    this.newDID.nativeElement.value = '';
-  }
-
-  async changeDID(did: string){
-    this.changeDIDModalInfo.nativeElement.classList.remove('error');
-    this.changeDIDModalInfo.nativeElement.classList.add('waiting');
-    this.changeDIDModalInfo.nativeElement.innerText = 'Please wait';
-    this.changeDIDModalClose.nativeElement.disabled = true;
-    this.changeDIDModalYes.nativeElement.disabled = true;
-    if(did){
-      this.messageService.sendMessage({
-        task: TASKS.CHANGE_DID,
-        did: did,
-        }, 
-        (response) =>{
-          if(response.result){
-            this.currentDID = did;
-            this.signingInfoSet = [];
-            this.newDID.nativeElement.value = '';
-            this.changeDIDModalInfo.nativeElement.classList.remove('waiting');
-            this.changeDIDModalClose.nativeElement.disabled = false;
-            this.changeDIDModalYes.nativeElement.disabled = false;
-            this.changeDIDModalClose.nativeElement.click();
-
-            this.addNewKeyButton.nativeElement.disabled = false;
-            this.changeDetector.detectChanges();
-            this.toastrService.success(response.result, 'DID_SIOP', {
-              onActivateTick: true,
-              positionClass: 'toast-bottom-center',
-            });
-          }
-          else if(response.err){
-            this.changeDIDModalInfo.nativeElement.innerText = response.err;
-            this.changeDIDModalInfo.nativeElement.classList.remove('waiting');
-            this.changeDIDModalInfo.nativeElement.classList.add('error');
-            this.changeDIDModalClose.nativeElement.disabled = false;
-            this.changeDIDModalYes.nativeElement.disabled = false;
-          }
-        }
-      );
-    }
-    else{
-      this.changeDIDModalInfo.nativeElement.innerText = 'Please enter a valid DID';
-      this.changeDIDModalInfo.nativeElement.classList.remove('waiting');
-      this.changeDIDModalInfo.nativeElement.classList.add('error');
-      this.changeDIDModalClose.nativeElement.disabled = false;
-      this.changeDIDModalYes.nativeElement.disabled = false;
+  didChange(changed: boolean){
+    if(changed){
+      this.addNewKeyButton.nativeElement.disabled = false;
+      this.currentDID = this.identityService.getCurrentDID();
+      this.signingInfoSet = this.identityService.getSigningInfoSet();
+      this.changeDetector.detectChanges();
     }
   }
 
@@ -351,7 +304,6 @@ export class SettingsComponent implements OnInit {
       );
     }
     else{
-      this.changeDIDModalInfo.nativeElement.innerText = 'Please enter a valid DID';
       this.testDataModalInfo.nativeElement.classList.remove('waiting');
       this.testDataModalInfo.nativeElement.classList.add('error');
       this.testDataModalClose.nativeElement.disabled = false;
