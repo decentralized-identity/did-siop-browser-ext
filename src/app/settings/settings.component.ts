@@ -32,9 +32,6 @@ export class SettingsComponent implements OnInit {
   @ViewChild('removeKeyModalYes') removeKeyModalYes: ElementRef;
   @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
 
-  @ViewChild('createDIDModalInfo') createDIDModalInfo: ElementRef;
-  @ViewChild('createDIDModalClose') createDIDModalClose: ElementRef;
-
   @Output() clickedBack = new EventEmitter<boolean>();
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService, private identityService: IdentityService) {
@@ -236,43 +233,6 @@ export class SettingsComponent implements OnInit {
       this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
       this.newPasswordModalInfo.nativeElement.classList.add('error');
       this.newPasswordModalInfo.nativeElement.innerText = 'Please fill all data';
-    }
-  }
-
-  async createNewDID(method: string, data: any){
-    this.createDIDModalInfo.nativeElement.classList.remove('error');
-    this.createDIDModalInfo.nativeElement.classList.add('waiting');
-    this.createDIDModalInfo.nativeElement.innerText = 'Please wait';
-    this.createDIDModalClose.nativeElement.disabled = true;
-
-    if(method){
-      this.messageService.sendMessage({
-        task: TASKS.CREATE_DID,
-        method,
-        data
-      },
-      (response)=>{
-        if(response.result){
-          this.currentDID = response.result.did;
-
-          this.signingInfoSet = [];
-          this.signingInfoSet.push({key: response.result.keyString, kid: response.result.kid});
-          this.createDIDModalClose.nativeElement.disabled = false;
-          this.createDIDModalClose.nativeElement.click();
-          this.changeDetector.detectChanges();
-          this.toastrService.success('Successful', 'DID_SIOP', {
-            onActivateTick: true,
-            positionClass: 'toast-bottom-center',
-          });
-        }
-        else if(response.err){
-          this.createDIDModalInfo.nativeElement.innerText = response.err;
-          this.createDIDModalInfo.nativeElement.classList.remove('waiting');
-          this.createDIDModalInfo.nativeElement.classList.add('error');
-          this.createDIDModalClose.nativeElement.disabled = false;
-        }
-      }
-      );
     }
   }
 
