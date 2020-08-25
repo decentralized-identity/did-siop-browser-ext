@@ -103,23 +103,6 @@
     color: $app-primary !important;
 }
 
-.new-key-kid, .new-key-algorithm, .new-key-format{
-    margin-bottom: 25px;
-    p{
-        margin-bottom: 8px !important;
-    }
-}
-
-.new-key-modal-input-label{
-    padding-left: 10px;
-}
-
-.new-key-modal-input{
-    select, input, textarea{
-        background-color: $app-section-background;
-    }
-}
-
 .password{
     padding-left: 25px;
     padding-right: 25px;

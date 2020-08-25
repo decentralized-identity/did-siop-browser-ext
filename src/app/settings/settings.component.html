@@ -33,7 +33,7 @@
                   <p>Signing Keys</p>
                 </div>
                 <div class="col d-flex justify-content-end new-key-btn">
-                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal" (click)="addNewKeyButtonClicked()"><small>Add New Key</small></button>
+                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal"><small>Add New Key</small></button>
                 </div>
               </div>
               <div class="row signing-keys-bottom">
@@ -61,32 +61,8 @@
               </div>
             </div>
     
-            <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="newKeyModalLabel">Add New Key</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="new-key-key">
-                          <p class="new-key-modal-input-label">Private Key</p>
-                          <div class="input-group input-group-sm new-key-modal-input">
-                              <textarea id="newKeyString" #newKeyString type="password" rows="10" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                          </div>
-                        </div>
-                        <p #addNewKeyModalInfo></p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-start">
-                      <button #addNewKeyModalYes type="button" class="btn btn-primary btn-ok" (click)='addNewKey(newKeyString.value)'>Add Key</button>
-                      <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
-    
+            <new-key-modal (didChanged)="didChange($event)"></new-key-modal>
+
             <div class="modal" id="removeKeyModal" tabindex="-1" role="dialog" aria-labelledby="removeKeyModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">

@@ -15,10 +15,6 @@ export class SettingsComponent implements OnInit {
   signingInfoSet: any[] = [];
   
   @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
-  @ViewChild('addNewKeyModalClose') addNewKeyModalClose: ElementRef;
-  @ViewChild('addNewKeyModalYes') addNewKeyModalYes: ElementRef;
-  @ViewChild('addNewKeyModalInfo') addNewKeyModalInfo: ElementRef;
-  @ViewChild('newKeyString') newKeyString: ElementRef;
 
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
   @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
@@ -63,55 +59,6 @@ export class SettingsComponent implements OnInit {
       this.currentDID = this.identityService.getCurrentDID();
       this.signingInfoSet = this.identityService.getSigningInfoSet();
       this.changeDetector.detectChanges();
-    }
-  }
-
-  addNewKeyButtonClicked(){
-    this.addNewKeyModalInfo.nativeElement.innerText = '';
-    this.newKeyString.nativeElement.value = '';
-  }
-
-  async addNewKey(keyString: string){
-    this.addNewKeyModalInfo.nativeElement.classList.remove('error');
-    this.addNewKeyModalInfo.nativeElement.classList.add('waiting');
-    this.addNewKeyModalInfo.nativeElement.innerText = 'Please wait';
-    this.addNewKeyModalClose.nativeElement.disabled = true;
-    this.addNewKeyModalYes.nativeElement.disabled = true;
-
-    if(keyString){
-      this.messageService.sendMessage({
-        task: TASKS.ADD_KEY,
-        keyInfo: keyString,
-        }, 
-        (response) =>{
-          if(response.result){
-            this.signingInfoSet.push({key: keyString, kid: response.result});
-            this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
-            this.addNewKeyModalClose.nativeElement.disabled = false;
-            this.addNewKeyModalYes.nativeElement.disabled = false;
-            this.addNewKeyModalClose.nativeElement.click();
-            this.changeDetector.detectChanges();
-            this.toastrService.success(response.result, 'DID_SIOP', {
-              onActivateTick: true,
-              positionClass: 'toast-bottom-center',
-            });
-          }
-          else if(response.err){
-            this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
-            this.addNewKeyModalInfo.nativeElement.classList.add('error');
-            this.addNewKeyModalInfo.nativeElement.innerText = response.err;
-            this.addNewKeyModalClose.nativeElement.disabled = false;
-            this.addNewKeyModalYes.nativeElement.disabled = false;
-          }
-        }
-      );
-    }
-    else{
-      this.addNewKeyModalInfo.nativeElement.classList.remove('waiting');
-      this.addNewKeyModalInfo.nativeElement.classList.add('error');
-      this.addNewKeyModalInfo.nativeElement.innerText = 'Please fill all fields';
-      this.addNewKeyModalClose.nativeElement.disabled = false;
-      this.addNewKeyModalYes.nativeElement.disabled = false;
     }
   }
 
