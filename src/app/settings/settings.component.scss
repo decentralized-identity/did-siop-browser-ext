@@ -135,23 +135,6 @@
     }
 }
 
-.new-password-modal-input-label{
-    padding-left: 10px;
-}
-
-.old-password, .new-password, .new-password-2{
-    margin-bottom: 25px;
-    p{
-        margin-bottom: 8px !important;
-    }
-}
-
-.new-password-modal-input{
-    select, input, textarea{
-        background-color: $app-section-background;
-    }
-}
-
 .btn-link{
     &:active{
         &:focus{
@@ -162,4 +145,10 @@
         outline: none !important;
         box-shadow: none;
     }
+}
+
+.btn-back{
+    color: $app-primary;
+    font-size: 18px;
+    margin-left: 25px;
 }

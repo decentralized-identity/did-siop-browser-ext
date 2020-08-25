@@ -74,48 +74,12 @@
                     <p>Password</p>
                   </div>
                   <div class="col d-flex justify-content-end new-password-btn">
-                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newPasswordModal" (click)="changePasswordButtonClicked()"><small>Change</small></button>
+                    <button type="button" class="btn btn-link" (click)="openChangePasswordModal()"><small>Change</small></button>
                   </div>
                 </div>
             </div>
 
-            <div class="modal" id="newPasswordModal" tabindex="-1" role="dialog" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="newPasswordModalLabel">Change Password</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="old-password">
-                          <p class="new-password-modal-input-label">Old Password</p>
-                          <div class="input-group input-group-sm new-password-modal-input">
-                              <input id="oldPassword" #oldPassword type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                          </div>
-                        </div>
-                        <div class="new-password">
-                            <p class="new-password-modal-input-label">New Password</p>
-                            <div class="input-group input-group-sm new-password-modal-input">
-                                <input id="newPassword" #newPassword type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                            </div>
-                        </div>
-                        <div class="new-password-2">
-                            <p class="new-password-modal-input-label">Confirm New Password</p>
-                            <div class="input-group input-group-sm new-password-modal-input">
-                                <input id="newPassword2" #newPassword2 type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                            </div>
-                        </div>
-                        <p #newPasswordModalInfo></p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-start">
-                      <button #newPasswordModalYes type="button" class="btn btn-primary btn-ok" (click)="changePassword(oldPassword.value, newPassword.value, newPassword2.value)">Change Password</button>
-                      <button #newPasswordModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
+            <change-password-modal #changePasswordModal (didChanged)="didChange($event)"></change-password-modal>
         </div>
     </div>
 </div>

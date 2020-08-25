@@ -5,11 +5,12 @@ import { TestDataModalComponent } from './test-data-modal/test-data-modal.compon
 import { CreateDIDModalComponent } from './create-did-modal/create-did-modal.component';
 import { NewKeyModalComponent } from './new-key-modal/new-key-modal.component';
 import { RemoveKeyModalComponent } from './remove-key-modal/remove-key-modal.component';
+import { ChangePasswordModalComponent } from './change-password-modal/change-password-modal.component';
 
 
 
 @NgModule({
-  declarations: [ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent, NewKeyModalComponent, RemoveKeyModalComponent],
+  declarations: [ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent, NewKeyModalComponent, RemoveKeyModalComponent, ChangePasswordModalComponent],
   imports: [
     CommonModule
   ],
@@ -19,8 +20,9 @@ import { RemoveKeyModalComponent } from './remove-key-modal/remove-key-modal.com
     CreateDIDModalComponent,
     NewKeyModalComponent,
     RemoveKeyModalComponent,
+    ChangePasswordModalComponent,
   ]
 })
 export class ModalsModule { }
 
-export {ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent, NewKeyModalComponent, RemoveKeyModalComponent}
+export {ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent, NewKeyModalComponent, RemoveKeyModalComponent, ChangePasswordModalComponent}

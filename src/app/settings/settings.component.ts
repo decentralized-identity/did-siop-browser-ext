@@ -3,7 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { BackgroundMessageService } from '../background-message.service';
 import { TASKS } from 'src/const'; 
 import { IdentityService } from '../identity.service';
-import { RemoveKeyModalComponent, ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent } from '../modals/modals.module';
+import { RemoveKeyModalComponent, ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent, NewKeyModalComponent } from '../modals/modals.module';
 
 @Component({
   selector: 'app-settings',
@@ -21,14 +21,8 @@ export class SettingsComponent implements OnInit {
   @ViewChild('changeDIDModal') changeDIDModal: ChangeDIDModalComponent;
   @ViewChild('testDataModal') testDataModal: TestDataModalComponent;
   @ViewChild('createDIDModal') createDIDModal: CreateDIDModalComponent;
-  @ViewChild('newKeyModal') newKeyModal: CreateDIDModalComponent;
-
-  @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
-  @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
-  @ViewChild('newPasswordModalInfo') newPasswordModalInfo: ElementRef;
-  @ViewChild('oldPassword') oldPassword: ElementRef;
-  @ViewChild('newPassword') newPassword: ElementRef;
-  @ViewChild('newPassword2') newPassword2: ElementRef;
+  @ViewChild('newKeyModal') newKeyModal: NewKeyModalComponent;
+  @ViewChild('changePasswordModal') changePasswordModal: ChangeDIDModalComponent;
   
   @Output() clickedBack = new EventEmitter<boolean>();
 
@@ -42,6 +36,8 @@ export class SettingsComponent implements OnInit {
         if(response.did){
           this.currentDID = response.did;
           this.signingInfoSet = JSON.parse(response.keys);
+          this.identityService.setCurrentDID(this.currentDID);
+          this.identityService.setSigningInfoSet(this.signingInfoSet);
         }
         else{
           this.currentDID = 'No DID provided';
@@ -84,82 +80,8 @@ export class SettingsComponent implements OnInit {
     this.removeKeyModal.open(kid);
   }
 
-  changePasswordButtonClicked(){
-    this.newPasswordModalInfo.nativeElement.innerText = '';
-    this.newPassword.nativeElement.value = '';
-    this.newPassword2.nativeElement.value = '';
-    this.oldPassword.nativeElement.value = '';
-  }
-
-  async changePassword(oldPassword: string, newPassword: string, newPassword2: string){
-    this.newPasswordModalInfo.nativeElement.classList.remove('error');
-    this.newPasswordModalInfo.nativeElement.classList.add('waiting');
-    this.newPasswordModalInfo.nativeElement.innerText = 'Please wait';
-    this.newPasswordModalClose.nativeElement.disabled = true;
-    this.newPasswordModalYes.nativeElement.disabled = true;
-
-    if(oldPassword.length != 0 && newPassword.length != 0 && newPassword2.length != 0){
-      if(newPassword === newPassword2){
-        this.messageService.sendMessage({
-            task: TASKS.LOGIN,
-            password: oldPassword
-          }, 
-          (response)=> {
-            if(response.result){
-             this.messageService.sendMessage({
-               task: TASKS.CHANGE_EXT_AUTHENTICATION,
-               oldPassword: oldPassword,
-               newPassword: newPassword,
-             },
-              (response)=> {
-                if(response.result){
-                  this.oldPassword.nativeElement.value = '';
-                  this.newPassword.nativeElement.value = '';
-                  this.newPassword2.nativeElement.value = '';
-                  this.newPasswordModalClose.nativeElement.disabled = false;
-                  this.newPasswordModalYes.nativeElement.disabled = false;
-                  this.newPasswordModalClose.nativeElement.click();
-                  this.changeDetector.detectChanges();
-                  this.toastrService.success('Password changed successfully', 'DID_SIOP', {
-                    onActivateTick: true,
-                    positionClass: 'toast-bottom-center',
-                  });
-                }
-                else if(response.err){
-                  this.newPasswordModalClose.nativeElement.disabled = false;
-                  this.newPasswordModalYes.nativeElement.disabled = false;
-                  this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
-                  this.newPasswordModalInfo.nativeElement.classList.add('error');
-                  this.newPasswordModalInfo.nativeElement.innerText = 'An error occurred';
-                }
-              }
-             );
-            }
-            else{
-              this.newPasswordModalClose.nativeElement.disabled = false;
-              this.newPasswordModalYes.nativeElement.disabled = false;
-              this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
-              this.newPasswordModalInfo.nativeElement.classList.add('error');
-              this.newPasswordModalInfo.nativeElement.innerText = 'Incorrect old password';
-            }
-          }
-        );
-      }
-      else{
-        this.newPasswordModalClose.nativeElement.disabled = false;
-        this.newPasswordModalYes.nativeElement.disabled = false;
-        this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
-        this.newPasswordModalInfo.nativeElement.classList.add('error');
-        this.newPasswordModalInfo.nativeElement.innerText = 'Passwords do not match';
-      }
-    }
-    else{
-      this.newPasswordModalClose.nativeElement.disabled = false;
-      this.newPasswordModalYes.nativeElement.disabled = false;
-      this.newPasswordModalInfo.nativeElement.classList.remove('waiting');
-      this.newPasswordModalInfo.nativeElement.classList.add('error');
-      this.newPasswordModalInfo.nativeElement.innerText = 'Please fill all data';
-    }
+  openChangePasswordModal(){
+    this.changePasswordModal.open();
   }
 
   goBack(){
