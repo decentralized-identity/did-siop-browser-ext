@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from './globals';
+import { STORAGE_KEYS } from '../const';
 import { hash } from './CryptoUtils';
 
 export function initExtAuthentication(password: string): boolean{

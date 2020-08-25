@@ -1,0 +1,66 @@
+@import "../../colors";
+
+.input-group-sm{
+    margin-bottom: 10px;
+}
+
+.input-group-text{
+    width: 100px;
+}
+
+.input-group-sm{
+    textarea{
+        resize: none;
+    }
+}
+
+.warning{
+    color: orangered;
+}
+
+.success{
+    color: green;
+}
+
+.error{
+    color: red;
+}
+
+.waiting{
+    color: $app-primary;
+}
+
+.modal-header{
+    border-bottom: 1px solid $app-primary;
+}
+
+.modal-footer{
+    border: none;
+}
+
+.btn-ok{
+    background-color: $app-primary;
+    border: 1px solid $app-primary;
+    border-radius: 40px;
+    min-width: 100px;
+}
+
+.btn-cancel{
+    color: $app-primary;
+}
+
+.btn-link{
+    &:active{
+        &:focus{
+            background-color: transparent;
+        }
+    }
+    &:focus{
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+
+.modal-trigger{
+    display: none;
+}

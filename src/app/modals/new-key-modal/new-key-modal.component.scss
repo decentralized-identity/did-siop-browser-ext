@@ -1,0 +1,11 @@
+@import "../../../colors";
+
+.new-key-modal-input-label{
+    padding-left: 10px;
+}
+
+.new-key-modal-input{
+    textarea{
+        background-color: $app-section-background;
+    }
+}

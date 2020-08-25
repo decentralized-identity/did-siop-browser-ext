@@ -1,14 +1,15 @@
 <div class="settings">
     <div class="setting">
-        <div class="identity container-fluid">
+        <div class="container-fluid identity">
             <div class="identity-inner">
               <div class="row identity-top">
                 <div class="col">
                   <p>Current Identity</p>
                 </div>
-                <div class="col d-flex justify-content-end change-did-btn">
-                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal" (click)="initializeTestDataButtonClicked()"><small>Test Data</small></button>
-                  <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal" (click)="changeDIDButtonClicked()"><small>Change</small></button>
+                <div class="col d-flex justify-content-end identity-actions">
+                  <button class="btn btn-link" (click)="openTestDataModal()"><small>Test</small></button>
+                  <button class="btn btn-link" (click)="openCreateDIDModal()"><small>Create</small></button>
+                  <button class="btn btn-link" (click)="openChangeDIDModal()"><small>Change</small></button>
                 </div>
               </div>
               <div class="row identity-bottom">
@@ -17,52 +18,12 @@
                 </div>
               </div>
             </div>
-            
-            <div class="modal" id="changeDIDModal" tabindex="-1" role="dialog" aria-labelledby="changeDIDModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="changeDIDModalLabel">Enter New DID</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                      <p class="warning">Warning! Changing DID will remove all the keys related to current DID</p>
-                      <p>New DID</p>
-                      <div class="input-group input-group-sm">
-                          <textarea id="newDID" #newDID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                      </div>
-                      <p #changeDIDModalInfo></p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-start">
-                    <button #changeDIDModalYes type="button" class="btn btn-primary btn-ok" (click)="changeDID(newDID.value)">Change DID</button>
-                    <button #changeDIDModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div class="modal" id="testDataModal" tabindex="-1" role="dialog" aria-labelledby="testDataModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="testDataModalLabel">Initialize Test Data</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                      <p class="warning">Initialize Identity with test data. Warning! This will remove current DID and all the related keys. Are you sure?</p>
-                      <p #testDataModalInfo></p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-start">
-                    <button #testDataModalYes type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
-                    <button #testDataModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <change-did-modal #changeDIDModal (didChanged)="didChange($event)"></change-did-modal>
+
+            <test-data-modal #testDataModal (didChanged)="didChange($event)"></test-data-modal>
+            
+            <create-did-modal #createDIDModal (didChanged)="didChange($event)"></create-did-modal>
         </div>
     
         <div class="container-fluid signing-keys">
@@ -72,7 +33,7 @@
                   <p>Signing Keys</p>
                 </div>
                 <div class="col d-flex justify-content-end new-key-btn">
-                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal" (click)="addNewKeyButtonClicked()"><small>Add New Key</small></button>
+                  <button #newKeyButton type="button" class="btn btn-link" (click)="openNewKeyModal()"><small>Add New Key</small></button>
                 </div>
               </div>
               <div class="row signing-keys-bottom">
@@ -91,7 +52,7 @@
                             <div class="input-group input-group-sm">
                                 <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                             </div>
-                            <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
+                            <button class="btn btn-link remove-key-btn" (click)='openRemoveKeyModal(key.kid)'><small>Remove</small></button>
                         </div>
                       </div>
                     </div>
@@ -100,56 +61,9 @@
               </div>
             </div>
     
-            <div class="modal" id="newKeyModal" tabindex="-1" role="dialog" aria-labelledby="newKeyModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="newKeyModalLabel">Add New Key</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="new-key-key">
-                          <p class="new-key-modal-input-label">Private Key</p>
-                          <div class="input-group input-group-sm new-key-modal-input">
-                              <textarea id="newKeyString" #newKeyString type="password" rows="10" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea>
-                          </div>
-                        </div>
-                        <p #addNewKeyModalInfo></p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-start">
-                      <button #addNewKeyModalYes type="button" class="btn btn-primary btn-ok" (click)='addNewKey(newKeyString.value)'>Add Key</button>
-                      <button #addNewKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
-    
-            <div class="modal" id="removeKeyModal" tabindex="-1" role="dialog" aria-labelledby="removeKeyModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="removeKeyModalLabel">Remove Key</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                      <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
-                      <p>KID</p>
-                      <div class="input-group input-group-sm">
-                        <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
-                      </div>
-                      <p #removeKeyModalInfo></p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-start">
-                    <button #removeKeyModalYes type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
-                    <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <new-key-modal #newKeyModal (didChanged)="didChange($event)"></new-key-modal>
+
+            <remove-key-modal #removeKeyModal (didChanged)="didChange($event)"></remove-key-modal>
         </div>
     </div>
     <div class="setting">
@@ -160,48 +74,12 @@
                     <p>Password</p>
                   </div>
                   <div class="col d-flex justify-content-end new-password-btn">
-                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#newPasswordModal" (click)="changePasswordButtonClicked()"><small>Change</small></button>
+                    <button type="button" class="btn btn-link" (click)="openChangePasswordModal()"><small>Change</small></button>
                   </div>
                 </div>
             </div>
 
-            <div class="modal" id="newPasswordModal" tabindex="-1" role="dialog" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="newPasswordModalLabel">Change Password</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="old-password">
-                          <p class="new-password-modal-input-label">Old Password</p>
-                          <div class="input-group input-group-sm new-password-modal-input">
-                              <input id="oldPassword" #oldPassword type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                          </div>
-                        </div>
-                        <div class="new-password">
-                            <p class="new-password-modal-input-label">New Password</p>
-                            <div class="input-group input-group-sm new-password-modal-input">
-                                <input id="newPassword" #newPassword type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                            </div>
-                        </div>
-                        <div class="new-password-2">
-                            <p class="new-password-modal-input-label">Confirm New Password</p>
-                            <div class="input-group input-group-sm new-password-modal-input">
-                                <input id="newPassword2" #newPassword2 type="password" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-                            </div>
-                        </div>
-                        <p #newPasswordModalInfo></p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-start">
-                      <button #newPasswordModalYes type="button" class="btn btn-primary btn-ok" (click)="changePassword(oldPassword.value, newPassword.value, newPassword2.value)">Change Password</button>
-                      <button #newPasswordModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
+            <change-password-modal #changePasswordModal (didChanged)="didChange($event)"></change-password-modal>
         </div>
     </div>
 </div>

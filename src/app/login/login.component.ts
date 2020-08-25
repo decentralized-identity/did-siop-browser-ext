@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { TASKS } from 'src/globals';
+import { TASKS } from 'src/const';
 import { BackgroundMessageService } from '../background-message.service';
 
 @Component({
