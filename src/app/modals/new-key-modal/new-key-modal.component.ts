@@ -15,6 +15,7 @@ export class NewKeyModalComponent implements OnInit {
   @ViewChild('modalYes') modalYes: ElementRef;
   @ViewChild('modalInfo') modalInfo: ElementRef;
   @ViewChild('newKeyString') newKeyString: ElementRef;
+  @ViewChild('modalOpen') modalOpen: ElementRef;
 
   @Output() didChanged = new EventEmitter<boolean>();
 
@@ -23,9 +24,10 @@ export class NewKeyModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  clearModal(){
+  open(){
     this.modalInfo.nativeElement.innerText = '';
     this.newKeyString.nativeElement.value = '';
+    this.modalOpen.nativeElement.click();
   }
 
   async addNewKey(keyString: string){
@@ -48,7 +50,6 @@ export class NewKeyModalComponent implements OnInit {
             this.modalInfo.nativeElement.classList.remove('waiting');
             this.modalClose.nativeElement.disabled = false;
             this.modalYes.nativeElement.disabled = false;
-            this.clearModal();
             this.modalClose.nativeElement.click();
             this.didChanged.emit(true);
             this.toastrService.success(response.result, 'DID_SIOP', {

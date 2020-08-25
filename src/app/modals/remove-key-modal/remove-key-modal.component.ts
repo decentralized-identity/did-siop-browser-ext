@@ -55,7 +55,6 @@ export class RemoveKeyModalComponent implements OnInit {
           });
           this.modalClose.nativeElement.disabled = false;
           this.modalYes.nativeElement.disabled = false;
-          this.clear();
           this.modalClose.nativeElement.click();
           this.didChanged.emit(true);
         }

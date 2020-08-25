@@ -13,6 +13,7 @@ export class CreateDIDModalComponent implements OnInit {
   
   @ViewChild('modalInfo') modalInfo: ElementRef;
   @ViewChild('modalClose') modalClose: ElementRef;
+  @ViewChild('modalOpen') modalOpen: ElementRef;
   
   @Output() didChanged = new EventEmitter<boolean>();
 
@@ -21,8 +22,9 @@ export class CreateDIDModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  clearModal(){
+  open(){
     this.modalInfo.nativeElement.innerText = '';
+    this.modalOpen.nativeElement.click();
   }
 
   async createNewDID(method: string, data: any){
@@ -44,7 +46,6 @@ export class CreateDIDModalComponent implements OnInit {
           this.modalClose.nativeElement.disabled = false;
           this.didChanged.emit(true);
           this.modalClose.nativeElement.click();
-          this.clearModal();
           this.toastrService.success('Successful', 'DID_SIOP', {
             onActivateTick: true,
             positionClass: 'toast-bottom-center',

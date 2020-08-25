@@ -7,9 +7,9 @@
                   <p>Current Identity</p>
                 </div>
                 <div class="col d-flex justify-content-end identity-actions">
-                  <button class="btn btn-link" data-toggle="modal" data-target="#testDataModal"><small>Test</small></button>
-                  <button class="btn btn-link" data-toggle="modal" data-target="#createDIDModal"><small>Create</small></button>
-                  <button class="btn btn-link" data-toggle="modal" data-target="#changeDIDModal"><small>Change</small></button>
+                  <button class="btn btn-link" (click)="openTestDataModal()"><small>Test</small></button>
+                  <button class="btn btn-link" (click)="openCreateDIDModal()"><small>Create</small></button>
+                  <button class="btn btn-link" (click)="openChangeDIDModal()"><small>Change</small></button>
                 </div>
               </div>
               <div class="row identity-bottom">
@@ -19,11 +19,11 @@
               </div>
             </div>
 
-            <change-did-modal (didChanged)="didChange($event)"></change-did-modal>
+            <change-did-modal #changeDIDModal (didChanged)="didChange($event)"></change-did-modal>
 
-            <test-data-modal (didChanged)="didChange($event)"></test-data-modal>
+            <test-data-modal #testDataModal (didChanged)="didChange($event)"></test-data-modal>
             
-            <create-did-modal (didChanged)="didChange($event)"></create-did-modal>
+            <create-did-modal #createDIDModal (didChanged)="didChange($event)"></create-did-modal>
         </div>
     
         <div class="container-fluid signing-keys">
@@ -33,7 +33,7 @@
                   <p>Signing Keys</p>
                 </div>
                 <div class="col d-flex justify-content-end new-key-btn">
-                  <button #addNewKeyButton type="button" class="btn btn-link" data-toggle="modal" data-target="#newKeyModal"><small>Add New Key</small></button>
+                  <button #newKeyButton type="button" class="btn btn-link" (click)="openNewKeyModal()"><small>Add New Key</small></button>
                 </div>
               </div>
               <div class="row signing-keys-bottom">
@@ -61,7 +61,7 @@
               </div>
             </div>
     
-            <new-key-modal (didChanged)="didChange($event)"></new-key-modal>
+            <new-key-modal #newKeyModal (didChanged)="didChange($event)"></new-key-modal>
 
             <remove-key-modal #removeKeyModal (didChanged)="didChange($event)"></remove-key-modal>
         </div>

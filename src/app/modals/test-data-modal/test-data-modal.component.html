@@ -1,9 +1,10 @@
-<div class="modal" id="testDataModal" tabindex="-1" role="dialog" aria-labelledby="testDataModalLabel" aria-hidden="true" (focus)="clearModal()">
+<button #modalOpen data-toggle="modal" data-target="#testDataModal" class="modal-trigger"></button>
+<div class="modal" id="testDataModal" tabindex="-1" role="dialog" aria-labelledby="testDataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="testDataModalLabel">Initialize Test Data</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearModal()">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -13,7 +14,7 @@
         </div>
         <div class="modal-footer d-flex justify-content-start">
           <button #modalYes type="button" class="btn btn-primary btn-ok" (click)="initializeTestData()">Yes</button>
-          <button #modalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal" (click)="clearModal()">Cancel</button>
+          <button #modalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

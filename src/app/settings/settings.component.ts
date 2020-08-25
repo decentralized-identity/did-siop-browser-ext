@@ -3,7 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { BackgroundMessageService } from '../background-message.service';
 import { TASKS } from 'src/const'; 
 import { IdentityService } from '../identity.service';
-import { RemoveKeyModalComponent } from '../modals/modals.module';
+import { RemoveKeyModalComponent, ChangeDIDModalComponent, TestDataModalComponent, CreateDIDModalComponent } from '../modals/modals.module';
 
 @Component({
   selector: 'app-settings',
@@ -15,9 +15,13 @@ export class SettingsComponent implements OnInit {
   currentDID: string;
   signingInfoSet: any[] = [];
   
-  @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
+  @ViewChild('newKeyButton') newKeyButton: ElementRef;
 
   @ViewChild('removeKeyModal') removeKeyModal: RemoveKeyModalComponent;
+  @ViewChild('changeDIDModal') changeDIDModal: ChangeDIDModalComponent;
+  @ViewChild('testDataModal') testDataModal: TestDataModalComponent;
+  @ViewChild('createDIDModal') createDIDModal: CreateDIDModalComponent;
+  @ViewChild('newKeyModal') newKeyModal: CreateDIDModalComponent;
 
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
   @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
@@ -41,7 +45,7 @@ export class SettingsComponent implements OnInit {
         }
         else{
           this.currentDID = 'No DID provided';
-          this.addNewKeyButton.nativeElement.disabled = true;
+          this.newKeyButton.nativeElement.disabled = true;
         }
         this.changeDetector.detectChanges();
       }
@@ -53,11 +57,27 @@ export class SettingsComponent implements OnInit {
 
   didChange(changed: boolean){
     if(changed){
-      this.addNewKeyButton.nativeElement.disabled = false;
+      this.newKeyButton.nativeElement.disabled = false;
       this.currentDID = this.identityService.getCurrentDID();
       this.signingInfoSet = this.identityService.getSigningInfoSet();
       this.changeDetector.detectChanges();
     }
+  }
+
+  openChangeDIDModal(){
+    this.changeDIDModal.open();
+  }
+
+  openTestDataModal(){
+    this.testDataModal.open();
+  }
+
+  openCreateDIDModal(){
+    this.createDIDModal.open();
+  }
+
+  openNewKeyModal(){
+    this.newKeyModal.open();
   }
 
   openRemoveKeyModal(kid){

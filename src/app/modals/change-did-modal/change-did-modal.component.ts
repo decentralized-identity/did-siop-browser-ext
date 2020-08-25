@@ -15,6 +15,7 @@ export class ChangeDIDModalComponent implements OnInit {
   @ViewChild('modalClose') modalClose: ElementRef;
   @ViewChild('modalInfo') modalInfo: ElementRef;
   @ViewChild('modalYes') modalYes: ElementRef;
+  @ViewChild('modalOpen') modelOpen: ElementRef;
 
   @Output() didChanged = new EventEmitter<boolean>();
 
@@ -23,9 +24,10 @@ export class ChangeDIDModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  clearModal(){
+  open(){
     this.modalInfo.nativeElement.innerText = '';
     this.newDID.nativeElement.value = '';
+    this.modelOpen.nativeElement.click();
   }
 
   async changeDID(did: string){
@@ -47,7 +49,6 @@ export class ChangeDIDModalComponent implements OnInit {
             this.modalInfo.nativeElement.classList.remove('waiting');
             this.modalClose.nativeElement.disabled = false;
             this.modalYes.nativeElement.disabled = false;
-            this.clearModal();
             this.modalClose.nativeElement.click();
             this.didChanged.emit(true);
             this.toastrService.success(response.result, 'DID_SIOP', {

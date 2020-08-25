@@ -14,6 +14,7 @@ export class TestDataModalComponent implements OnInit {
   @ViewChild('modalClose') modalClose: ElementRef;
   @ViewChild('modalInfo') modalInfo: ElementRef;
   @ViewChild('modalYes') modalYes: ElementRef;
+  @ViewChild('modalOpen') modalOpen: ElementRef;
 
   @Output() didChanged = new EventEmitter<boolean>();
 
@@ -22,8 +23,9 @@ export class TestDataModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  clearModal(){
+  open(){
     this.modalInfo.nativeElement.innerText = '';
+    this.modalOpen.nativeElement.click();
   }
 
   async initializeTestData(){
@@ -55,7 +57,6 @@ export class TestDataModalComponent implements OnInit {
                   this.modalYes.nativeElement.disabled = false;
                   this.didChanged.emit(true);
                   this.modalClose.nativeElement.click();
-                  this.clearModal();
                   this.toastrService.success('Successful', 'DID_SIOP', {
                     onActivateTick: true,
                     positionClass: 'toast-bottom-center',
