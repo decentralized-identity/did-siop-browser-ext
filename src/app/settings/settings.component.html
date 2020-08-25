@@ -52,7 +52,7 @@
                             <div class="input-group input-group-sm">
                                 <textarea value="{{key.kid}}" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
                             </div>
-                            <button class="btn btn-link remove-key-btn" (click)='selectKey(key.kid)' data-toggle="modal" data-target="#removeKeyModal"><small>Remove</small></button>
+                            <button class="btn btn-link remove-key-btn" (click)='openRemoveKeyModal(key.kid)'><small>Remove</small></button>
                         </div>
                       </div>
                     </div>
@@ -63,30 +63,7 @@
     
             <new-key-modal (didChanged)="didChange($event)"></new-key-modal>
 
-            <div class="modal" id="removeKeyModal" tabindex="-1" role="dialog" aria-labelledby="removeKeyModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="removeKeyModalLabel">Remove Key</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                      <p class="warning">You are about to remove key.This cannot be undone. Are you sure?</p>
-                      <p>KID</p>
-                      <div class="input-group input-group-sm">
-                        <textarea #toRemoveKeyKID class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" disabled></textarea>
-                      </div>
-                      <p #removeKeyModalInfo></p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-start">
-                    <button #removeKeyModalYes type="button" class="btn btn-primary btn-ok" (click)="removeKey(toRemoveKeyKID.value)">Yes</button>
-                    <button #removeKeyModalClose type="button" class="btn btn-link btn-cancel" data-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <remove-key-modal #removeKeyModal (didChanged)="didChange($event)"></remove-key-modal>
         </div>
     </div>
     <div class="setting">

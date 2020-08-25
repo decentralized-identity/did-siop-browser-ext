@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { BackgroundMessageService } from '../background-message.service';
 import { TASKS } from 'src/const'; 
 import { IdentityService } from '../identity.service';
+import { RemoveKeyModalComponent } from '../modals/modals.module';
 
 @Component({
   selector: 'app-settings',
@@ -16,6 +17,8 @@ export class SettingsComponent implements OnInit {
   
   @ViewChild('addNewKeyButton') addNewKeyButton: ElementRef;
 
+  @ViewChild('removeKeyModal') removeKeyModal: RemoveKeyModalComponent;
+
   @ViewChild('newPasswordModalClose') newPasswordModalClose: ElementRef;
   @ViewChild('newPasswordModalYes') newPasswordModalYes: ElementRef;
   @ViewChild('newPasswordModalInfo') newPasswordModalInfo: ElementRef;
@@ -23,11 +26,6 @@ export class SettingsComponent implements OnInit {
   @ViewChild('newPassword') newPassword: ElementRef;
   @ViewChild('newPassword2') newPassword2: ElementRef;
   
-  @ViewChild('removeKeyModalInfo') removeKeyModalInfo: ElementRef;
-  @ViewChild('removeKeyModalClose') removeKeyModalClose: ElementRef;
-  @ViewChild('removeKeyModalYes') removeKeyModalYes: ElementRef;
-  @ViewChild('toRemoveKeyKID') toRemoveKeyKID: ElementRef;
-
   @Output() clickedBack = new EventEmitter<boolean>();
 
   constructor(private changeDetector: ChangeDetectorRef, private toastrService: ToastrService, private messageService: BackgroundMessageService, private identityService: IdentityService) {
@@ -62,47 +60,8 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async removeKey(kid: string){
-    this.removeKeyModalInfo.nativeElement.classList.remove('error');
-    this.removeKeyModalInfo.nativeElement.classList.add('waiting');
-    this.removeKeyModalInfo.nativeElement.innerText = 'Please wait';
-    this.removeKeyModalClose.nativeElement.disabled = true;
-    this.removeKeyModalYes.nativeElement.disabled = true;
-
-    if(kid){
-      this.messageService.sendMessage({
-        task: TASKS.REMOVE_KEY,
-        kid: kid,
-        }, 
-        (response) =>{
-          if(response.result){
-            this.signingInfoSet = this.signingInfoSet.filter(key => {
-              return key.kid !== kid;
-            });
-            this.toastrService.success(response.result, 'DID_SIOP', {
-              onActivateTick: true,
-              positionClass: 'toast-bottom-center',
-            });
-            this.removeKeyModalClose.nativeElement.disabled = false;
-            this.removeKeyModalYes.nativeElement.disabled = false;
-            this.removeKeyModalClose.nativeElement.click();
-            this.changeDetector.detectChanges();
-          }
-          else if(response.err){
-            this.removeKeyModalInfo.nativeElement.innerText = response.err;
-            this.removeKeyModalInfo.nativeElement.classList.remove('waiting');
-            this.removeKeyModalInfo.nativeElement.classList.add('error');
-            this.removeKeyModalClose.nativeElement.disabled = false;
-            this.removeKeyModalYes.nativeElement.disabled = false;
-          }
-        }
-      );
-    }
-  }
-
-  selectKey(keyid){
-    this.toRemoveKeyKID.nativeElement.value = keyid;
-    this.removeKeyModalInfo.nativeElement.innerText = '';
+  openRemoveKeyModal(kid){
+    this.removeKeyModal.open(kid);
   }
 
   changePasswordButtonClicked(){
