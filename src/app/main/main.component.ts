@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { TASKS } from 'src/globals';
+import { TASKS } from 'src/const';
 import { BackgroundMessageService } from '../background-message.service';
 
 @Component({

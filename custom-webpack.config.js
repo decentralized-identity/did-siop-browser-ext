@@ -2,8 +2,8 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: { 
-        background: 'src/background.ts',
-        inject: 'src/inject.ts'
+        background: 'src/core/background.ts',
+        inject: 'src/core/inject.ts'
     },
     node: {
         stream: true,

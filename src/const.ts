@@ -21,4 +21,5 @@ export const enum TASKS{
     GET_IDENTITY,
     GET_REQUESTS,
     MAKE_REQUEST,
+    CREATE_DID,
 }
