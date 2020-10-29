@@ -8,8 +8,14 @@
 This implements _Self Issued OpenId Connect Provider (SIOP)_ for _Decentralized Identities (DIDs)_. This is implemented  as a browser add-on and allows to integrate _Identity Wallets_ with _Relying Parties_ which uses OpenIDConnect Clients (OIDC Clients) complies the SIOP specification.
 
 Following are the primary specifications followed by this implementation.
-* [OpenID Connect Core 1.0 incorporating errata set 1](https://openid.net/specs/openid-connect-core-1_0.html#SelfIssued)
-* [Self-Issued OpenID Connect Provider DID Profile](https://identity.foundation/did-siop/)
+
+| Specification | Version |
+| ------------- | --------|
+| [OpenID Connect Core 1.0 incorporating errata set 1](https://openid.net/specs/openid-connect-core-1_0.html#SelfIssued) | Final v1.0 |
+| [Self-Issued OpenID Connect Provider DID Profile](https://identity.foundation/did-siop/) | :exclamation: DIF WG Draft v0.1 (Unapproved) |
+| | |
+
+**NOTE:** Work on DIF SIOP DID Profile specification has moved to OIDF AB WG. The group will work on a new SIOP v2 specification that will likely introduce breaking changes to the DIF SIOP DID Profile specification.
 
 ### Background ###
 Even though the OIDC specifications have defined protocols to to be independent of any single or few authorization providers, currently day millions of people rely on Social Login schemes provided by companies such as Google and Facebook. DID-SIOP brings the authorization provider service under the control of true owner of the identity and its meta data. In other words, DID-SIOP replace Social Login Schemes with a software module run out of his/her browser (as an add-on) or smart phone application. Significance of this is that, identification and personal data will be under the full control of the owner of the data and will prevent unauthorized use of such data by any other party.
