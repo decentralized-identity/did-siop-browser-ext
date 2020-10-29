@@ -12,7 +12,7 @@ Following are the primary specifications followed by this implementation.
 | Specification | Version |
 | ------------- | --------|
 | [OpenID Connect Core 1.0 incorporating errata set 1](https://openid.net/specs/openid-connect-core-1_0.html#SelfIssued) | Final v1.0 |
-| [Self-Issued OpenID Connect Provider DID Profile](https://identity.foundation/did-siop/) | :exclamation: DIF WG Draft v0.1 (Unapproved) |
+| [Self-Issued OpenID Connect Provider DID Profile](https://identity.foundation/did-siop/) | :exclamation: DIF WG Draft v0.1 (Unapproved) :exclamation: |
 | | |
 
 **NOTE:** Work on DIF SIOP DID Profile specification has moved to OIDF AB WG. The group will work on a new SIOP v2 specification that will likely introduce breaking changes to the DIF SIOP DID Profile specification.
